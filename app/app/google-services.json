@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "494111396660",
+    "project_id": "repairme-956fd",
+    "storage_bucket": "repairme-956fd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494111396660:android:c664cf2d51e5747160cb61",
+        "android_client_info": {
+          "package_name": "com.example.repairme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3EJzJZELSevtog0YP8vMkFjIT2win6IA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
