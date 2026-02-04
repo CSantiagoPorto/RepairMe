@@ -1,5 +1,7 @@
 package com.example.repairme.ui.screens.auth
+import android.content.Context
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
@@ -23,20 +25,62 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.repairme.data.repository.AuthRepository
 import com.example.repairme.ui.theme.botonNaranja
 
 import com.example.repairme.ui.theme.naranjaLetras
 
 
+
 @Composable
-fun LoginScreen(){
-    var email by remember{ mutableStateOf("") }
-    var contrasena by remember{ mutableStateOf("") }
+fun LoginScreen() {
+    val repo = AuthRepository()
+    var email by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    fun mensaje(context: Context, mensaje: String){
+        Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
+    }
+    fun loguearse(){
+        if(email.isEmpty()){
+            mensaje(context, "Debe proporcionar una dirección de email")
+            return
+        }
+        if (!email.contains("@")){
+            mensaje(context, "Debe proporcionar un email válido")
+            return
+        }
+        if (contrasena.isEmpty()){
+            mensaje(context, "Debe introducir la contaseña")
+            return
+        }
+            mensaje(context,"Voy a validar")
+        repo.validarCorreoPassword(
+            correo = email,
+            contraseña = contrasena,
+            validacionOK = {nombre->
+                Toast.makeText(context, "Hola $nombre",Toast.LENGTH_LONG).show()
+            },
+            validacionError = {noEncontrado->
+                Toast.makeText(context, "Algo ha fallado",Toast.LENGTH_SHORT).show()
+            }
+        )
+
+    }
+
+
+
+
+
+
+
 
     Column (
 
@@ -72,14 +116,17 @@ fun LoginScreen(){
             textStyle = TextStyle(textAlign = TextAlign.Center),
             value = contrasena,
             onValueChange = {contrasena=it},
-            label = {Text("email")}
+            label = {Text("contraseña")}
 
 
         )
         Spacer(modifier = Modifier.height(150.dp
         ))
         Button(
-            onClick = {},
+            onClick = {
+                loguearse()
+
+            },
             colors=ButtonDefaults.buttonColors(
                 containerColor = botonNaranja,
                 contentColor = Color.White
@@ -93,10 +140,17 @@ fun LoginScreen(){
             //Esto tiene que ser cliclable
         )
 
+//TODO:
+        //verificar que los campos tengan contenido. Si no ---> Mensaje error
+        //Hay que enchufar con Firebase y validar
+        //Si es correcto lee el rol
+        //Cuando haya siguiente pantalla tiene que moverse a ahí
 
 
 
     }//Acaba la columna
+
+
 }
 
 
