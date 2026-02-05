@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.data.repository.AuthRepository
@@ -37,9 +39,13 @@ import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
 
 
-
+@Preview
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onNavigateToRegistro:()-> Unit={},
+                onNavigateToUserScreen: ()-> Unit={},
+                onNavigateToAdminScreen:()->Unit={}
+) {
+
     val repo = AuthRepository()
     var email by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
@@ -67,6 +73,7 @@ fun LoginScreen() {
             contraseña = contrasena,
             validacionOK = {nombre->
                 Toast.makeText(context, "Hola $nombre",Toast.LENGTH_LONG).show()
+                // onNavigateToUserSreen()
             },
             validacionError = {noEncontrado->
                 Toast.makeText(context, "Algo ha fallado",Toast.LENGTH_SHORT).show()
@@ -113,6 +120,7 @@ fun LoginScreen() {
         Spacer(modifier = Modifier.height(34.dp))
         TextField(
             //modifier = Modifier.fillMaxSize(),
+            visualTransformation = PasswordVisualTransformation(), //Así nos oculata la contraseña,
             textStyle = TextStyle(textAlign = TextAlign.Center),
             value = contrasena,
             onValueChange = {contrasena=it},
@@ -136,8 +144,12 @@ fun LoginScreen() {
         Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = "Regístrate aquí",
-            color = naranjaLetras
+            color = naranjaLetras,
             //Esto tiene que ser cliclable
+            modifier = Modifier.clickable {
+                //Aquí tenemos que llamar a una función de navegación
+                onNavigateToRegistro()
+            }
         )
 
 //TODO:

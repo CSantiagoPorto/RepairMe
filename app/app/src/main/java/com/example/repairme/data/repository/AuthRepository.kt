@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.example.repairme.ui.screens.auth.LoginScreen
 
 class AuthRepository {
     //Esta clase se ocupa únicamente de FireBase.
@@ -39,6 +40,9 @@ class AuthRepository {
                     datos-> val nombreUser= datos.child("name").getValue(String::class.java)
                     if(!nombreUser.isNullOrBlank()){
                         validacionOK(nombreUser)
+
+
+
                     }else{
                         validacionError("No se encontró")
                     }
