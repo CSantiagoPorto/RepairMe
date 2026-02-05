@@ -86,7 +86,7 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
 
 
 
-
+//Añadir el Scaffold con el Botton Bar y el ToolBar
 
 
     Column (
