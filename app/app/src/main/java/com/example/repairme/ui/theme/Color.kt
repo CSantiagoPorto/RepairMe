@@ -10,6 +10,10 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
+
+// Colores que usamos en Figma
+val Naranja = Color(0xFFD98841)
+val GrisFondoPantalla = Color(0xFFD8D8D8)
 val naranjaLetras= Color(0xFFfc8138 )
 val grisfondo=Color(0xFFE5E5E5)
 val botonNaranja = Color(0xFFC58B4A)
