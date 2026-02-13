@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import com.example.repairme.data.repository.AuthRepository
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 // Colores
@@ -23,22 +26,20 @@ import com.example.repairme.ui.theme.GrisFondoPantalla
 
 @Composable
 fun RegisterScreen(
-    // Desdde aqui mandaremos los datos a la BDD
-    onRegister: (
-        nombre: String,
-        apellidos: String,
-        direccion: String,
-        codigoPostal: String,
-        localidad: String,
-        dni: String,
-        telefono: String,
-        password: String
-
-    ) -> Unit = { _, _, _, _, _, _, _, _ -> }
+    onNavigateBack: () -> Unit = {},//Con esta función volvemos al login
+    onRegisterSucess: () -> Unit = {}
+    //Dejo esta función aquí porque la voy a usar para volver al login cuando
+    //el registro haya sido exitoso
 ) {
 
+    //Creo instancia del repo y del context
+    val repo = AuthRepository()
+    val context = LocalContext.current
+
     // Variables/inputs del formulario
-    var nombre by rememberSaveable() { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var pass by rememberSaveable { mutableStateOf("") }
+    var nombre by rememberSaveable { mutableStateOf("") }
     var apellidos by rememberSaveable { mutableStateOf("") }
     var direccion by rememberSaveable { mutableStateOf("") }
     var codigoPostal by rememberSaveable { mutableStateOf("") }
@@ -55,6 +56,15 @@ fun RegisterScreen(
     // Función de validación
     fun validarCampos(): Boolean {
         // Si algún campo está vacío -> error
+        if (email.trim().isEmpty() || !email.contains("@")) {
+            error = "Email inválido"
+            return false
+        }
+
+        if (pass.trim().length < 6) {
+            error = "Contraseña debe tener al menos 6 caracteres"
+            return false
+        }
         if (
             nombre.trim().isEmpty() ||
             apellidos.trim().isEmpty() ||
@@ -119,13 +129,37 @@ fun RegisterScreen(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
+        OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+                error = null
+            },
+            label = { Text("Email") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !ok
+        )
+
+        OutlinedTextField(
+            value = pass,
+            onValueChange = {
+                pass = it
+                error = null
+            },
+            label = { Text("Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !ok
+        )
+
         // Campos del formulario
         // Nombre
         OutlinedTextField(
             value = nombre,
             onValueChange = {
                 nombre = it
-                ok = false
                 error = null
             },
             label = { Text("Nombre") },
@@ -137,7 +171,6 @@ fun RegisterScreen(
             value = apellidos,
             onValueChange = {
                 apellidos = it
-                ok = false
                 error = null
             },
             label = { Text("Apellidos") },
@@ -173,7 +206,6 @@ fun RegisterScreen(
             value = direccion,
             onValueChange = {
                 direccion = it
-                ok = false
                 error = null
             },
             label = { Text("Dirección") },
@@ -186,7 +218,6 @@ fun RegisterScreen(
             onValueChange = {
                 // Filtramos para que solo se escriban números
                 codigoPostal = it.filter { c -> c.isDigit() }.take(5)
-                ok = false
                 error = null
             },
             label = { Text("Código Postal") },
@@ -199,7 +230,6 @@ fun RegisterScreen(
             value = localidad,
             onValueChange = {
                 localidad = it
-                ok = false
                 error = null
             },
             label = { Text("Localidad") },
@@ -250,15 +280,26 @@ fun RegisterScreen(
             onClick = {
                 if (validarCampos()) {
                     ok = true
-                    onRegister(
-                        nombre.trim(),
-                        apellidos.trim(),
-                        direccion.trim(),
-                        codigoPostal.trim(),
-                        localidad.trim(),
-                        dni.trim().uppercase(),
-                        telefono.trim(),
-                        password
+                    repo.crearUsuario(
+                        email = email.trim(),
+                        password = pass.trim(),
+                        nombre = nombre.trim(),
+                        apellidos = apellidos.trim(),
+                        telefono = telefono.trim(),
+                        direccion = direccion.trim(),
+                        codigoPostal = codigoPostal.trim(),
+                        localidad = localidad.trim(),
+                        dni = dni.trim().uppercase(),
+                        creadoOK = {
+                            ok = false
+                            Toast.makeText(context, "Usuario creado", Toast.LENGTH_LONG).show()
+                            onRegisterSucess()
+                        },
+                        creadoError = { mensaje ->
+                            ok = false
+                            error = mensaje
+                            Toast.makeText(context, "Error: $mensaje", Toast.LENGTH_LONG).show()
+                        }
                     )
                 } else {
                     ok = false
@@ -267,21 +308,21 @@ fun RegisterScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Naranja,
                 contentColor = Color.White
-            )
-            ,
+            ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Registrarme")
         }
 
-    }
-
-    // Para previsualizar la pantalla en design
-    @Composable
-    fun RegisterScreenPreview() {
-        MaterialTheme {
-            RegisterScreen()
+        TextButton(onClick = onNavigateBack) {
+            Text("¿Ya tienes cuenta? Inicia sesión", color = Naranja)
         }
     }
+}
 
+@Composable
+fun RegisterScreenPreview() {
+    MaterialTheme {
+        RegisterScreen()
+    }
 }

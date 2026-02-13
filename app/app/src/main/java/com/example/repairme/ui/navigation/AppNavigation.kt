@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 
 class AppNavigation {
@@ -11,7 +12,7 @@ class AppNavigation {
     @Composable
     fun navegarApp(){
 
-        val navController= rememberNavController()
+        val navController= rememberNavController()//Esto permite que la pantalla persista aunque se cambie la orientación
 
         NavHost(
             navController= navController,
@@ -24,9 +25,10 @@ class AppNavigation {
                 )
 
             }
-            composable(Rutas.USERSCREEN.ruta) {
-                LoginScreen(//Cambia esto a UserScreen cuando te la pasen
-                    onNavigateToUserScreen={navController.navigate(Rutas.USERSCREEN.ruta)}
+            composable(Rutas.REGISTRO.ruta) {
+                RegisterScreen(
+
+                    //onNavigateLogin={navController.popBackStack()}
                 )
             }
         }
