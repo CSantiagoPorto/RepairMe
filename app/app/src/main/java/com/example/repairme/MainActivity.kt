@@ -11,8 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.repairme.ui.navigation.AppNavigation
 import com.example.repairme.ui.screens.auth.LoginScreen
 import com.example.repairme.ui.theme.RepairMeTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,14 +23,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             RepairMeTheme {
 
-                    LoginScreen()
+                   AppNavigation().navegarApp()
 
             }
         }
     }
 }
 
-@Composable
+/*@Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
@@ -42,4 +44,4 @@ fun GreetingPreview() {
     RepairMeTheme {
         Greeting("Android")
     }
-}
+}*/

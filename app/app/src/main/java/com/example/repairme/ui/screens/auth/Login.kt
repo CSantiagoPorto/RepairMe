@@ -39,7 +39,7 @@ import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LoginScreen(onNavigateToRegistro:()-> Unit={},
                 onNavigateToUserScreen: ()-> Unit={},
@@ -65,6 +65,10 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
         }
         if (contrasena.isEmpty()){
             mensaje(context, "Debe introducir la contaseña")
+            return
+        }
+        if(contrasena.length<8){
+            mensaje(context,"La contraseña debe tener al menos 8 caracteres")
             return
         }
             mensaje(context,"Voy a validar")
@@ -120,7 +124,7 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
         Spacer(modifier = Modifier.height(34.dp))
         TextField(
             //modifier = Modifier.fillMaxSize(),
-            visualTransformation = PasswordVisualTransformation(), //Así nos oculata la contraseña,
+            visualTransformation = PasswordVisualTransformation(), //Así nos oculta la contraseña,
             textStyle = TextStyle(textAlign = TextAlign.Center),
             value = contrasena,
             onValueChange = {contrasena=it},
