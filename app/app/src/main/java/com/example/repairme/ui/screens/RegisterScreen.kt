@@ -46,6 +46,8 @@ fun RegisterScreen(
     var localidad by rememberSaveable { mutableStateOf("") }
     var dni by rememberSaveable { mutableStateOf("") }
     var telefono by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+
 
     // Variables para decir si OK o error
     var error by rememberSaveable { mutableStateOf<String?>(null) }
@@ -94,6 +96,13 @@ fun RegisterScreen(
             error = "Teléfono inválido (deben ser 9 números)"
             return false
         }
+
+        // Contraseña mínimo 8 caracteres
+        if (password.length < 8) {
+            error = "La contraseña debe tener mínimo 8 caracteres"
+            return false
+        }
+
 
         // Si todo va bien, limpiamos error y dejamos el DNI en mayúsculas
         dni = dniMayus
@@ -168,6 +177,30 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        // Campo DNI/NIF (lo ponemos en mayúsculas mientras escribe)
+        OutlinedTextField(
+            value = dni,
+            onValueChange = {
+                dni = it.uppercase()
+                ok = false
+                error = null
+            },
+            label = { Text("DNI/NIF") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        // Campo Teléfono (solo números y máximo 9)
+        OutlinedTextField(
+            value = telefono,
+            onValueChange = {
+                telefono = it.filter { c -> c.isDigit() }.take(9)
+                ok = false
+                error = null
+            },
+            label = { Text("Teléfono") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth()
+        )
+
         // Direccion
         OutlinedTextField(
             value = direccion,
@@ -203,28 +236,32 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo DNI/NIF (lo ponemos en mayúsculas mientras escribe)
+        // Campo Contraseña
         OutlinedTextField(
-            value = dni,
+            value = password,
             onValueChange = {
-                dni = it.uppercase()
+                password = it
+                ok = false
                 error = null
             },
-            label = { Text("DNI/NIF") },
+            label = { Text("Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo Teléfono (solo números y máximo 9)
+        // Campo Contraseña
         OutlinedTextField(
-            value = telefono,
+            value = password,
             onValueChange = {
-                telefono = it.filter { c -> c.isDigit() }.take(9)
+                password = it
+                ok = false
                 error = null
             },
-            label = { Text("Teléfono") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            label = { Text("Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
+
 
         // Mensajes de error/ok
         if (error != null) {
