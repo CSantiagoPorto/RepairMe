@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -98,5 +99,7 @@ class AuthRepository {
             }.addOnFailureListener { e -> creadoError("Error de bd: ${e.message}") }
         }
     }
+
+
 
 }
