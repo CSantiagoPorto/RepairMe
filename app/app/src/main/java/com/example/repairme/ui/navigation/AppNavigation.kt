@@ -30,7 +30,8 @@ class AppNavigation {
             composable(Rutas.REGISTRO.ruta) {
                 RegisterScreen(
 
-                    //onNavigateLogin={navController.popBackStack()}
+                   onNavigateBack ={navController.popBackStack()},
+                    onRegisterSucess={navController.popBackStack()}
                     //AQUÍ EN ALGÚN MOMENTO HAY QUE IMPLEMENTAR LA VUELTA AL LOGIN
                 )
             }
