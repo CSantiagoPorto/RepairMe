@@ -75,12 +75,15 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
         repo.validarCorreoPassword(
             correo = email,
             contraseña = contrasena,
-            validacionOK = {nombre->
-                Toast.makeText(context, "Hola $nombre",Toast.LENGTH_LONG).show()
-                // onNavigateToUserSreen()
+            validacionOK = {usuario->
+                Toast.makeText(context, "Hola ${usuario.name}",Toast.LENGTH_LONG).show()
+                when(usuario.role){
+                    "USER"-> onNavigateToUserScreen()
+                    else-> onNavigateToAdminScreen()
+                }
             },
             validacionError = {noEncontrado->
-                Toast.makeText(context, "Algo ha fallado",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Algo ha fallado y no se encontró el usuario",Toast.LENGTH_SHORT).show()
             }
         )
 

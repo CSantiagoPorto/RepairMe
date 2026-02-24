@@ -236,31 +236,6 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo Contraseña
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                ok = false
-                error = null
-            },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Campo Contraseña
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                ok = false
-                error = null
-            },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
 
 
         // Mensajes de error/ok

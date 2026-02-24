@@ -37,7 +37,7 @@ class DeviceRepository {
         val dispositivoRef= database.getReference("devices")// esto obtiene la ruta
         val dispositivoUid= dispositivoRef.push().key
 
-        if(dispositivoRef==null){
+        if(dispositivoUid==null){
             error("Se produjo un error al creae el id del dispositivo")
             return
 
@@ -48,13 +48,11 @@ class DeviceRepository {
             deviceModel = deviceModel,
             deviceSN = deviceSN,
             userId = userId)
-        if (dispositivoUid != null) {
-            dispositivoRef.child(dispositivoUid).setValue(dispositivo).addOnSuccessListener {
-                exito(dispositivoUid)
+        dispositivoRef.child(dispositivoUid).setValue(dispositivo).addOnSuccessListener {
+            exito(dispositivoUid)
 
-            }.addOnFailureListener{
-                kotlin.error("Algo pasó y no se grabó en la bbdd")
-            }
+        }.addOnFailureListener{
+            kotlin.error("Algo pasó y no se grabó en la bbdd")
         }
 
     }

@@ -185,9 +185,9 @@ fun AddEquipoScreen(
 
                     // Crear objeto Equipo con los datos introducidos
                     val equipo = Equipo(
-                        marca = marca.trim(),
-                        modelo = modelo.trim(),
-                        numeroSerie = numeroSerie.trim(),
+                        deviceBrand = marca.trim(),
+                        deviceModel = modelo.trim(),
+                        deviceSN = numeroSerie.trim(),
                         averias = listaAverias
                     )
 

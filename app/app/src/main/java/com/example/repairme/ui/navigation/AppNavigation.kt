@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 
@@ -20,7 +21,8 @@ class AppNavigation {
         ) {
             composable(Rutas.LOGIN.ruta){
                 LoginScreen(
-                    onNavigateToRegistro={navController.navigate(Rutas.REGISTRO.ruta)}
+                    onNavigateToRegistro={navController.navigate(Rutas.REGISTRO.ruta)},
+                    onNavigateToUserScreen={navController.navigate(Rutas.ADD_EQUIPO.ruta)}
 
                 )
 
@@ -29,7 +31,11 @@ class AppNavigation {
                 RegisterScreen(
 
                     //onNavigateLogin={navController.popBackStack()}
+                    //AQUÍ EN ALGÚN MOMENTO HAY QUE IMPLEMENTAR LA VUELTA AL LOGIN
                 )
+            }
+            composable(Rutas.ADD_EQUIPO.ruta) {
+                AddEquipoScreen()
             }
         }
     }
