@@ -1,9 +1,13 @@
 package com.example.repairme.ui.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.repairme.data.repository.DeviceRepository
+import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 
@@ -20,7 +24,8 @@ class AppNavigation {
         ) {
             composable(Rutas.LOGIN.ruta){
                 LoginScreen(
-                    onNavigateToRegistro={navController.navigate(Rutas.REGISTRO.ruta)}
+                    onNavigateToRegistro={navController.navigate(Rutas.REGISTRO.ruta)},
+                    onNavigateToUserScreen={navController.navigate(Rutas.ADD_EQUIPO.ruta)}
 
                 )
 
@@ -28,9 +33,26 @@ class AppNavigation {
             composable(Rutas.REGISTRO.ruta) {
                 RegisterScreen(
 
-                    //onNavigateLogin={navController.popBackStack()}
+                   onNavigateBack ={navController.popBackStack()},
+                    onRegisterSucess={navController.popBackStack()}
+
                 )
             }
+            composable(Rutas.ADD_EQUIPO.ruta) {
+                val repo = DeviceRepository()
+                val context = LocalContext.current
+                AddEquipoScreen(
+                    onGuardar = { equipo ->
+                        repo.crearEquipo(
+                            equipo = equipo,
+                            exito  = { Toast.makeText(context, "Equipo guardado", Toast.LENGTH_LONG).show() },
+                            error  = { causa -> Toast.makeText(context, causa, Toast.LENGTH_LONG).show() }
+                        )
+                    },
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
         }
     }
 

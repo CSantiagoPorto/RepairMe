@@ -46,7 +46,7 @@ fun RegisterScreen(
     var localidad by rememberSaveable { mutableStateOf("") }
     var dni by rememberSaveable { mutableStateOf("") }
     var telefono by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
+    //var password by rememberSaveable { mutableStateOf("") }
 
 
     // Variables para decir si OK o error
@@ -98,7 +98,7 @@ fun RegisterScreen(
         }
 
         // Contraseña mínimo 8 caracteres
-        if (password.length < 8) {
+        if (pass.length < 8) {
             error = "La contraseña debe tener mínimo 8 caracteres"
             return false
         }
@@ -236,31 +236,6 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo Contraseña
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                ok = false
-                error = null
-            },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Campo Contraseña
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                ok = false
-                error = null
-            },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
 
 
         // Mensajes de error/ok
