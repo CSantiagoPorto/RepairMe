@@ -1,7 +1,9 @@
 package com.example.repairme.data.model
 
+import com.google.firebase.database.Exclude
+
 data class Usuario (
-    val id: String = "",
+   @get:Exclude val id: String = "",//Necesito excluirlo como documento en la bbdd pero lo necesito luego para poder filtrar por id y recuperar luego una luista de users
     val name: String = "",
     val email: String = "",
     val phone: String = "",
