@@ -16,12 +16,7 @@ class DeviceRepository {
     
     fun crearEquipo(
 
-        devicesId:String="",
-        deviceBrand:String="",
-        deviceModel:String="",
-        deviceSN:String="",
-        userId: String = "",
-        averias: List<Averia> = emptyList(),
+        equipo: Equipo, //En vez de meterle mil parámetros le meto el objeto ya
         error: (String)->Unit,
         exito:(String)->Unit
     ){
@@ -42,17 +37,14 @@ class DeviceRepository {
             return
 
         }
-        var dispositivo= Equipo(
-            devicesId = devicesId,
-            deviceBrand = deviceBrand,
-            deviceModel = deviceModel,
-            deviceSN = deviceSN,
+        var dispositivo= equipo.copy(
+            devicesId = dispositivoUid,
             userId = userId)
         dispositivoRef.child(dispositivoUid).setValue(dispositivo).addOnSuccessListener {
             exito(dispositivoUid)
 
         }.addOnFailureListener{
-            kotlin.error("Algo pasó y no se grabó en la bbdd")
+            e-> error("Algo pasó y no se grabó en la bbdd")
         }
 
     }

@@ -1,9 +1,12 @@
 package com.example.repairme.ui.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
@@ -32,12 +35,24 @@ class AppNavigation {
 
                    onNavigateBack ={navController.popBackStack()},
                     onRegisterSucess={navController.popBackStack()}
-                    //AQUÍ EN ALGÚN MOMENTO HAY QUE IMPLEMENTAR LA VUELTA AL LOGIN
+
                 )
             }
             composable(Rutas.ADD_EQUIPO.ruta) {
-                AddEquipoScreen()
+                val repo = DeviceRepository()
+                val context = LocalContext.current
+                AddEquipoScreen(
+                    onGuardar = { equipo ->
+                        repo.crearEquipo(
+                            equipo = equipo,
+                            exito  = { Toast.makeText(context, "Equipo guardado", Toast.LENGTH_LONG).show() },
+                            error  = { causa -> Toast.makeText(context, causa, Toast.LENGTH_LONG).show() }
+                        )
+                    },
+                    onVolver = { navController.popBackStack() }
+                )
             }
+
         }
     }
 
