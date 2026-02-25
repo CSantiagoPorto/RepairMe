@@ -37,6 +37,7 @@ fun AddEquipoScreen(
     var numeroSerie by rememberSaveable { mutableStateOf("") }
 
     // Avería opcional, saldrá cuadro de texto cuando se pulse
+    // Avería opcional, saldrá cuadro de texto cuando se pulse
     var anadirAveria by rememberSaveable { mutableStateOf(false) }
     var descripcionAveria by rememberSaveable { mutableStateOf("") }
 

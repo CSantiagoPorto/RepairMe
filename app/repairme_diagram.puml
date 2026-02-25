@@ -4,7 +4,7 @@ skinparam classAttributeIconSize 0
 skinparam classFontSize 13
 skinparam shadowing false
 skinparam linetype ortho
-top to bottom direction
+
 skinparam packageStyle rectangle
 
 skinparam class {
@@ -180,9 +180,4 @@ package "ui.screens" #FDEBD0 {
 
 }
 
-
-' Esto fuerza el orden para que quede de arriba a abajo
-"model" -[hidden]down-> "repository"
-"repository" -[hidden]down-> "ui.navigation"
-"ui.navigation" -[hidden]down-> "ui.screens"
 @enduml

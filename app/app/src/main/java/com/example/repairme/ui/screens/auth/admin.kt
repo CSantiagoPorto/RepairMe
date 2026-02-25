@@ -24,11 +24,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun AdminScreen() {
+fun AdminScreen(onAddEquipo: () -> Unit = {}) {
     val orangePrimary = Color(0xFFE67E22)
     val grayBackground = Color(0xFFF5F5F5)
 
     var currentScreen by remember { mutableStateOf<String?>(null) }
+
 
     Column(
         modifier = Modifier

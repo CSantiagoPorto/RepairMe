@@ -42,7 +42,7 @@ import com.example.repairme.ui.theme.naranjaLetras
 @Preview(showBackground = true)
 @Composable
 fun LoginScreen(onNavigateToRegistro:()-> Unit={},
-                onNavigateToUserScreen: ()-> Unit={},
+                onNavigateToUserScreen: ()-> Unit={},//Aquí está vacío pero luego en App navigation le vamos a dar destino
                 onNavigateToAdminScreen:()->Unit={}
 ) {
 
