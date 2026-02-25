@@ -1,0 +1,188 @@
+@startuml RepairMe
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 13
+skinparam shadowing false
+skinparam linetype ortho
+top to bottom direction
+skinparam packageStyle rectangle
+
+skinparam class {
+    BackgroundColor #FDFEFE
+    BorderColor #888888
+    FontColor #2c3e50
+}
+
+
+
+' los modelos
+
+
+package "model" #D6EAF8 {
+
+    class Usuario <<data class>> {
+        - id : String
+        - name : String
+        - email : String
+        - phone : String
+        - role : String = "user"
+        - createdAt : Long
+        - apellidos : String
+        - direccion : String
+        - codigoPostal : String
+        - localidad : String
+        - dni : String
+    }
+
+    class Equipo <<data class>> {
+        - devicesId : String
+        - deviceBrand : String
+        - deviceModel : String
+        - deviceSN : String
+        - userId : String
+        - averias : List<Averia>
+    }
+
+    class Averia <<data class>> {
+        - id : String
+        - userId : String
+        - descripcion : String
+        - estado : String = "Abierta"
+        - createdAt : Long
+        - updates : List<AveriaUpdate>
+    }
+
+    class AveriaUpdate <<data class>> {
+        - mensaje : String
+        - createdAt : Long
+        - autor : String = "tecnico"
+    }
+
+}
+
+
+' los repos
+
+
+package "repository" #D5F5E3 {
+
+    class AuthRepository {
+        - autenticacion : FirebaseAuth
+        - bbdd : FirebaseDatabase
+        --
+        + validarCorreoPassword(correo: String,\n  contraseña: String,\n  validacionOK: (Usuario) -> Unit,\n  validacionError: (String) -> Unit)
+        + crearUsuario(email: String,\n  password: String, nombre: String,\n  apellidos: String, telefono: String,\n  direccion: String, cp: String,\n  localidad: String, dni: String,\n  creadoOK: () -> Unit,\n  creadoError: (String) -> Unit)
+    }
+
+    class DeviceRepository {
+        - auth : FirebaseAuth
+        - database : FirebaseDatabase
+        --
+        + crearEquipo(equipo: Equipo,\n  error: (String) -> Unit,\n  exito: (String) -> Unit)
+    }
+
+    class RepairRepository {
+        - auth : FirebaseAuth
+        - database : FirebaseDatabase
+        - averiaRef : DatabaseReference
+        --
+        + abrirAveria(averia: Averia,\n  exito: () -> Unit,\n  fallo: (String) -> Unit)
+    }
+
+}
+
+
+' Las interfaces
+
+
+package "ui.navigation" #FDEBD0 {
+
+    class Rutas <<sealed class>> {
+        - ruta : String
+        ==
+        LOGIN
+        REGISTRO
+        USERSCREEN
+        ADD_EQUIPO
+    }
+
+    class AppNavigation {
+        --
+        + navegarApp()
+    }
+
+}
+
+package "ui.screens" #FDEBD0 {
+
+    class LoginScreen <<Composable>> {
+        - email : String
+        - contrasena : String
+        - loguearse()
+        - mensaje(ctx, msg: String)
+        --
+        + onNavigateToRegistro : () -> Unit
+        + onNavigateToUserScreen : () -> Unit
+        + onNavigateToAdminScreen : () -> Unit
+
+    }
+
+    class RegisterScreen <<Composable>> {
+        - email: String
+        - nombre : String
+        - pass: String
+        - apellidos : String
+        - dni: String
+        - telefono:String
+        - direccion: String
+        - codigoPostal:String
+        - error : String?
+        - ok : Boolean
+        - validarCampos() : Boolean
+        --
+        + onNavigateBack : () -> Unit
+        + onRegisterSucess : () -> Unit
+
+    }
+
+    class AddEquipoScreen <<Composable>> {
+        - marca : String
+        - modelo : String
+        - numeroSerie : String
+        - anadirAveria : Boolean
+        - descripcionAveria : String
+        - error : String?
+        - validarCampos() : Boolean
+        --
+        + onGuardar : (Equipo) -> Unit
+        + onVolver : () -> Unit
+
+    }
+
+    class AdminScreen <<Composable>> {
+        - currentScreen : String?
+        --
+        + HomeContent()
+        + RepairListScreen()
+        + RepairedListScreen()
+    }
+
+    class ListaEquiposScreen <<Composable>> {
+        -titulo : String
+        --
+
+        + onVolver : () -> Unit
+        + onNuevoEquipo : () -> Unit
+        + onVerEquipo : (Equipo) -> Unit
+        + onPerfil : () -> Unit
+        + onCerrarSesion : () -> Unit
+    }
+
+}
+
+
+' Esto fuerza el orden para que quede de arriba a abajo
+"model" -[hidden]down-> "repository"
+"repository" -[hidden]down-> "ui.navigation"
+"ui.navigation" -[hidden]down-> "ui.screens"
+@enduml
