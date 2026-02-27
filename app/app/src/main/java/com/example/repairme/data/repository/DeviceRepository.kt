@@ -48,4 +48,34 @@ class DeviceRepository {
         }
 
     }
+
+    fun obtenerEquipos(
+        error: (String)->Unit,
+        exito:(List<Equipo>)->Unit,//Me tiene que devolver la lista en caso de éxito
+
+    ){
+        var listaEquipos= mutableListOf<Equipo>()
+        val userId=auth.currentUser?.uid
+        val dispositivoRef= database.getReference("devices")// esto obtiene la ruta
+
+        dispositivoRef.orderByChild("userId").equalTo(userId).get().addOnSuccessListener { snapshot->
+            for(child in snapshot.children){
+                val equipo= child.getValue(Equipo::class.java)
+                if(equipo!=null){
+                    listaEquipos.add(equipo)
+                }
+
+            }
+            exito(listaEquipos)
+
+        }.addOnFailureListener{e-> error("Algo pasó y no se pudieron recuperar los equipos")}
+
+//Esta línea  dispositivoRef.orderByChild("userId").equalTo(userId).get().addOnSuccessListener
+        //funciona ordenando por ese hijo, busca los que son de ese user y obtiene el objeto
+
+
+    }
+
+
+
 }

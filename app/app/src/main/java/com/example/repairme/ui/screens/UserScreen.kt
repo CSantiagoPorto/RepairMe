@@ -23,9 +23,11 @@ import com.example.repairme.ui.theme.naranjaLetras
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserScreen(
-    onAddEquipo: () -> Unit = {}
+    verEquipos: () -> Unit = {},
+    onAddEquipo:()->Unit={}
 ) {
     var equiposExpandido by remember { mutableStateOf(false) }
+    var reparacionesExpandido by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = GrisFondoPantalla,
@@ -55,8 +57,8 @@ fun UserScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
+            Card(//Card de equipos
+                modifier = Modifier.fillMaxWidth().clickable { equiposExpandido=!equiposExpandido },
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Row(
@@ -79,11 +81,22 @@ fun UserScreen(
                         modifier = Modifier.size(40.dp)
                     )
                 }
+                if (equiposExpandido){
+                    HorizontalDivider()
+                    Row (
+                        modifier= Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ){
+                        TextButton(onClick = {verEquipos()}) {
+                            Text("Ver equipos", color = Naranja)
+                        }
+                    }
+                }
             }
 
 
-            Card(
-                modifier = Modifier.fillMaxWidth().clickable { equiposExpandido= false },
+            Card(//Card de reparaciones
+                modifier = Modifier.fillMaxWidth().clickable { reparacionesExpandido=!reparacionesExpandido},
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Row(
@@ -110,15 +123,7 @@ fun UserScreen(
         }
     }//Aquí termina el Scaffold
 
-    if (equiposExpandido){
-        HorizontalDivider()
-        Row (
-            modifier= Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ){
-            TextButton(onClick = {}) { }
-        }
-    }
+
 }
 
 @Preview(showSystemUi = true)
