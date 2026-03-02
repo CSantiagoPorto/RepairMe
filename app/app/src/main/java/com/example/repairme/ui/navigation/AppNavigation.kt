@@ -46,9 +46,9 @@ class AppNavigation {
             }
             composable(Rutas.USERSCREEN.ruta) {
                 UserScreen(
-                    onAddEquipo = {navController.navigate(Rutas.ADD_EQUIPO.ruta)},
-                    verEquipos= {navController.navigate(Rutas.ADD_EQUIPO.ruta)}
+                    onAddEquipo = {navController.navigate(Rutas.ADD_EQUIPO.ruta)}
                 )
+
             }
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(

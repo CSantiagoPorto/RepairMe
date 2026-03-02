@@ -1,6 +1,7 @@
 package com.example.repairme.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,9 +32,9 @@ import com.example.repairme.ui.theme.naranjaLetras
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserScreen(
-    verEquipos: () -> Unit = {},
     onAddEquipo:()->Unit={},
-    onVolver:()->Unit={}
+    onVolver:()->Unit={},
+    onVerEquipos:(Equipo)-> Unit={}
 
 ) {
     var equiposExpandido by remember { mutableStateOf(false) }
@@ -125,18 +126,35 @@ fun UserScreen(
                         modifier= Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ){
-                        TextButton(onClick = {verEquipos()}) {
+                        TextButton(onClick = {onAddEquipo()}) {
                             Text("Añadir equipo", color = Naranja)
                         }
                     }
-                    Column (
+                    Column (//Espaciar las tarjetas
+                        modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
 
                     ){
-                        listaEquipos.forEach{equipo-> Text(
+                        listaEquipos.forEach{equipo-> Card (
+                            modifier = Modifier.fillMaxWidth().padding(18.dp).clickable { //Hay que crear la función de ver equipo
+                                onVerEquipos(equipo) },
+                            shape= RoundedCornerShape(9.dp),
+                            border = BorderStroke(2.dp, Naranja)
+                        ){
+                            Row (
+                                modifier= Modifier.fillMaxWidth().padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ){
+                                Text(text = "${equipo.deviceBrand} ${equipo.deviceModel}")
+                            }
+                        }
+                            /*Text(
                             //Ahora mismo los equipos se muestran feos, en un text
                             //Esto mejor convertirlo en otra card
                             text = "${equipo.deviceBrand} ${equipo.deviceModel}"
-                        ) }
+                        ) */
+                        }
                     }
                 }
             }

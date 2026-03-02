@@ -26,9 +26,6 @@ class AuthRepository {
         correo: String,
         contraseña: String,
         validacionOK: (Usuario) -> Unit,
-        //Esto es una función que recibe un String y devuelve un Unit, que es un objeto
-        //Que va a ser un objeto vacío. Se usa para avisar que todo ha ido bien. Cuando sale, es cuando
-        //puedo lanzar el Toast en Login
         validacionError: (String) -> Unit
 
 
