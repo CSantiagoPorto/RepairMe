@@ -11,6 +11,8 @@ import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -182,6 +184,8 @@ fun BottomNavButton(
 
 @Composable
 fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
+    val equipmentStates = remember { mutableStateOf(List(10) { "Esperando confirmación" }) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -205,7 +209,16 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
         )
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(10) { index ->
-                RepairItem("Equipo ${index + 1}")
+                RepairItem(
+                    title = "Equipo ${index + 1}",
+                    currentState = equipmentStates.value[index],
+                    orangePrimary = orangePrimary,
+                    onStateChange = { newState ->
+                        equipmentStates.value = equipmentStates.value.toMutableList().apply {
+                            this[index] = newState
+                        }
+                    }
+                )
             }
         }
     }
@@ -236,25 +249,93 @@ fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit) {
         )
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(10) { index ->
-                RepairItem("Equipo reparado ${index + 1}")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Text(
+                        text = "Equipo reparado ${index + 1}",
+                        modifier = Modifier.padding(16.dp),
+                        fontSize = 14.sp
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun RepairItem(title: String) {
+fun RepairItem(
+    title: String,
+    currentState: String = "Esperando confirmación",
+    orangePrimary: Color = Color(0xFFE67E22),
+    onStateChange: (String) -> Unit = {}
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val states = listOf(
+        "Esperando confirmación",
+        "En reparación",
+        "Reparado"
+    )
+
+    val buttonColor = if (currentState == "Reparado") {
+        Color(0xFF4CAF50) // Verde
+    } else {
+        orangePrimary
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        shape = RoundedCornerShape(8.dp), // Añadir background redondeado y elevation 2.dp?
+        shape = RoundedCornerShape(8.dp),
     ) {
-        Text(
-            text = title,
-            modifier = Modifier.padding(16.dp),
-            fontSize = 14.sp
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                fontSize = 14.sp,
+                modifier = Modifier.weight(1f)
+            )
+
+            Box {
+                Button(
+                    onClick = { expanded = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonColor
+                    ),
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    Text(
+                        text = currentState,
+                        fontSize = 12.sp,
+                        color = Color.White
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    states.forEach { state ->
+                        DropdownMenuItem(
+                            text = { Text(state) },
+                            onClick = {
+                                onStateChange(state)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
