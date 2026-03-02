@@ -9,6 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
+import com.example.repairme.ui.screens.UserScreen
+import com.example.repairme.ui.screens.auth.AdminScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 
 class AppNavigation {
@@ -25,7 +27,11 @@ class AppNavigation {
             composable(Rutas.LOGIN.ruta){
                 LoginScreen(
                     onNavigateToRegistro={navController.navigate(Rutas.REGISTRO.ruta)},
-                    onNavigateToUserScreen={navController.navigate(Rutas.ADD_EQUIPO.ruta)}
+                    onNavigateToUserScreen={navController.navigate(Rutas.USERSCREEN.ruta)},
+                    onNavigateToAdminScreen={navController.navigate(Rutas.ADMINSCREEN.ruta)}
+                    //Esta es la función real que le pasa el destino. Cuando se llama a la función
+                    //sobreescribe la función vacía y ejecuta el navController
+                    //Es aquí cuando se decide a dónde ir (
 
                 )
 
@@ -38,6 +44,18 @@ class AppNavigation {
 
                 )
             }
+            composable(Rutas.USERSCREEN.ruta) {
+                UserScreen(
+                    onAddEquipo = {navController.navigate(Rutas.ADD_EQUIPO.ruta)}
+                )
+
+            }
+            composable(Rutas.ADMINSCREEN.ruta){
+                AdminScreen(
+                    onAddEquipo= {navController.navigate(Rutas.ADD_EQUIPO.ruta)}
+                )
+            }
+
             composable(Rutas.ADD_EQUIPO.ruta) {
                 val repo = DeviceRepository()
                 val context = LocalContext.current

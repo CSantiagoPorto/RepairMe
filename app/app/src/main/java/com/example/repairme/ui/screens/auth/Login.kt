@@ -42,7 +42,7 @@ import com.example.repairme.ui.theme.naranjaLetras
 @Preview(showBackground = true)
 @Composable
 fun LoginScreen(onNavigateToRegistro:()-> Unit={},
-                onNavigateToUserScreen: ()-> Unit={},
+                onNavigateToUserScreen: ()-> Unit={},//Aquí está vacío pero luego en App navigation le vamos a dar destino
                 onNavigateToAdminScreen:()->Unit={}
 ) {
 
@@ -77,7 +77,7 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
             contraseña = contrasena,
             validacionOK = {usuario->
                 Toast.makeText(context, "Hola ${usuario.name}",Toast.LENGTH_LONG).show()
-                when(usuario.role){
+                when(usuario.role.uppercase()){
                     "USER"-> onNavigateToUserScreen()
                     else-> onNavigateToAdminScreen()
                 }
