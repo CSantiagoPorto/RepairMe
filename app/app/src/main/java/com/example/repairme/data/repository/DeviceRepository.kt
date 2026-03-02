@@ -57,8 +57,14 @@ class DeviceRepository {
         var listaEquipos= mutableListOf<Equipo>()
         val userId=auth.currentUser?.uid
         val dispositivoRef= database.getReference("devices")// esto obtiene la ruta
+        if(userId==null){
+            error("Se produjo un error al encontrar el id de usuario")
+            return
 
-        dispositivoRef.orderByChild("userId").equalTo(userId).get().addOnSuccessListener { snapshot->
+        }
+
+        dispositivoRef.orderByChild("userId").equalTo(userId).get().addOnSuccessListener {
+            snapshot->
             for(child in snapshot.children){
                 val equipo= child.getValue(Equipo::class.java)
                 if(equipo!=null){

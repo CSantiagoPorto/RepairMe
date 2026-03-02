@@ -1,20 +1,28 @@
 package com.example.repairme.ui.screens
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.repairme.data.model.Equipo
+import com.example.repairme.data.repository.DeviceRepository
+import com.example.repairme.ui.screens.auth.BottomNavButton
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.grisfondo
@@ -24,22 +32,38 @@ import com.example.repairme.ui.theme.naranjaLetras
 @Composable
 fun UserScreen(
     verEquipos: () -> Unit = {},
-    onAddEquipo:()->Unit={}
+    onAddEquipo:()->Unit={},
+    onVolver:()->Unit={}
+
 ) {
     var equiposExpandido by remember { mutableStateOf(false) }
     var reparacionesExpandido by remember { mutableStateOf(false) }
+    var listaEquipos by remember { mutableStateOf(listOf<Equipo>()) }
+    LaunchedEffect(equiposExpandido) {
+        val repo= DeviceRepository()
+        if(equiposExpandido){//Esot sólo se va a cargar cuando la card se abra
+            repo.obtenerEquipos(
+                error = {
+                    mensaje-> Log.d("Si ves este mensaje es porque no está obteniendo los equipos", mensaje)
+                    onVolver()},
+                exito = {equipos ->
+                    Log.d("Log de UserScreen", "Equipos recibido: ${equipos.size}")
+                    listaEquipos= equipos }
+            )
+        }
+    }
 
     Scaffold(
         containerColor = GrisFondoPantalla,
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
 
                 title = {
                     Text(
                         text = "ClearRepair",
                         color = naranjaLetras,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                       // textAlign = TextAlign.Center
 
                     )
                 },
@@ -47,6 +71,19 @@ fun UserScreen(
                     containerColor = grisfondo
                 )
             )
+        },
+        bottomBar = {//RECUERDA PREGUNTARLES A LOS CHICOS SI ESTO LO HACEMOS COMPARTIBLE
+            Row (
+                modifier= Modifier. fillMaxWidth().background(Color.White).padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                BottomNavButton(icon= Icons.Filled.Computer, label = "Mis equipos", color= Naranja, onClick = {})
+                BottomNavButton(icon= Icons.Filled.Build, label = "Mis reparaciones", color= Naranja, onClick = {})
+                BottomNavButton(icon= Icons.Filled.Notifications, label = "Mis notificaciones", color= Naranja, onClick = {})
+                BottomNavButton(icon= Icons.Filled.Person, label = "Mi Perfil", color= Naranja, onClick = {})
+            }
+
         }
     ) { innerPadding ->
         Column(
@@ -81,6 +118,7 @@ fun UserScreen(
                         modifier = Modifier.size(40.dp)
                     )
                 }
+
                 if (equiposExpandido){
                     HorizontalDivider()
                     Row (
@@ -88,8 +126,17 @@ fun UserScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ){
                         TextButton(onClick = {verEquipos()}) {
-                            Text("Ver equipos", color = Naranja)
+                            Text("Añadir equipo", color = Naranja)
                         }
+                    }
+                    Column (
+
+                    ){
+                        listaEquipos.forEach{equipo-> Text(
+                            //Ahora mismo los equipos se muestran feos, en un text
+                            //Esto mejor convertirlo en otra card
+                            text = "${equipo.deviceBrand} ${equipo.deviceModel}"
+                        ) }
                     }
                 }
             }
@@ -121,8 +168,7 @@ fun UserScreen(
                 }
             }
         }
-    }//Aquí termina el Scaffold
-
+    }
 
 }
 

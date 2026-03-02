@@ -77,7 +77,7 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
             contraseña = contrasena,
             validacionOK = {usuario->
                 Toast.makeText(context, "Hola ${usuario.name}",Toast.LENGTH_LONG).show()
-                when(usuario.role){
+                when(usuario.role.uppercase()){
                     "USER"-> onNavigateToUserScreen()
                     else-> onNavigateToAdminScreen()
                 }
