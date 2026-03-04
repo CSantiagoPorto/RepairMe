@@ -24,24 +24,22 @@ class RepairRepository {
             return
 
         }
-        val averiaRef= database.getReference("repairId")
         val averiaUid= averiaRef.push().key
 
         //Push me crea el ID y key me devuelve el id
 
         if(averiaUid==null){
-            fallo("Se produjo un error al creae el id del dispositivo")
+            fallo("Se produjo un error al crear el id de la avería")
             return
 
         }
 
-        var repair= averia.copy(
+        val repair= averia.copy(
             id=averiaUid,
             userId= userId
         )
 
-
-        averiaRef.child(averiaUid).setValue("repair")
+        averiaRef.child(averiaUid).setValue(repair)
             .addOnSuccessListener { exito() }
             .addOnFailureListener{ e-> fallo("Error al guardar: ${e.message}")}
     }
