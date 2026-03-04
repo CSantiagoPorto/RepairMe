@@ -15,25 +15,26 @@ class UserRepository {
     ){
         var listaTecnicos= mutableListOf<Usuario>()
         val tecnicoRef= bbdd.getReference("users")
-        val tecnicouid= tecnicoRef.push().key
 
-        if (tecnicouid==null){
-            error("No se encontró ningún técnico")
-            return
-        }
         tecnicoRef.orderByChild("role").equalTo("tecnico").get().addOnSuccessListener {
             snapshot->for (
                 child in snapshot.children
             ){
                 val tecnico= child.getValue(Usuario::class.java)
+                 val uidTenico= child.key ?: ""
                 if (tecnico!=null){
-                    listaTecnicos.add(tecnico)
+
+
+
+
+                    listaTecnicos.add(tecnico.copy(id=uidTenico))
+                    //Aquí hay que ponerle el uid porque no se guarda como documento
                 }
             }
             exito(listaTecnicos)
 
         }.addOnFailureListener(
-            { e->error("No se ha podido recuperar la lista de técnicos disponibles")}
+            { e->fallo ("No se ha podido recuperar la lista de técnicos disponibles")}
         )
 
     }
