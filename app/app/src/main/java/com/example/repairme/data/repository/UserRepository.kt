@@ -20,11 +20,10 @@ class UserRepository {
             snapshot->for (
                 child in snapshot.children
             ){
-                val tecnico= child.getValue(Usuario::class.java)
+
                  val uidTenico= child.key ?: ""
+            val tecnico= child.getValue(Usuario::class.java)
                 if (tecnico!=null){
-
-
 
 
                     listaTecnicos.add(tecnico.copy(id=uidTenico))

@@ -44,6 +44,32 @@ class RepairRepository {
             .addOnFailureListener{ e-> fallo("Error al guardar: ${e.message}")}
     }
 
+    fun obtenerAveriaUser(
+        fallo: (String) -> Unit,
+        exito: (List<Averia>) -> Unit
+    ){
+        var listaAverías= mutableListOf<Averia>()
+        val userId= auth.currentUser?.uid
+        val averiaRef= database.getReference("repairs")
+        if(userId==null){
+            fallo("No se encontró el usuario")
+            return
+        }
+
+        averiaRef.orderByChild("userId").equalTo(userId).get().addOnSuccessListener {
+            snapshot->
+            for(child in snapshot.children){
+                val averia= child.getValue(Averia::class.java)
+                if(averia!=null){
+                    listaAverías.add(averia)
+                }
+            }
+            exito(listaAverías)
+        }.addOnFailureListener(
+            {e->fallo("No se encontrarion averías")}
+        )
+    }
+
 
 
 }
