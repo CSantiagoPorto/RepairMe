@@ -22,7 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Equipo
+import com.example.repairme.data.model.Averia
 import com.example.repairme.data.repository.DeviceRepository
+import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.screens.auth.BottomNavButton
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
@@ -34,12 +36,15 @@ import com.example.repairme.ui.theme.naranjaLetras
 fun UserScreen(
     onAddEquipo:()->Unit={},
     onVolver:()->Unit={},
-    onVerEquipos:(Equipo)-> Unit={}
+    onVerEquipos:(Equipo)-> Unit={},
+    onVerAverias:(Averia)->Unit={}
 
 ) {
     var equiposExpandido by remember { mutableStateOf(false) }
     var reparacionesExpandido by remember { mutableStateOf(false) }
     var listaEquipos by remember { mutableStateOf(listOf<Equipo>()) }
+    var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
+
     LaunchedEffect(equiposExpandido) {
         val repo= DeviceRepository()
         if(equiposExpandido){//Esot sólo se va a cargar cuando la card se abra
@@ -50,6 +55,22 @@ fun UserScreen(
                 exito = {equipos ->
                     Log.d("Log de UserScreen", "Equipos recibido: ${equipos.size}")
                     listaEquipos= equipos }
+            )
+        }
+    }
+
+    LaunchedEffect(reparacionesExpandido) {
+        val repo=RepairRepository()
+        if (reparacionesExpandido){
+            repo.obtenerAveriaUser(
+                fallo = {
+                    mensaje-> Log.d("Si ves este mensaje es porque no está obteniendo las averías", mensaje)
+                    onVolver()
+                },
+                exito = {averias ->
+                    Log.d("Log de las averçías que recibo", "Averías recibidas:${averias.size}")
+                    listaAverias=averias
+                }
             )
         }
     }
@@ -183,6 +204,44 @@ fun UserScreen(
                         tint = Naranja,
                         modifier = Modifier.size(40.dp)
                     )
+                }
+                if (reparacionesExpandido){
+                    HorizontalDivider()
+                    Row (
+                        modifier= Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ){
+                        //Aquí hay que poner un solicitar reparación
+                       // TextButton(onClick = {onAddEquipo()}) {
+                         //   Text("Añadir equipo", color = Naranja)
+                       // }
+                    }
+                    Column (//Espaciar las tarjetas
+                        modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+
+                    ){
+                        listaAverias.forEach{averia-> Card (
+                            modifier = Modifier.fillMaxWidth().padding(18.dp).clickable { //Hay que crear la función de ver equipo
+                                onVerAverias(averia) },
+                            shape= RoundedCornerShape(9.dp),
+                            border = BorderStroke(2.dp, Naranja)
+                        ){
+                            Row (
+                                modifier= Modifier.fillMaxWidth().padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ){
+                                Text(text = "${averia.equipoNombre} ${averia.tituloAveria} ")
+                            }
+                        }
+                            /*Text(
+                            //Ahora mismo los equipos se muestran feos, en un text
+                            //Esto mejor convertirlo en otra card
+                            text = "${equipo.deviceBrand} ${equipo.deviceModel}"
+                        ) */
+                        }
+                    }
                 }
             }
         }
