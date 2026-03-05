@@ -25,7 +25,6 @@ class UserRepository {
             val tecnico= child.getValue(Usuario::class.java)
                 if (tecnico!=null){
 
-
                     listaTecnicos.add(tecnico.copy(id=uidTenico))
                     //Aquí hay que ponerle el uid porque no se guarda como documento
                 }
