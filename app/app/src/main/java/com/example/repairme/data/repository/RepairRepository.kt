@@ -16,30 +16,17 @@ class RepairRepository : OperationsTemplateRepository() {
     ){
         val userId= auth.currentUser?.uid
         if (userId==null){
-            // necesito una salida del error si no encuentrar el user
-            error("Usuario no encontrado")
+            fallo("Usuario no encontrado")
             return
-
         }
-<<<<<<< HEAD
-        val averiaUid= averiaRef.push().key
 
-        //Push me crea el ID y key me devuelve el id
+        val averiaUid= newId(NODE)
 
-        if(averiaUid==null){
-            fallo("Se produjo un error al crear el id de la avería")
-=======
 
-        val averiaRef= ref("repairId")
-        val averiaUid= newId("repairId")
-
-        //Push me crea el ID y key me devuelve el id
 
         if(averiaUid.isBlank()){
-            fallo("Se produjo un error al creae el id del dispositivo")
->>>>>>> 38b299f44ce50e6473a0eb83b3b102a130456747
+            fallo("Se produjo un error al crear el id de la avería")
             return
-
         }
 
         val repair= averia.copy(
@@ -47,24 +34,41 @@ class RepairRepository : OperationsTemplateRepository() {
             userId= userId
         )
 
-<<<<<<< HEAD
-        averiaRef.child(averiaUid).setValue(repair)
-=======
-        // !!! CREO QUE SE GUARDA UN STRING Y NO EL OBJETO !!!
-        averiaRef.child(averiaUid).setValue("repair")
->>>>>>> 38b299f44ce50e6473a0eb83b3b102a130456747
-            .addOnSuccessListener { exito() }
-            .addOnFailureListener{ e-> fallo("Error al guardar: ${e.message}") }
+        setValue("$NODE/$averiaUid", repair,
+            ok = { exito() },
+            error = { msg -> fallo(msg) }
+        )
     }
 
-<<<<<<< HEAD
+    // El admin necesita todas las averías para poder asignarlas
+    fun obtenerAveriasTodas(
+        fallo: (String) -> Unit,
+        exito: (List<Averia>) -> Unit
+    ){
+        var listaAverías= mutableListOf<Averia>()
+        val averiaRef= ref(NODE)
+        //Quiero que me muestre primero las pendientes de asignar, así que hago una lista de estados
+        val estado= listOf("Pendiente", "Asignada", "Presupuestada", "En reparación", "reparado")
+        averiaRef.orderByChild("estado").get().addOnSuccessListener {
+            snashot->
+            for (child in snashot.children){
+                val averia= child.getValue(Averia::class.java)
+                if(averia!=null){
+                    listaAverías.add(averia)
+                }
+            }
+            exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
+        }
+    }
+
+
     fun obtenerAveriaUser(
         fallo: (String) -> Unit,
         exito: (List<Averia>) -> Unit
     ){
         var listaAverías= mutableListOf<Averia>()
         val userId= auth.currentUser?.uid
-        val averiaRef= database.getReference("repairs")
+        val averiaRef= ref(NODE)
         if(userId==null){
             fallo("No se encontró el usuario")
             return
@@ -84,7 +88,7 @@ class RepairRepository : OperationsTemplateRepository() {
         )
     }
 
-=======
+
     //Editar avería completa
     fun editarAveria(
         averiaEditada:Averia,
@@ -95,7 +99,7 @@ class RepairRepository : OperationsTemplateRepository() {
             fallo("La avería no tiene id")
             return
         }
->>>>>>> 38b299f44ce50e6473a0eb83b3b102a130456747
+
 
         setValue("$NODE/${averiaEditada.id}", averiaEditada,
             ok = { exito() },
