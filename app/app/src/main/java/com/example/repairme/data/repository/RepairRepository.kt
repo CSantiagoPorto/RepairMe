@@ -58,7 +58,7 @@ class RepairRepository : OperationsTemplateRepository() {
                 }
             }
             exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
-        }
+        }.addOnFailureListener{e->fallo("No se encontraron las averías")}
     }
 
 
