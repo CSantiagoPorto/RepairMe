@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.Card
-
 import androidx.compose.material3.Icon
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import com.example.repairme.data.model.Averia
 import com.example.repairme.ui.theme.Naranja
 
@@ -79,23 +78,65 @@ fun AdminScreen(
                     )
                 }
             }
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically){
-                Text(text = "Técnicos",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Naranja
-                )
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = "Técnicos",
-                    tint = Naranja,
-                    modifier = Modifier.size(40.dp)
-                )
+           Card (){ Row (modifier = Modifier
+               .fillMaxWidth()
+               .padding(20.dp),
+               horizontalArrangement = Arrangement.SpaceBetween,
+               verticalAlignment = Alignment.CenterVertically)
+           {
+               Text(text = "Técnicos",
+                   fontSize = 18.sp,
+                   fontWeight = FontWeight.SemiBold,
+                   color = Naranja
+               )
+               Icon(
+                   imageVector = Icons.Filled.Engineering,
+                   contentDescription = "Técnicos",
+                   tint = Naranja,
+                   modifier = Modifier.size(40.dp)
+               )
 
+           }  }
+          Card (){
+              Row (modifier = Modifier
+              .fillMaxWidth()
+              .padding(20.dp),
+              horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically)
+              {
+              Text(text = "Clientes",
+                  fontSize = 18.sp,
+                  fontWeight = FontWeight.SemiBold,
+                  color = Naranja
+              )
+              Icon(
+                  imageVector = Icons.Filled.Person,
+                  contentDescription = "Clientes",
+                  tint = Naranja,
+                  modifier = Modifier.size(40.dp)
+              )
+
+            }
+          }
+            Card() {
+                Row (modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically)
+                {
+                    Text(text = "Presupuestos",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Naranja
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.RequestQuote,
+                        contentDescription = "Presupuestos",
+                        tint = Naranja,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
             }
         }
     }

@@ -212,8 +212,8 @@ fun UserScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ){
                         //Aquí hay que poner un solicitar reparación
-                       // TextButton(onClick = {onAddEquipo()}) {
-                         //   Text("Añadir equipo", color = Naranja)
+                       // TextButton(onClick = {onAddReparacion()}) {
+                         //   Text("Añadir reparacion", color = Naranja)
                        // }
                     }
                     Column (//Espaciar las tarjetas
