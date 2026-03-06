@@ -5,6 +5,9 @@ sealed class Rutas (val ruta:String){//Equivale a un enum
     data object  REGISTRO: Rutas("registro")
     data object  USERSCREEN: Rutas("pantallaUser")
     data object ADD_EQUIPO: Rutas("addEquipo")
+    data object ADMINSCREEN:Rutas("pantallaAdmin")
+    data object REGISTRO_TECNICO : Rutas("registroTecnico")
+
 
 
     //Aquí le estoy diciendo que Login pues es un tipo de ruta
