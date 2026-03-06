@@ -34,6 +34,7 @@ import com.example.repairme.ui.theme.Naranja
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
 fun AdminScreen(
     onVerAverias: (Averia)->Unit={},
     onLogOut: ()->Unit={}
