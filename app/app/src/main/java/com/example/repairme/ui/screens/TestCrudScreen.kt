@@ -117,7 +117,8 @@ fun TestCrudScreen(
 
                 repairRepo.abrirAveria(
                     averia = averia,
-                    exito = { Toast.makeText(context, "Avería creada (mira Firebase)", Toast.LENGTH_SHORT).show() },
+                    exito = {
+                        Toast.makeText(context, "Avería creada (mira Firebase)", Toast.LENGTH_SHORT).show() },
                     fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() }
                 )
             }) { Text("Abrir avería dummy") }
@@ -126,8 +127,12 @@ fun TestCrudScreen(
                 repairRepo.obtenerAveriaUser(
                     fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                     exito = { lista ->
+                        Log.d("TESTCRUD", "exito llamado, lista=${lista.size}")
+
                         averiasLog = "Averías: ${lista.size}\n" +
-                                lista.joinToString("\n") { "${it.id} - ${it.estado} - ${it.tituloAveria}" }
+                                lista.joinToString("\n") { "${it.id} - ${it.estado} - ${it.tituloAveria}"
+
+                                }
                     }
                 )
             }) { Text("Listar mis averías") }

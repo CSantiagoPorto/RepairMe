@@ -1,7 +1,11 @@
 package com.example.repairme.data.repository
 
+import android.util.Log
 import com.example.repairme.data.model.Averia
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class RepairRepository : OperationsTemplateRepository() {
 
@@ -69,23 +73,31 @@ class RepairRepository : OperationsTemplateRepository() {
         var listaAverías= mutableListOf<Averia>()
         val userId= auth.currentUser?.uid
         val averiaRef= ref(NODE)
+        Log.d("TESTCRUD", "obtenerAveriaUser llamado, userId=$userId")
         if(userId==null){
             fallo("No se encontró el usuario")
             return
         }
 
-        averiaRef.orderByChild("userId").equalTo(userId).get().addOnSuccessListener {
-            snapshot->
-            for(child in snapshot.children){
-                val averia= child.getValue(Averia::class.java)
-                if(averia!=null){
-                    listaAverías.add(averia)
+        averiaRef.orderByChild("userId").equalTo(userId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.d("TESTCRUD", "onDataChange, hijos=${snapshot.childrenCount}")
+                   for(child in snapshot.children){
+                       val averia= child.getValue(Averia::class.java)
+                       if(averia!=null){
+                           listaAverías.add(averia)
+                       }
+                   }
+                    Log.d("TESTCRUD", "lista final: ${listaAverías.size}")
+                    exito(listaAverías)
                 }
-            }
-            exito(listaAverías)
-        }.addOnFailureListener(
-            {e->fallo("No se encontrarion averías")}
-        )
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("TESTCRUD", "onCancelled: ${error.message}")
+                    fallo(error.message)
+                }
+            })
+
     }
 
 
