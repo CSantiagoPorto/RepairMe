@@ -14,6 +14,7 @@ import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.data.repository.RepairRepository
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import com.example.repairme.data.repository.UserRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +24,7 @@ fun TestCrudScreen(
     val context = LocalContext.current
     val deviceRepo = remember { DeviceRepository() }
     val repairRepo = remember { RepairRepository() }
+    val userRepo = remember { UserRepository() }
 
     var devicesIdToDelete by remember { mutableStateOf("") }
     var equipoIdForAveria by remember { mutableStateOf("") }
@@ -30,6 +32,12 @@ fun TestCrudScreen(
 
     var equiposLog by remember { mutableStateOf("") }
     var averiasLog by remember { mutableStateOf("") }
+
+    var tecnicoId by remember { mutableStateOf("") }
+    var tecnicoNombre by remember { mutableStateOf("") }
+    var tecnicoApellidos by remember { mutableStateOf("") }
+    var tecnicoTelefono by remember { mutableStateOf("") }
+    var tecnicosLog by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -153,6 +161,76 @@ fun TestCrudScreen(
             }) { Text("Eliminar avería por id") }
 
             if (averiasLog.isNotBlank()) Text(averiasLog)
+
+            Divider()
+
+            Text("Técnicos (users)", style = MaterialTheme.typography.titleMedium)
+
+            Button(onClick = {
+                userRepo.obtenerTecnicos(
+                    fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                    exito = { lista ->
+                        tecnicosLog = "Técnicos: ${lista.size}\n" +
+                                lista.joinToString("\n") {
+                                    "${it.id} - ${it.name} ${it.apellidos} - ${it.phone}"
+                                }
+                    }
+                )
+            }) { Text("Listar técnicos") }
+
+            OutlinedTextField(
+                value = tecnicoId,
+                onValueChange = { tecnicoId = it },
+                label = { Text("id del técnico") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = tecnicoNombre,
+                onValueChange = { tecnicoNombre = it },
+                label = { Text("Nombre del técnico") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = tecnicoApellidos,
+                onValueChange = { tecnicoApellidos = it },
+                label = { Text("Apellidos del técnico") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = tecnicoTelefono,
+                onValueChange = { tecnicoTelefono = it },
+                label = { Text("Teléfono del técnico") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(onClick = {
+                val updates = mapOf(
+                    "name" to tecnicoNombre.trim(),
+                    "apellidos" to tecnicoApellidos.trim(),
+                    "phone" to tecnicoTelefono.trim(),
+                    "role" to "tecnico"
+                )
+
+                userRepo.editarTecnicoParcial(
+                    tecnicoId = tecnicoId.trim(),
+                    updates = updates,
+                    fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                    exito = { Toast.makeText(context, "Técnico actualizado", Toast.LENGTH_SHORT).show() }
+                )
+            }) { Text("Editar técnico por id") }
+
+            Button(onClick = {
+                userRepo.eliminarTecnico(
+                    tecnicoId = tecnicoId.trim(),
+                    fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                    exito = { Toast.makeText(context, "Técnico eliminado", Toast.LENGTH_SHORT).show() }
+                )
+            }) { Text("Eliminar técnico por id") }
+
+            if (tecnicosLog.isNotBlank()) Text(tecnicosLog)
         }
     }
 }
