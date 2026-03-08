@@ -11,8 +11,9 @@ import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.TestCrudScreen
 import com.example.repairme.ui.screens.UserScreen
-import com.example.repairme.ui.screens.auth.AdminScreen
+import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
+import com.example.repairme.ui.screens.AdminScreen
 
 class AppNavigation {
 
@@ -29,7 +30,9 @@ class AppNavigation {
                 LoginScreen(
                     onNavigateToRegistro = { navController.navigate(Rutas.REGISTRO.ruta) },
                     onNavigateToUserScreen = { navController.navigate(Rutas.USERSCREEN.ruta) },
-                    onNavigateToAdminScreen = { navController.navigate(Rutas.ADMINSCREEN.ruta) }
+                    onNavigateToTecnicoScreen = { navController.navigate(Rutas.TECNICOSCREEN.ruta) } ,
+                    onNavigateToAdminScreen={navController.navigate(Rutas.ADMINSCREEN.ruta)}
+
                     //Esta es la función real que le pasa el destino. Cuando se llama a la función
                     //sobreescribe la función vacía y ejecuta el navController
                     //Es aquí cuando se decide a dónde ir (
@@ -50,9 +53,15 @@ class AppNavigation {
                 )
             }
 
+            composable(Rutas.TECNICOSCREEN.ruta){
+                TecnicoScreen(
+                    onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) }
+                )
+            }
+
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(
-                    onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) }
+                    onLogOut = { navController.navigate(Rutas.LOGIN.ruta) }
                 )
             }
 

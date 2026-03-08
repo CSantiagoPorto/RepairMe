@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun AdminScreen(onAddEquipo: () -> Unit = {}) {
+fun TecnicoScreen(onAddEquipo: () -> Unit = {}) {
     val orangePrimary = Color(0xFFE67E22)
     val grayBackground = Color(0xFFF5F5F5)
 
@@ -342,6 +342,6 @@ fun RepairItem(
 
 @Preview(showSystemUi = true)
 @Composable
-fun AdminScreenPreview() {
-    AdminScreen()
+fun TecnicoScreenPreview() {
+    TecnicoScreen()
 }
