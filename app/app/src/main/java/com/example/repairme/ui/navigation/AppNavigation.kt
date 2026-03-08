@@ -14,6 +14,7 @@ import com.example.repairme.ui.screens.UserScreen
 import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 import com.example.repairme.ui.screens.AdminScreen
+import com.example.repairme.ui.screens.RegisterTecnicoScreen
 
 class AppNavigation {
 
@@ -86,6 +87,13 @@ class AppNavigation {
                     onBack = { navController.popBackStack() }
                 )
             }
+            composable(Rutas.REGISTRO_TECNICO.ruta) {
+                RegisterTecnicoScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onRegisterSucess = { navController.popBackStack() }
+                )
+            }
+
         }
     }
 }

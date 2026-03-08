@@ -71,6 +71,7 @@ class AuthRepository {
         codigoPostal: String,
         localidad: String,
         dni: String,
+        role:String ="user",
         creadoOK: () -> Unit,
         creadoError: (String) -> Unit
     ) {
@@ -88,7 +89,7 @@ class AuthRepository {
                 codigoPostal = codigoPostal,
                 localidad = localidad,
                 dni = dni,
-                role = "user",
+                role = role,
                 createdAt = System.currentTimeMillis()
             )
             bbdd.getReference().child("users").child(uid).setValue(usuario).addOnSuccessListener {

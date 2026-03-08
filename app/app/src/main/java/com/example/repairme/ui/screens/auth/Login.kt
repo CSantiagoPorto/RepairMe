@@ -77,6 +77,7 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
                 when(usuario.role.uppercase()){
                     "USER"-> onNavigateToUserScreen()
                     "ADMIN"-> onNavigateToTecnicoScreen()
+                    "TECNICO"-> onNavigateToTecnicoScreen
                 }
             },
             validacionError = {noEncontrado->
