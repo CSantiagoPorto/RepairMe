@@ -10,12 +10,12 @@ import com.google.firebase.database.ValueEventListener
 class TecnicoRepository: OperationsTemplateRepository() {
 
     private val auth = FirebaseAuth.getInstance()
-    private val NODE = "employees"
+    private val NODE = "users"
 
     //Necesitamos grabar un equipo. Cada equipo tiene que ir vinculado a un id de usuario
     //Voy a neceesitar: crearlo, que me devuelva el id, que tenga asociado idUser
 
-    fun crearTecnico(
+ /*   fun crearTecnico(
         tecnico: Tecnico, //En vez de meterle mil parámetros le meto el objeto ya
         error: (String) -> Unit,
         exito: (String) -> Unit
@@ -39,7 +39,7 @@ class TecnicoRepository: OperationsTemplateRepository() {
             ok = { exito(tecnicoUid) },
             error = { error("Algo pasó y no se grabó en la bbdd") }
         )
-    }
+    }*/
 
 
 
@@ -52,7 +52,7 @@ class TecnicoRepository: OperationsTemplateRepository() {
         var listaTecnicos= mutableListOf<Usuario>()
         val tecnicoRef= ref(NODE)
 //Tecnicos está en otro nodo
-        tecnicoRef.orderByChild("role").equalTo("TECNICO")
+        tecnicoRef.orderByChild("role").equalTo("tecnico")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (child in snapshot.children){
