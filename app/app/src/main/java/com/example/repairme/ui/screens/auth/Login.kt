@@ -1,21 +1,17 @@
 package com.example.repairme.ui.screens.auth
 import android.content.Context
-import android.widget.Space
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -42,7 +38,8 @@ import com.example.repairme.ui.theme.naranjaLetras
 @Preview(showBackground = true)
 @Composable
 fun LoginScreen(onNavigateToRegistro:()-> Unit={},
-                onNavigateToUserScreen: ()-> Unit={},
+                onNavigateToUserScreen: ()-> Unit={},//Aquí está vacío pero luego en App navigation le vamos a dar destino
+                onNavigateToTecnicoScreen:()->Unit={},
                 onNavigateToAdminScreen:()->Unit={}
 ) {
 
@@ -77,9 +74,9 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
             contraseña = contrasena,
             validacionOK = {usuario->
                 Toast.makeText(context, "Hola ${usuario.name}",Toast.LENGTH_LONG).show()
-                when(usuario.role){
+                when(usuario.role.uppercase()){
                     "USER"-> onNavigateToUserScreen()
-                    else-> onNavigateToAdminScreen()
+                    "ADMIN"-> onNavigateToTecnicoScreen()
                 }
             },
             validacionError = {noEncontrado->

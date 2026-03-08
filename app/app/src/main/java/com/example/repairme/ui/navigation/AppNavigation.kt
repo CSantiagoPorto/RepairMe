@@ -11,17 +11,21 @@ import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.RegisterTecnicoScreen
 import com.example.repairme.ui.screens.auth.AdminScreen
+import com.example.repairme.ui.screens.TestCrudScreen
+import com.example.repairme.ui.screens.UserScreen
+import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
+import com.example.repairme.ui.screens.AdminScreen
 
 class AppNavigation {
 
     @Composable
     fun navegarApp(){
 
-        val navController= rememberNavController()//Esto permite que la pantalla persista aunque se cambie la orientación
+        val navController = rememberNavController()//Esto permite que la pantalla persista aunque se cambie la orientación
 
         NavHost(
-            navController= navController,
+            navController = navController,
             startDestination = Rutas.LOGIN.ruta //Le decimos que empiece en el login
         ) {
             composable(Rutas.LOGIN.ruta){
@@ -32,15 +36,29 @@ class AppNavigation {
                     //sobreescribe la función vacía y ejecuta el navController
                     //Es aquí cuando se decide a dónde ir (
 
+                    //Esta es la función real que le pasa el destino. Cuando se llama a la función
+                    //sobreescribe la función vacía y ejecuta el navController
+                    //Es aquí cuando se decide a dónde ir (
                 )
-
             }
+
             composable(Rutas.REGISTRO.ruta) {
                 RegisterScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onRegisterSucess = { navController.popBackStack() }
+                )
+            }
 
-                   onNavigateBack ={navController.popBackStack()},
-                    onRegisterSucess={navController.popBackStack()}
+            composable(Rutas.USERSCREEN.ruta) {
+                UserScreen(
+                    onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
+                    onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) }
+                )
+            }
 
+            composable(Rutas.TECNICOSCREEN.ruta){
+                TecnicoScreen(
+                    onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) }
                 )
             }
 
@@ -68,5 +86,4 @@ class AppNavigation {
 
         }
     }
-
 }
