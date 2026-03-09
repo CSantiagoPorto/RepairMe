@@ -14,5 +14,6 @@ data class Averia(
     val presupuestoDefinitivo: Double = 0.0,
     val presupuestoAceptado: Boolean? = null,
     val createdAt: Long = 0L,
-    val updates: List<AveriaUpdate> = emptyList()
+    val updates: List<AveriaUpdate> = emptyList(),
+    val lineasPresupuesto: List<LineaPresupuesto> = emptyList()
 )

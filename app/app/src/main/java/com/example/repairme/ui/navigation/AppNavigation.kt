@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.repairme.data.repository.DeviceRepository
+import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.TestCrudScreen
@@ -14,6 +15,8 @@ import com.example.repairme.ui.screens.UserScreen
 import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 import com.example.repairme.ui.screens.AdminScreen
+import com.example.repairme.ui.screens.RegisterTecnicoScreen
+import com.example.repairme.ui.screens.RepairsScreen
 
 class AppNavigation {
 
@@ -61,7 +64,10 @@ class AppNavigation {
 
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(
-                    onLogOut = { navController.navigate(Rutas.LOGIN.ruta) }
+                    onLogOut = { navController.navigate(Rutas.LOGIN.ruta) },
+                    onVerAverias = {navController.navigate(Rutas.REPAIRSSCREEN.ruta)},
+                    onVerTecnicos = {navController.navigate(Rutas.REGISTRO_TECNICO.ruta)}
+
                 )
             }
 
@@ -79,6 +85,13 @@ class AppNavigation {
                     onVolver = { navController.popBackStack() }
                 )
             }
+            composable (Rutas.REPAIRSSCREEN.ruta){
+
+                RepairsScreen(
+                    onVolver = {navController.popBackStack()}
+                )
+
+            }
 
             //para testing screen
             composable(Rutas.TESTCRUD.ruta) {
@@ -86,6 +99,13 @@ class AppNavigation {
                     onBack = { navController.popBackStack() }
                 )
             }
+            composable(Rutas.REGISTRO_TECNICO.ruta) {
+                RegisterTecnicoScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onRegisterSucess = { navController.popBackStack() }
+                )
+            }
+
         }
     }
 }
