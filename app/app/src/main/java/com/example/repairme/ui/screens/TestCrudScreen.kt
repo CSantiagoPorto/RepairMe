@@ -14,7 +14,7 @@ import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.data.repository.RepairRepository
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.example.repairme.data.repository.UserRepository
+import com.example.repairme.data.repository.TecnicoRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +24,7 @@ fun TestCrudScreen(
     val context = LocalContext.current
     val deviceRepo = remember { DeviceRepository() }
     val repairRepo = remember { RepairRepository() }
-    val userRepo = remember { UserRepository() }
+    val tecnicoRepo = remember { TecnicoRepository() }
 
     var devicesIdToDelete by remember { mutableStateOf("") }
     var equipoIdForAveria by remember { mutableStateOf("") }
@@ -167,7 +167,7 @@ fun TestCrudScreen(
             Text("Técnicos (users)", style = MaterialTheme.typography.titleMedium)
 
             Button(onClick = {
-                userRepo.obtenerTecnicos(
+                tecnicoRepo.obtenerTecnicos(
                     fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                     exito = { lista ->
                         tecnicosLog = "Técnicos: ${lista.size}\n" +
@@ -214,7 +214,7 @@ fun TestCrudScreen(
                     "role" to "tecnico"
                 )
 
-                userRepo.editarTecnicoParcial(
+                tecnicoRepo.editarTecnicoParcial(
                     tecnicoId = tecnicoId.trim(),
                     updates = updates,
                     fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
@@ -223,7 +223,7 @@ fun TestCrudScreen(
             }) { Text("Editar técnico por id") }
 
             Button(onClick = {
-                userRepo.eliminarTecnico(
+                tecnicoRepo.eliminarTecnico(
                     tecnicoId = tecnicoId.trim(),
                     fallo = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                     exito = { Toast.makeText(context, "Técnico eliminado", Toast.LENGTH_SHORT).show() }

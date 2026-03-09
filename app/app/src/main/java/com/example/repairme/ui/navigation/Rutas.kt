@@ -7,6 +7,12 @@ sealed class Rutas (val ruta:String){//Equivale a un enum
     data object ADD_EQUIPO: Rutas("addEquipo")
     data object ADMINSCREEN:Rutas("pantallaAdmin")
     data object REGISTRO_TECNICO : Rutas("registroTecnico")
+    data object TECNICOSCREEN:Rutas("pantallaTecnico")
+    data object TESTCRUD: Rutas("testCrud")
+    data object  ADMINSCREEN: Rutas("pantallaAdmin")
+    data object REGISTRO_TECNICO: Rutas("registroTecnico")
+    data object  REPAIRSSCREEN: Rutas("VerReparacionesadmin")
+
 
 
 

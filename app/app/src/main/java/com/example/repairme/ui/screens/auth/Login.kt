@@ -76,7 +76,8 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
                 Toast.makeText(context, "Hola ${usuario.name}",Toast.LENGTH_LONG).show()
                 when(usuario.role.uppercase()){
                     "USER"-> onNavigateToUserScreen()
-                    "ADMIN"-> onNavigateToTecnicoScreen()
+                    "ADMIN"-> onNavigateToAdminScreen()
+                    "TECNICO"-> onNavigateToTecnicoScreen()
                 }
             },
             validacionError = {noEncontrado->
