@@ -36,7 +36,8 @@ import com.example.repairme.ui.theme.Naranja
 @Composable
 
 fun AdminScreen(
-    onVerAverias: (Averia)->Unit={},
+    onVerAverias: ()->Unit={},
+
     onLogOut: ()->Unit={}
 ){
     Scaffold (
@@ -58,6 +59,7 @@ fun AdminScreen(
             Card(//Esta va a ser la car de reparaciones
                 //Aquí hay que ponerle los modificadores de espacio de la card
                 //Y también hay que ponerle para que al expandir muestre las reparaciones
+                onClick = {onVerAverias()}
             ){
                 Row(
                     modifier = Modifier
