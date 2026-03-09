@@ -71,7 +71,7 @@ class AuthRepository {
         codigoPostal: String,
         localidad: String,
         dni: String,
-        role:String ="user",
+        role: String = "user",
         creadoOK: () -> Unit,
         creadoError: (String) -> Unit
     ) {
