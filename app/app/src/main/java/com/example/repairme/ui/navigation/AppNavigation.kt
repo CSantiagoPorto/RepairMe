@@ -11,7 +11,7 @@ import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.RegisterTecnicoScreen
-import com.example.repairme.ui.screens.auth.AdminScreen
+import com.example.repairme.ui.screens.AdminScreen
 import com.example.repairme.ui.screens.TestCrudScreen
 import com.example.repairme.ui.screens.UserScreen
 import com.example.repairme.ui.screens.auth.TecnicoScreen
@@ -35,9 +35,9 @@ class AppNavigation {
                 LoginScreen(
                     onNavigateToRegistro = { navController.navigate(Rutas.REGISTRO.ruta) },
                     onNavigateToUserScreen = { navController.navigate(Rutas.USERSCREEN.ruta) },
-                    //Esta es la función real que le pasa el destino. Cuando se llama a la función
-                    //sobreescribe la función vacía y ejecuta el navController
-                    //Es aquí cuando se decide a dónde ir (
+                    onNavigateToTecnicoScreen = { navController.navigate(Rutas.TECNICOSCREEN.ruta) },
+                    onNavigateToAdminScreen = { navController.navigate(Rutas.ADMINSCREEN.ruta) }
+
 
                     //Esta es la función real que le pasa el destino. Cuando se llama a la función
                     //sobreescribe la función vacía y ejecuta el navController
