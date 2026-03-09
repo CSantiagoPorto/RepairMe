@@ -37,6 +37,7 @@ import com.example.repairme.ui.theme.Naranja
 
 fun AdminScreen(
     onVerAverias: ()->Unit={},
+    onVerTecnicos:()-> Unit={},
 
     onLogOut: ()->Unit={}
 ){
@@ -81,7 +82,7 @@ fun AdminScreen(
                     )
                 }
             }
-           Card (){ Row (modifier = Modifier
+           Card (onClick = {onVerTecnicos()}){ Row (modifier = Modifier
                .fillMaxWidth()
                .padding(20.dp),
                horizontalArrangement = Arrangement.SpaceBetween,

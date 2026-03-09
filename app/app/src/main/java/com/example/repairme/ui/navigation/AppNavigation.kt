@@ -65,7 +65,8 @@ class AppNavigation {
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(
                     onLogOut = { navController.navigate(Rutas.LOGIN.ruta) },
-                    onVerAverias = {navController.navigate(Rutas.REPAIRSSCREEN.ruta)}
+                    onVerAverias = {navController.navigate(Rutas.REPAIRSSCREEN.ruta)},
+                    onVerTecnicos = {navController.navigate(Rutas.REGISTRO_TECNICO.ruta)}
 
                 )
             }
