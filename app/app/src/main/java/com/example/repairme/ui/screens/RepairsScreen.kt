@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -29,47 +32,56 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Averia
+import com.example.repairme.data.model.EstadoAveria
+import com.example.repairme.data.model.Tecnico
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.theme.grisfondo
 import com.example.repairme.ui.theme.naranjaLetras
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.TecnicoRepository
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepairsScreen(
     onAddAveria: () -> Unit = {},
     onVolver: () -> Unit = {},
-    onVerAvería: () -> Unit = {}
+    onVerAvería: () -> Unit = {},
+   // onAceptar: () -> Unit={},
+    //onRechazar: () -> Unit={}
+
+
 ) {
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     var cargando by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var averiaSeleccionada by remember { mutableStateOf<Averia?>(null) }
-    //var averiaExpandida by remember {  }
+
     var listaTecnicos by remember { mutableStateOf(listOf<Usuario>()) }
+    var show by rememberSaveable( ) {mutableStateOf(false) }//Esto es para ocultar/mostrar el dialogo de asignación
+    val repo =remember {  RepairRepository() }
+    val repo2 = remember { TecnicoRepository() }
+    var averiaParaCambiarTecnico by remember { mutableStateOf<Averia?>(null) }
+
+    fun cargarAverias() {
+        repo.obtenerAveriasTodas(
+            fallo = { mensaje -> error = mensaje
+                    cargando=false},
+            exito = { averias -> listaAverias = averias
+            cargando=false}
+        )
+    }
 
     LaunchedEffect(Unit) {
-        val repo = RepairRepository()
-        val repo2 = TecnicoRepository()
-        repo.obtenerAveriasTodas(
-            fallo = { mensaje ->
-                error = mensaje
-                Log.d("RepairsScreen", "Error cargando averías: $mensaje")
-                cargando = false
-            },
-            exito = { averias ->
-                Log.d("RepairsScreen", "Averías recibidas: ${averias.size}")
-                listaAverias = averias
-                cargando = false
-            }
-        )
+
+      cargarAverias()
         repo2.obtenerTecnicos(
             fallo = { mensaje ->
                 error = mensaje
@@ -83,6 +95,8 @@ fun RepairsScreen(
             }
         )
     }
+
+
 
 
 
@@ -125,7 +139,10 @@ fun RepairsScreen(
                     ) {
                         items(listaAverias) { averia ->
                             Card(modifier = Modifier.fillMaxWidth(),
-                                onClick ={averiaSeleccionada=averia} ) {
+                                onClick ={ if(averia.tecnicoId.isBlank()){
+                                    averiaSeleccionada=averia
+                                }else{averiaParaCambiarTecnico=averia}
+                                } ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -160,6 +177,88 @@ fun RepairsScreen(
                 }
             }
         }
+        averiaSeleccionada?.let {//Let hace que sólo se ejecute si no es null
+                averia->
+            DialogoAsignar(
+                averia=averia,
+                tecnicos = listaTecnicos,
+                onRechazar = { averiaSeleccionada=null },
+                onAceptar = {tecnicoId->
+                    val averiaModificada=averia.copy(
+                        tecnicoId=tecnicoId,
+                        estado = EstadoAveria.Asignada.name
+                    )
+                    repo.editarAveria(
+                        averiaEditada = averiaModificada,
+                        exito={ averiaSeleccionada=null
+                              cargarAverias()},
+                        fallo = {}
+                    )
+
+                }
+            )
+        }
+
+        averiaParaCambiarTecnico?.let {
+            averia->
+            DialogoCambiarTecnico(
+                averia=averia,
+                tecnicos = listaTecnicos,
+                onRechazar = {averiaParaCambiarTecnico=null},
+                onAceptar = {
+                    averiaParaCambiarTecnico=null
+                    averiaSeleccionada=averia
+                }
+            )
+        }
     }
+}
+@Composable
+fun DialogoAsignar(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()->Unit, onAceptar:(String)-> Unit){
+    var tecnicoSeleccionado by remember { mutableStateOf<String?>(null) }
+
+       AlertDialog(onDismissRequest = {onRechazar()},
+           text = {Column() {
+               tecnicos.forEach { tecnico->
+                   TextButton(onClick = {tecnicoSeleccionado=tecnico.id}) {
+                       Text(text = tecnico.name)
+                   }
+               }
+           }},
+
+           confirmButton = {
+               TextButton(onClick = {
+                   tecnicoSeleccionado?.let { onAceptar(it) }
+
+               }) {Text(text ="Confirmar" ) }
+
+           },
+           dismissButton = {
+               TextButton(onClick = {
+                   onRechazar()
+               }) {Text(text = "Cancelar") }
+           },
+           title =  {Text(text = "Asigne un técnico a la reparación")}
+       )
+
+}
+
+@Composable
+fun DialogoCambiarTecnico(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()->Unit, onAceptar:()-> Unit){
+    AlertDialog(
+
+
+        onDismissRequest = {},
+
+
+        {
+            TextButton(onClick = {}) {Text(text ="Confirmar" ) }
+
+        },
+        dismissButton = {
+            TextButton(onClick = {}) {Text(text = "Cancelar") }
+        },
+        title =  {Text(text = "Esta reparación ya tiene técnico asignado ${tecnicos.find { it.id==averia?.tecnicoId }?.name}") }
+    )
 }
 
