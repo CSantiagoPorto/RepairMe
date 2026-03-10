@@ -16,6 +16,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.repairme.data.model.Averia
+import com.example.repairme.data.repository.RepairRepository
+import androidx.compose.foundation.lazy.items
+
 
 @Composable
 fun TecnicoScreen(onAddEquipo: () -> Unit = {}) {
@@ -31,6 +36,7 @@ fun TecnicoScreen(onAddEquipo: () -> Unit = {}) {
     val grayBackground = Color(0xFFF5F5F5)
 
     var currentScreen by remember { mutableStateOf<String?>(null) }
+
 
 
     Column(
@@ -186,6 +192,15 @@ fun BottomNavButton(
 @Composable
 fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
     val equipmentStates = remember { mutableStateOf(List(10) { "Esperando confirmación" }) }
+    var listaAverias by remember{mutableStateOf(listOf<Averia>()) }
+    var repo= remember { RepairRepository() }
+    LaunchedEffect(Unit) {
+        repo.obtenerAveriasTecnico(
+            fallo = {},
+            exito = {averias->listaAverias=averias}
+            //La lambda me trae el dato de fb,
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -209,15 +224,14 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
             modifier = Modifier.padding(vertical = 12.dp)
         )
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(10) { index ->
+            items(listaAverias) { averia ->
                 RepairItem(
-                    title = "Equipo ${index + 1}",
-                    currentState = equipmentStates.value[index],
+                    title = "Equipo ${averia.equipoNombre}",
+                    currentState = averia.estado,
                     orangePrimary = orangePrimary,
                     onStateChange = { newState ->
-                        equipmentStates.value = equipmentStates.value.toMutableList().apply {
-                            this[index] = newState
-                        }
+                     //   repo.editarAveria()
+
                     }
                 )
             }
