@@ -54,8 +54,7 @@ fun RepairsScreen(
     onAddAveria: () -> Unit = {},
     onVolver: () -> Unit = {},
     onVerAvería: () -> Unit = {},
-   // onAceptar: () -> Unit={},
-    //onRechazar: () -> Unit={}
+
 
 
 ) {
