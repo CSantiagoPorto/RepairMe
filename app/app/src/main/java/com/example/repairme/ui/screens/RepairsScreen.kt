@@ -106,7 +106,7 @@ fun RepairsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Reparaciones",
+                        "Asignar técnico a una reparación",
                         color = naranjaLetras,
                         fontWeight = FontWeight.Bold
                     )
@@ -245,20 +245,24 @@ fun DialogoAsignar(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()->Unit,
 
 @Composable
 fun DialogoCambiarTecnico(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()->Unit, onAceptar:()-> Unit){
+    var tecnicoSeleccionado by remember { mutableStateOf<String?>(null) }
     AlertDialog(
 
 
-        onDismissRequest = {},
+        onDismissRequest = {onRechazar()},
 
-
-        {
-            TextButton(onClick = {}) {Text(text ="Confirmar" ) }
-
+        confirmButton = {
+            TextButton(onClick = {
+               onAceptar()
+            }) {Text(text ="Confirmar" ) }
         },
         dismissButton = {
-            TextButton(onClick = {}) {Text(text = "Cancelar") }
+            TextButton(onClick = {
+                onRechazar()
+            }) {Text(text = "Cancelar") }
         },
-        title =  {Text(text = "Esta reparación ya tiene técnico asignado ${tecnicos.find { it.id==averia?.tecnicoId }?.name}") }
+        title =  {Text(text = "Esta reparación ya tiene técnico asignado \n Desea cambiarlo? \n El técnico asignado actualmente es: ${tecnicos.find { it.id == averia?.tecnicoId }?.name}") },
+
     )
 }
 
