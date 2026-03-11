@@ -64,7 +64,7 @@ fun RepairsScreen(
     var averiaSeleccionada by remember { mutableStateOf<Averia?>(null) }
 
     var listaTecnicos by remember { mutableStateOf(listOf<Usuario>()) }
-    var show by rememberSaveable( ) {mutableStateOf(false) }//Esto es para ocultar/mostrar el dialogo de asignación
+
     val repo =remember {  RepairRepository() }
     val repo2 = remember { TecnicoRepository() }
     var averiaParaCambiarTecnico by remember { mutableStateOf<Averia?>(null) }

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RequestQuote
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +45,7 @@ import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Equipo
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.LineaPresupuesto
+import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.screens.auth.BottomNavButton
@@ -51,6 +53,7 @@ import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.grisfondo
 import com.example.repairme.ui.theme.naranjaLetras
+import kotlin.collections.forEach
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +71,7 @@ fun UserScreen(
     var listaEquipos by remember { mutableStateOf(listOf<Equipo>()) }
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     var listaPresupuestadas by remember { mutableStateOf(listOf<Averia>()) }
+    var dialogoAveria by remember { mutableStateOf<Averia?>(null) }
 
     LaunchedEffect(equiposExpandido) {
         val repo = DeviceRepository()
@@ -275,7 +279,6 @@ fun UserScreen(
                                     .fillMaxWidth()
                                     .padding(18.dp)
                                     .clickable {
-                                        //Hay que crear la función de ver equipo
                                         onVerAverias(averia)
                                     },
                                 shape = RoundedCornerShape(9.dp),
@@ -335,8 +338,8 @@ fun UserScreen(
                                 .fillMaxWidth()
                                 .padding(18.dp)
                                 .clickable {
-                                    //Hay que crear la función de ver equipo
-                                    onVerAverias(averia)
+                                    dialogoAveria= averia
+
                                 },
                             shape = RoundedCornerShape(9.dp),
                             border = BorderStroke(2.dp, Naranja)
@@ -360,7 +363,52 @@ fun UserScreen(
 
             }
         }
+    }//Termina Scaffold
+    @Composable
+    fun DialogoPresupuestos(averia: Averia, onRechazar:()->Unit, onAceptar:()-> Unit){
+
+
+        AlertDialog(onDismissRequest = {onRechazar()},
+            text = {Column() {
+                averia.lineasPresupuesto.forEach {
+                    linea->
+                    Text("${linea.concepto}, ${linea.cantidad}, ${linea.precioUnitario}")
+
+
+                }
+                val subtotal = averia.lineasPresupuesto.sumOf { it.cantidad * it.precioUnitario }
+                val iva = subtotal * 0.21
+                Text("Subtotal: $subtotal €")
+                Text("IVA: $iva €")
+                Text("Total: ${subtotal + iva} €")
+
+            }},
+
+            confirmButton = {
+                TextButton(onClick = {
+
+
+                }) {Text(text ="Confirmar" ) }
+
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onRechazar()
+                }) {Text(text = "Cancelar") }
+            },
+            title =  {Text(text = "Asigne un técnico a la reparación")}
+        )
+
     }
+    dialogoAveria?.let {
+        averia ->
+        DialogoPresupuestos(
+            averia=averia,
+            onRechazar = {dialogoAveria=null},
+            onAceptar = {dialogoAveria=null}//Hay que cerrar el dialogo
+        )
+    }
+
 }
 
 @Preview(showSystemUi = true)
