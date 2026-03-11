@@ -29,10 +29,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.repairme.data.model.Averia
+import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.LineaPresupuesto
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.theme.naranjaLetras
@@ -91,7 +93,8 @@ fun DetalleAveriaTecnicoScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when {
                 cargando -> CircularProgressIndicator()
@@ -140,7 +143,11 @@ fun DetalleAveriaTecnicoScreen(
                                     precioUnitario = precioNumero
                                 )
                                 lineas= lineas+lineaEscribir
-                                //Lineas está vacía de inicio, vamos sumando
+                                //Lineas está vacía de inicio, vamos sumando y limpiamos
+                                concepto = ""
+                                cantidad = ""
+                                precioUnidad = ""
+
                             }){Text("Añadir")}
                         }
 
@@ -160,9 +167,35 @@ fun DetalleAveriaTecnicoScreen(
                                 Text("${linea.cantidad * linea.precioUnitario}", modifier = Modifier.weight(1f))
                             }
                         }
+                        item {
+                            val subtotal = lineas.sumOf { it.cantidad * it.precioUnitario }
+                            val iva = subtotal * 0.21
+                            val total = subtotal + iva
+
+                            Text("Subtotal: $subtotal €")
+                            Text("IVA (21%): $iva €")
+                            Text("Total: $total €")
+                        }
 
                         item {
-                            Button(onClick = {}) {
+                            Button(onClick = {
+                                 averia?.let {
+                                    resultado->
+                                     var averiaPresupuestada=averia!!.copy(
+                                        lineasPresupuesto=lineas,
+                                        estado= EstadoAveria.Presupuestada.name
+                                    )
+                                    repo.editarAveria(
+                                        averiaEditada = averiaPresupuestada,
+                                        exito = {},
+                                        fallo = {}
+
+                                    )
+
+
+
+                                }
+                            }) {
                                 Text("Enviar presupuesto")
                             }
                         }
