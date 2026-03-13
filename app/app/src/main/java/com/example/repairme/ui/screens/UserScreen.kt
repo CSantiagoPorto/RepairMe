@@ -63,7 +63,9 @@ fun UserScreen(
     onVerEquipos: (Equipo) -> Unit = {},
     onVerAverias: (Averia) -> Unit = {},
     onVerPresupuestos:(Averia)->Unit={},
-    onGoToTestCrud: () -> Unit = {}
+    onGoToTestCrud: () -> Unit = {},
+    onIrPerfil: () -> Unit = {}
+
 ) {
     var equiposExpandido by remember { mutableStateOf(false) }
     var reparacionesExpandido by remember { mutableStateOf(false) }
