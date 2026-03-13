@@ -11,6 +11,7 @@ sealed class Rutas (val ruta:String) {
     data object ADMINSCREEN : Rutas("pantallaAdmin")
     data object REGISTRO_TECNICO : Rutas("registroTecnico")
     data object REPAIRSSCREEN : Rutas("VerReparacionesadmin")
+    data object DETALLE_AVERIA_TECNICO: Rutas("detalleAveriaTecnico/{averiaId}")
 
 }
 

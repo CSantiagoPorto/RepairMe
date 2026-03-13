@@ -31,7 +31,11 @@ import androidx.compose.foundation.lazy.items
 
 
 @Composable
-fun TecnicoScreen(onAddEquipo: () -> Unit = {}) {
+fun TecnicoScreen(
+    onAddEquipo: () -> Unit = {},
+    onAveriaClick: (String) -> Unit={}
+
+) {
     val orangePrimary = Color(0xFFE67E22)
     val grayBackground = Color(0xFFF5F5F5)
 
@@ -61,8 +65,8 @@ fun TecnicoScreen(onAddEquipo: () -> Unit = {}) {
 
         // Main Content
         when (currentScreen) {
-            "repair" -> RepairListScreen(orangePrimary) { currentScreen = null }
-            "repaired" -> RepairedListScreen(orangePrimary) { currentScreen = null }
+            "repair" -> RepairListScreen(orangePrimary= orangePrimary, onBack =  { currentScreen = null }, onAveriaClick=onAveriaClick)
+            "repaired" -> RepairedListScreen(orangePrimary=orangePrimary, onBack =  { currentScreen = null }, onAveriaClick={})
             else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
         }
 
@@ -138,6 +142,7 @@ fun CardItem(
             .height(120.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp), // Añadir background redondeado y elevation 4,dp?
+
     ) {
         Row(
             modifier = Modifier
@@ -190,7 +195,7 @@ fun BottomNavButton(
 }
 
 @Composable
-fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
+fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (String) -> Unit) {
     val equipmentStates = remember { mutableStateOf(List(10) { "Esperando confirmación" }) }
     var listaAverias by remember{mutableStateOf(listOf<Averia>()) }
     var repo= remember { RepairRepository() }
@@ -232,7 +237,8 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
                     onStateChange = { newState ->
                      //   repo.editarAveria()
 
-                    }
+                    },
+                    onAveriaClick = {onAveriaClick(averia.id)}
                 )
             }
         }
@@ -240,7 +246,7 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
 }
 
 @Composable
-fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit) {
+fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:()-> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -286,7 +292,8 @@ fun RepairItem(
     title: String,
     currentState: String = "Esperando confirmación",
     orangePrimary: Color = Color(0xFFE67E22),
-    onStateChange: (String) -> Unit = {}
+    onStateChange: (String) -> Unit = {},
+    onAveriaClick: () -> Unit={}
 ) {
     var expanded by remember { mutableStateOf(false) }
     val states = listOf(
@@ -306,6 +313,7 @@ fun RepairItem(
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(8.dp),
+        onClick = {onAveriaClick()}
     ) {
         Row(
             modifier = Modifier
@@ -356,6 +364,11 @@ fun RepairItem(
 
 @Preview(showSystemUi = true)
 @Composable
-fun TecnicoScreenPreview() {
+fun TecnicoScreenPreview(
+    onAddEquipo: () -> Unit = {},
+
+    onAveriaClick: (String) -> Unit = {}
+
+) {
     TecnicoScreen()
 }

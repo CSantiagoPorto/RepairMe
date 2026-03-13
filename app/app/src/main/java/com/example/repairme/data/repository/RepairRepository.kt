@@ -1,6 +1,7 @@
 package com.example.repairme.data.repository
 
 import android.util.Log
+import android.util.Log.e
 import com.example.repairme.data.model.Averia
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -126,6 +127,25 @@ class RepairRepository : OperationsTemplateRepository() {
                     fallo(error.message)
                 }
             })
+
+    }
+    fun obtenerAveriaId(
+        fallo: (String) -> Unit,
+        exito: (Averia) -> Unit,
+        averiaId:String
+    ){
+
+
+        val averiaRef= ref("$NODE/$averiaId")
+
+       averiaRef.get().addOnSuccessListener {
+           snapshot ->
+           val averia= snapshot.getValue(Averia::class.java)
+           if(averia!=null){exito(averia)}
+           else fallo("Avería no encontrada")
+       }.addOnFailureListener {
+           e->fallo("Algo pasó ")
+       }
 
     }
 
