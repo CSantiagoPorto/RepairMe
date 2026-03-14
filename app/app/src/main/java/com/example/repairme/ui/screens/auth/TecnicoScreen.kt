@@ -33,7 +33,8 @@ import androidx.compose.foundation.lazy.items
 @Composable
 fun TecnicoScreen(
     onAddEquipo: () -> Unit = {},
-    onAveriaClick: (String) -> Unit={}
+    onAveriaClick: (String) -> Unit={},
+    onIrPerfil: () -> Unit = {}
 
 ) {
     val orangePrimary = Color(0xFFE67E22)
