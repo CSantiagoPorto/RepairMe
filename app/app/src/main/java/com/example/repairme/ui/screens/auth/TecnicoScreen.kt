@@ -16,6 +16,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,13 +25,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.repairme.data.model.Averia
+import com.example.repairme.data.repository.RepairRepository
+import androidx.compose.foundation.lazy.items
+
 
 @Composable
-fun TecnicoScreen(onAddEquipo: () -> Unit = {}) {
+fun TecnicoScreen(
+    onAddEquipo: () -> Unit = {},
+    onAveriaClick: (String) -> Unit={},
+    onIrPerfil: () -> Unit = {}
+
+) {
     val orangePrimary = Color(0xFFE67E22)
     val grayBackground = Color(0xFFF5F5F5)
 
     var currentScreen by remember { mutableStateOf<String?>(null) }
+
 
 
     Column(
@@ -55,8 +66,16 @@ fun TecnicoScreen(onAddEquipo: () -> Unit = {}) {
 
         // Main Content
         when (currentScreen) {
-            "repair" -> RepairListScreen(orangePrimary) { currentScreen = null }
-            "repaired" -> RepairedListScreen(orangePrimary) { currentScreen = null }
+            "repair" -> RepairListScreen(
+                orangePrimary= orangePrimary,
+                onBack =  { currentScreen = null },
+                onAveriaClick=onAveriaClick
+            )
+            "repaired" -> RepairedListScreen(
+                orangePrimary=orangePrimary,
+                onBack =  { currentScreen = null },
+                onAveriaClick=onAveriaClick
+            )
             else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
         }
 
@@ -132,6 +151,7 @@ fun CardItem(
             .height(120.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp), // Añadir background redondeado y elevation 4,dp?
+
     ) {
         Row(
             modifier = Modifier
@@ -158,7 +178,7 @@ fun CardItem(
 
 @Composable
 fun BottomNavButton(
-    icon: ImageVector, // Revisar
+    icon: ImageVector,
     label: String,
     color: Color,
     onClick: () -> Unit
@@ -184,8 +204,21 @@ fun BottomNavButton(
 }
 
 @Composable
-fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
-    val equipmentStates = remember { mutableStateOf(List(10) { "Esperando confirmación" }) }
+fun RepairListScreen(
+    orangePrimary: Color,
+    onBack: () -> Unit,
+    onAveriaClick: (String) -> Unit
+) {
+    var listaAverias by remember{mutableStateOf(listOf<Averia>()) }
+    var repo= remember { RepairRepository() }
+
+    LaunchedEffect(Unit) {
+        repo.obtenerAveriasTecnico(
+            fallo = {},
+            exito = {averias->listaAverias=averias}
+            //La lambda me trae el dato de fb,
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -209,16 +242,22 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
             modifier = Modifier.padding(vertical = 12.dp)
         )
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(10) { index ->
+            items(listaAverias) { averia ->
                 RepairItem(
-                    title = "Equipo ${index + 1}",
-                    currentState = equipmentStates.value[index],
+                    title = "Equipo ${averia.equipoNombre}",
+                    currentState = averia.estado,
                     orangePrimary = orangePrimary,
                     onStateChange = { newState ->
-                        equipmentStates.value = equipmentStates.value.toMutableList().apply {
-                            this[index] = newState
-                        }
-                    }
+                        // 1. Creamos el objeto actualizado
+                        val averiaActualizada = averia.copy(estado = newState)
+                        // 2. Lo enviamos a firebase
+                        repo.editarAveria(
+                            averiaEditada = averiaActualizada,
+                            exito = {/* Se refresca solo por el listener*/},
+                            fallo = {}
+                        )
+                    },
+                    onAveriaClick = {onAveriaClick(averia.id)}
                 )
             }
         }
@@ -226,7 +265,11 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit) {
 }
 
 @Composable
-fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit) {
+fun RepairedListScreen(
+    orangePrimary: Color,
+    onBack: () -> Unit,
+    onAveriaClick:(String)-> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -253,7 +296,8 @@ fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable { onAveriaClick("ID_$index") },
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(
@@ -272,7 +316,8 @@ fun RepairItem(
     title: String,
     currentState: String = "Esperando confirmación",
     orangePrimary: Color = Color(0xFFE67E22),
-    onStateChange: (String) -> Unit = {}
+    onStateChange: (String) -> Unit = {},
+    onAveriaClick: () -> Unit={}
 ) {
     var expanded by remember { mutableStateOf(false) }
     val states = listOf(
@@ -280,7 +325,7 @@ fun RepairItem(
         "En reparación",
         "Reparado"
     )
-
+    // El boton cambia a verde si el estado es reparado
     val buttonColor = if (currentState == "Reparado") {
         Color(0xFF4CAF50) // Verde
     } else {
@@ -292,6 +337,7 @@ fun RepairItem(
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(8.dp),
+        onClick = {onAveriaClick()}
     ) {
         Row(
             modifier = Modifier
@@ -329,6 +375,7 @@ fun RepairItem(
                         DropdownMenuItem(
                             text = { Text(state) },
                             onClick = {
+                                // Aqui llamamos a la funcion que actualiza el Firebase
                                 onStateChange(state)
                                 expanded = false
                             }
@@ -342,6 +389,11 @@ fun RepairItem(
 
 @Preview(showSystemUi = true)
 @Composable
-fun TecnicoScreenPreview() {
+fun TecnicoScreenPreview(
+    onAddEquipo: () -> Unit = {},
+
+    onAveriaClick: (String) -> Unit = {}
+
+) {
     TecnicoScreen()
 }

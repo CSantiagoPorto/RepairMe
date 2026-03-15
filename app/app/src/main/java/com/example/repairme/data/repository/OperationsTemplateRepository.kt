@@ -5,15 +5,17 @@ import com.google.firebase.database.FirebaseDatabase
 
 open class OperationsTemplateRepository {
 
-    //Conexión a la bbdd
-    private val database = FirebaseDatabase.getInstance(
-        "https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app"
-    )
+    // Conexión a la bbdd usando lazy para evitar errores en Previews
+    private val database by lazy {
+        FirebaseDatabase.getInstance(
+            "https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app"
+        )
+    }
 
-    //Acceso a una ruta concreta de la bbdd
+    // Acceso a una ruta concreta de la bbdd
     protected fun ref(path: String): DatabaseReference = database.getReference(path)
 
-    //Crea o sobrescribe el objeto/nodo completo (sirve para crear y para editar)
+    // Crea o sobrescribe el objeto/nodo completo
     protected fun setValue(
         path: String,
         value: Any,
@@ -25,7 +27,7 @@ open class OperationsTemplateRepository {
             .addOnFailureListener { e -> error(e.message ?: "Error al editar") }
     }
 
-    //Edita algunos campos sin editar todo el objeto
+    // Edita algunos campos
     protected fun updateChildren(
         path: String,
         updates: Map<String, Any?>,
@@ -37,7 +39,7 @@ open class OperationsTemplateRepository {
             .addOnFailureListener { e -> error(e.message ?: "Error desconocido") }
     }
 
-    //Borra el objeto/nodo
+    // Borra el objeto
     protected fun delete(
         path: String,
         ok: () -> Unit,
@@ -48,7 +50,7 @@ open class OperationsTemplateRepository {
             .addOnFailureListener { e -> error(e.message ?: "Error desconocido") }
     }
 
-    //Crea un ID y si por lo que sea la key viene como null pone el tiempo actual en ms
+    // Crea un ID único
     protected fun newId(path: String): String =
         ref(path).push().key ?: System.currentTimeMillis().toString()
 }

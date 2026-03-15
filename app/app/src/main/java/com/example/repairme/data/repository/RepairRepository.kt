@@ -9,13 +9,13 @@ import com.google.firebase.database.ValueEventListener
 
 class RepairRepository : OperationsTemplateRepository() {
 
-    private val auth = FirebaseAuth.getInstance()
+    private val auth by lazy { FirebaseAuth.getInstance() }
     private val NODE = "repairs"
 
     fun abrirAveria(
         averia: Averia,
-        exito:()-> Unit,
-        fallo:(String)->Unit
+        exito: () -> Unit,
+        fallo: (String) -> Unit
 
     ){
         val userId= auth.currentUser?.uid
@@ -25,8 +25,6 @@ class RepairRepository : OperationsTemplateRepository() {
         }
 
         val averiaUid= newId(NODE)
-
-
 
         if(averiaUid.isBlank()){
             fallo("Se produjo un error al crear el id de la avería")
@@ -49,13 +47,13 @@ class RepairRepository : OperationsTemplateRepository() {
         fallo: (String) -> Unit,
         exito: (List<Averia>) -> Unit
     ){
-        var listaAverías= mutableListOf<Averia>()
+        val listaAverías= mutableListOf<Averia>()
         val averiaRef= ref(NODE)
         //Quiero que me muestre primero las pendientes de asignar, así que hago una lista de estados
         val estado= listOf("Pendiente", "Asignada", "Presupuestada", "En reparación", "reparado")
         averiaRef.orderByChild("estado").get().addOnSuccessListener {
-            snashot->
-            for (child in snashot.children){
+            snapshot->
+            for (child in snapshot.children){
                 val averia= child.getValue(Averia::class.java)
                 if(averia!=null){
                     listaAverías.add(averia)
@@ -70,7 +68,7 @@ class RepairRepository : OperationsTemplateRepository() {
         fallo: (String) -> Unit,
         exito: (List<Averia>) -> Unit
     ){
-        var listaAverías= mutableListOf<Averia>()
+        val listaAverías= mutableListOf<Averia>()
         val userId= auth.currentUser?.uid
         val averiaRef= ref(NODE)
         Log.d("TESTCRUD", "obtenerAveriaUser llamado, userId=$userId")
@@ -98,6 +96,40 @@ class RepairRepository : OperationsTemplateRepository() {
                 }
             })
 
+    }
+
+    // Obtener Averia tecnico en tiempo real
+    fun obtenerAveriasTecnico(
+        fallo: (String) -> Unit,
+        exito: (List<Averia>) -> Unit
+    ) {
+        val tecnicoId = auth.currentUser?.uid
+        val averiaRef= ref(NODE)
+
+        if (tecnicoId == null) {
+            fallo("No se encontró el técnico")
+            return
+        }
+
+        // Pongo addValueEventListener para que me devuelva los cambios en tiempo real
+        averiaRef.orderByChild("tecnicoId").equalTo(tecnicoId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val listaAverias= mutableListOf<Averia>()
+                    // Usamos el for para recorrer los hijos
+                    for (child in snapshot.children) {
+                        val averia = child.getValue(Averia::class.java)
+                        if (averia != null) {
+                            listaAverias.add(averia)
+                        }
+                    }
+                    exito(listaAverias)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    fallo(error.message)
+                }
+            })
     }
 
 
@@ -135,5 +167,7 @@ class RepairRepository : OperationsTemplateRepository() {
             error = { msg-> fallo(msg) }
         )
     }
+
+
 
 }
