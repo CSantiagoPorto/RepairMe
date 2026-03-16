@@ -134,6 +134,13 @@ class AppNavigation {
                 )
             }
 
+            // Pantalla de pruebas CRUD
+            composable(Rutas.TESTCRUD.ruta) {
+                TestCrudScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
         }
     }
 }
