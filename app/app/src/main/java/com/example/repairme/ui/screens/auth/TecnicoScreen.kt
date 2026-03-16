@@ -99,7 +99,7 @@ fun TecnicoScreen(
                 icon = Icons.Filled.Person,
                 label = "Perfil",
                 color = orangePrimary,
-                onClick = { }
+                onClick = { onIrPerfil() }
             )
         }
     }
