@@ -3,9 +3,11 @@ package com.example.repairme.ui.navigation
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.screens.AddEquipoScreen
@@ -16,8 +18,10 @@ import com.example.repairme.ui.screens.UserScreen
 import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 import com.example.repairme.ui.screens.AdminScreen
+import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
 import com.example.repairme.ui.screens.RegisterTecnicoScreen
 import com.example.repairme.ui.screens.RepairsScreen
+import com.example.repairme.ui.screens.ProfileScreen
 
 class AppNavigation {
 
@@ -34,9 +38,10 @@ class AppNavigation {
                 LoginScreen(
                     onNavigateToRegistro = { navController.navigate(Rutas.REGISTRO.ruta) },
                     onNavigateToUserScreen = { navController.navigate(Rutas.USERSCREEN.ruta) },
-                    //Esta es la función real que le pasa el destino. Cuando se llama a la función
-                    //sobreescribe la función vacía y ejecuta el navController
-                    //Es aquí cuando se decide a dónde ir (
+                    onNavigateToTecnicoScreen = { navController.navigate(Rutas.TECNICOSCREEN.ruta) },
+                    onNavigateToAdminScreen = { navController.navigate(Rutas.ADMINSCREEN.ruta) }
+
+
 
                     //Esta es la función real que le pasa el destino. Cuando se llama a la función
                     //sobreescribe la función vacía y ejecuta el navController
@@ -54,22 +59,25 @@ class AppNavigation {
             composable(Rutas.USERSCREEN.ruta) {
                 UserScreen(
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
-                    onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) }
+                    onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) }
                 )
             }
 
             composable(Rutas.TECNICOSCREEN.ruta){
                 TecnicoScreen(
-                    onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) }
+                    onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
+                    onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) }
                 )
             }
 
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(
                     onLogOut = { navController.navigate(Rutas.LOGIN.ruta) },
-                    onVerAverias = {navController.navigate(Rutas.REPAIRSSCREEN.ruta)},
-                    onVerTecnicos = {navController.navigate(Rutas.REGISTRO_TECNICO.ruta)}
-
+                    onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) }
                 )
             }
 
@@ -99,6 +107,22 @@ class AppNavigation {
                 RegisterTecnicoScreen(
                     onNavigateBack ={navController.popBackStack()},
                     onRegisterSucess={navController.popBackStack()}
+                )
+            }
+
+            composable (Rutas.DETALLE_AVERIA_TECNICO.ruta,
+                listOf(navArgument("averiaId"){type= NavType.StringType})){
+               backStackEntry->
+                val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
+                DetalleAveriaTecnicoScreen(
+                    averiaId = averiaId,
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
+            composable(Rutas.PROFILE.ruta) {
+                ProfileScreen(
+                    onVolver = { navController.popBackStack() }
                 )
             }
 

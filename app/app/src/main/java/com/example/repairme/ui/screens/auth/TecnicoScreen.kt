@@ -66,16 +66,8 @@ fun TecnicoScreen(
 
         // Main Content
         when (currentScreen) {
-            "repair" -> RepairListScreen(
-                orangePrimary= orangePrimary,
-                onBack =  { currentScreen = null },
-                onAveriaClick=onAveriaClick
-            )
-            "repaired" -> RepairedListScreen(
-                orangePrimary=orangePrimary,
-                onBack =  { currentScreen = null },
-                onAveriaClick=onAveriaClick
-            )
+            "repair" -> RepairListScreen(orangePrimary= orangePrimary, onBack =  { currentScreen = null }, onAveriaClick=onAveriaClick)
+            "repaired" -> RepairedListScreen(orangePrimary=orangePrimary, onBack =  { currentScreen = null }, onAveriaClick={})
             else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
         }
 
@@ -204,14 +196,10 @@ fun BottomNavButton(
 }
 
 @Composable
-fun RepairListScreen(
-    orangePrimary: Color,
-    onBack: () -> Unit,
-    onAveriaClick: (String) -> Unit
-) {
+fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (String) -> Unit) {
+    val equipmentStates = remember { mutableStateOf(List(10) { "Esperando confirmación" }) }
     var listaAverias by remember{mutableStateOf(listOf<Averia>()) }
     var repo= remember { RepairRepository() }
-
     LaunchedEffect(Unit) {
         repo.obtenerAveriasTecnico(
             fallo = {},
@@ -265,11 +253,7 @@ fun RepairListScreen(
 }
 
 @Composable
-fun RepairedListScreen(
-    orangePrimary: Color,
-    onBack: () -> Unit,
-    onAveriaClick:(String)-> Unit
-) {
+fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:()-> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()

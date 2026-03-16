@@ -1,6 +1,7 @@
 package com.example.repairme.data.repository
 
 import android.util.Log
+import android.util.Log.e
 import com.example.repairme.data.model.Averia
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -62,6 +63,35 @@ class RepairRepository : OperationsTemplateRepository() {
             exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
         }.addOnFailureListener{e->fallo("No se encontraron las averías")}
     }
+    fun obtenerAveriasTecnico(
+        fallo: (String) -> Unit,
+        exito: (List<Averia>) -> Unit
+    ){
+        var listaAverías= mutableListOf<Averia>()
+        val estado= listOf("Pendiente", "Asignada", "Presupuestada", "En reparación", "reparado")
+        var averiaRef= ref(NODE)
+        var tecnicoId= auth.currentUser?.uid
+        //Añadoo comprobación porque equatTo no admite nulos
+        if (tecnicoId==null){
+            fallo("No existe el técnico")
+            return
+        }
+        var tecnicoAsignado= averiaRef.orderByChild("tecnicoId").equalTo(tecnicoId).get().addOnSuccessListener {
+            snapshot ->
+            Log.d("TecnicoRepo", "hijos: ${snapshot.childrenCount}")
+
+            for (child in snapshot.children){
+                var averia= child.getValue(Averia::class.java)
+                if(averia!=null){
+                    listaAverías.add(averia)
+                }
+            }
+            exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
+
+
+        }.addOnFailureListener { e->fallo("No se encuentran averías para este técnico") }
+
+    }
 
 
     fun obtenerAveriaUser(
@@ -95,6 +125,25 @@ class RepairRepository : OperationsTemplateRepository() {
                     fallo(error.message)
                 }
             })
+
+    }
+    fun obtenerAveriaId(
+        fallo: (String) -> Unit,
+        exito: (Averia) -> Unit,
+        averiaId:String
+    ){
+
+
+        val averiaRef= ref("$NODE/$averiaId")
+
+       averiaRef.get().addOnSuccessListener {
+           snapshot ->
+           val averia= snapshot.getValue(Averia::class.java)
+           if(averia!=null){exito(averia)}
+           else fallo("Avería no encontrada")
+       }.addOnFailureListener {
+           e->fallo("Algo pasó ")
+       }
 
     }
 

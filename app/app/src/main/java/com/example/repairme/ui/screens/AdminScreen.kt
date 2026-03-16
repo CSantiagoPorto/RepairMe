@@ -38,6 +38,7 @@ import com.example.repairme.ui.theme.Naranja
 fun AdminScreen(
     onVerAverias: ()->Unit={},
     onVerTecnicos:()-> Unit={},
+    onIrPerfil: () -> Unit = {},
 
     onLogOut: ()->Unit={}
 ){
