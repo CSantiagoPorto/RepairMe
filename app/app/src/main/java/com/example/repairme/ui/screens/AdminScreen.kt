@@ -143,6 +143,30 @@ fun AdminScreen(
                     )
                 }
             }
+
+            // Perfil del admin
+            Card(onClick = { onIrPerfil() }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Mi perfil",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Naranja
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "Mi perfil",
+                        tint = Naranja,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            }
         }
     }
 }

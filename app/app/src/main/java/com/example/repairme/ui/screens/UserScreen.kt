@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RequestQuote
@@ -64,7 +65,8 @@ fun UserScreen(
     onVerAverias: (Averia) -> Unit = {},
     onVerPresupuestos:(Averia)->Unit={},
     onGoToTestCrud: () -> Unit = {},
-    onIrPerfil: () -> Unit = {}
+    onIrPerfil: () -> Unit = {},
+    onIrServicios: () -> Unit = {}
 
 ) {
     var equiposExpandido by remember { mutableStateOf(false) }
@@ -155,10 +157,11 @@ fun UserScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BottomNavButton(icon = Icons.Filled.Computer, label = "Mis equipos", color = Naranja, onClick = {})
-                BottomNavButton(icon = Icons.Filled.Build, label = "Mis reparaciones", color = Naranja, onClick = {})
-                BottomNavButton(icon = Icons.Filled.Notifications, label = "Mis notificaciones", color = Naranja, onClick = {})
-                BottomNavButton(icon = Icons.Filled.Person, label = "Mi Perfil", color = Naranja, onClick = {})
+                BottomNavButton(icon = Icons.Filled.Computer, label = "Equipos", color = Naranja, onClick = {})
+                BottomNavButton(icon = Icons.Filled.Build, label = "Reparaciones", color = Naranja, onClick = {})
+                BottomNavButton(icon = Icons.Filled.RequestQuote, label = "Presupuestos", color = Naranja, onClick = {})
+                BottomNavButton(icon = Icons.Filled.Person, label = "Perfil", color = Naranja, onClick = { onIrPerfil() })
+                BottomNavButton(icon = Icons.Filled.Info, label = "Servicios", color = Naranja, onClick = { onIrServicios() })
             }
         }
     ) { innerPadding ->

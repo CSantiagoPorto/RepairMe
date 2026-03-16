@@ -22,6 +22,7 @@ import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
 import com.example.repairme.ui.screens.RegisterTecnicoScreen
 import com.example.repairme.ui.screens.RepairsScreen
 import com.example.repairme.ui.screens.ProfileScreen
+import com.example.repairme.ui.screens.ServicesScreen
 
 class AppNavigation {
 
@@ -60,7 +61,8 @@ class AppNavigation {
                 UserScreen(
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
-                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) }
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) }
                 )
             }
 
@@ -122,6 +124,12 @@ class AppNavigation {
 
             composable(Rutas.PROFILE.ruta) {
                 ProfileScreen(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
+            composable(Rutas.SERVICES.ruta){
+                ServicesScreen(
                     onVolver = { navController.popBackStack() }
                 )
             }
