@@ -44,6 +44,7 @@ fun TecnicoScreen(
 
 
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -237,7 +238,9 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (St
                     orangePrimary = orangePrimary,
                     onStateChange = { newState ->
                         // 1. Creamos el objeto actualizado
-                        val averiaActualizada = averia.copy(estado = newState)
+                        val averiaActualizada = averia.copy(
+                            estado = newState,
+                            fechaEntrega = if(newState=="Reparado") System.currentTimeMillis()else averia.fechaEntrega)
                         // 2. Lo enviamos a firebase
                         repo.editarAveria(
                             averiaEditada = averiaActualizada,
@@ -254,6 +257,17 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (St
 
 @Composable
 fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:(String)-> Unit) {
+    var listaReparadas by remember { mutableStateOf(listOf<Averia>()) }
+    val repo = remember { RepairRepository() }
+
+    LaunchedEffect(Unit) {
+        repo.obtenerAveriasTecnico(
+            fallo = {},
+            exito = { averias ->
+                listaReparadas = averias.filter { it.estado == "Reparado" }
+            }
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -276,16 +290,17 @@ fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:(
             modifier = Modifier.padding(vertical = 12.dp)
         )
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(10) { index ->
+            //Cmambio esto para que las lea desde la bbdd
+            items(listaReparadas) { averia ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable { onAveriaClick("ID_$index") },
+                        .clickable { onAveriaClick("ID_$averia") },
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(
-                        text = "Equipo reparado ${index + 1}",
+                        text = "${averia.equipoNombre} ---  ${averia.tituloAveria}",
                         modifier = Modifier.padding(16.dp),
                         fontSize = 14.sp
                     )
