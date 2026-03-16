@@ -74,6 +74,8 @@ fun UserScreen(
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     var listaPresupuestadas by remember { mutableStateOf(listOf<Averia>()) }
     var dialogoAveria by remember { mutableStateOf<Averia?>(null) }
+    val repo = remember { RepairRepository() }//Necesito el repo para aceptar el presu
+
 
     LaunchedEffect(equiposExpandido) {
         val repo = DeviceRepository()
@@ -116,7 +118,12 @@ fun UserScreen(
                 },
                 exito = { averias ->
                     Log.d("Log de las averçías que recibo", "Averías Presupuestadas recibidas:${averias.size}")
-                    listaPresupuestadas = averias.filter { it.estado == EstadoAveria.Presupuestada.name }
+                    listaPresupuestadas = averias.filter {
+                        it.estado == EstadoAveria.Presupuestada.name||
+                                it.estado == EstadoAveria.EnReparacion.name||
+                                it.estado == EstadoAveria.Declinada.name
+
+                    }
                 }
             )
         }
@@ -385,20 +392,28 @@ fun UserScreen(
                 Text("Total: ${subtotal + iva} €")
 
             }},
-
             confirmButton = {
-                TextButton(onClick = {
-
-
-                }) {Text(text ="Confirmar" ) }
-
+                if (averia.presupuestoAceptado == null) {
+                    TextButton(onClick = { onAceptar() }) {
+                        Text(text = "Confirmar")
+                    }
+                }
             },
-            dismissButton = {
+
+
+
+            /*dismissButton = {
                 TextButton(onClick = {
                     onRechazar()
                 }) {Text(text = "Cancelar") }
+            },*/
+            dismissButton = {
+                if(averia.presupuestoAceptado==null){
+                    TextButton(onClick = {onRechazar}) {Text(text = "Cancelar") }
+                }
             },
-            title =  {Text(text = "Asigne un técnico a la reparación")}
+            title = { Text(text = "Detalle del presupuesto") }
+
         )
 
     }
@@ -406,8 +421,32 @@ fun UserScreen(
         averia ->
         DialogoPresupuestos(
             averia=averia,
-            onRechazar = {dialogoAveria=null},
-            onAceptar = {dialogoAveria=null}//Hay que cerrar el dialogo
+            onRechazar = {
+                repo.editarAveria(
+                    averiaEditada = averia.copy(
+                        presupuestoAceptado = true,
+                        estado= EstadoAveria.Declinada.name
+                ),
+                    exito = {
+                        listaPresupuestadas=listaPresupuestadas.filter { it.id!=averia.id }
+                        dialogoAveria=null
+                    },
+                    fallo={dialogoAveria=null}
+                )
+            },
+            onAceptar = {
+                repo.editarAveria(
+                    averiaEditada = averia.copy(
+                        presupuestoAceptado = true,
+                        estado= EstadoAveria.EnReparacion.name
+                    ),
+                    exito = {
+                        listaPresupuestadas=listaPresupuestadas.filter { it.id!=averia.id }
+                        dialogoAveria=null
+                    },
+                    fallo={dialogoAveria=null}
+                )
+            }//Hay que cerrar el dialogo
         )
     }
 
