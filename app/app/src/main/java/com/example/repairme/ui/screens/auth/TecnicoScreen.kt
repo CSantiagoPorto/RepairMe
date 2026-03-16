@@ -41,6 +41,9 @@ fun TecnicoScreen(
     val grayBackground = Color(0xFFF5F5F5)
 
     var currentScreen by remember { mutableStateOf<String?>(null) }
+    var listaReparadas by remember { mutableStateOf(listOf<Averia>()) }
+    val repo = remember { RepairRepository() }
+
 
 
 
@@ -237,7 +240,9 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (St
                     orangePrimary = orangePrimary,
                     onStateChange = { newState ->
                         // 1. Creamos el objeto actualizado
-                        val averiaActualizada = averia.copy(estado = newState)
+                        val averiaActualizada = averia.copy(
+                            estado = newState,
+                            fechaEntrega = if(newState=="Reparado") System.currentTimeMillis()else averia.fechaEntrega)
                         // 2. Lo enviamos a firebase
                         repo.editarAveria(
                             averiaEditada = averiaActualizada,
