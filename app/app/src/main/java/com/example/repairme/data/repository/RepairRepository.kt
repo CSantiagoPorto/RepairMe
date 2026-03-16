@@ -63,35 +63,7 @@ class RepairRepository : OperationsTemplateRepository() {
             exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
         }.addOnFailureListener{e->fallo("No se encontraron las averías")}
     }
-    fun obtenerAveriasTecnico(
-        fallo: (String) -> Unit,
-        exito: (List<Averia>) -> Unit
-    ){
-        var listaAverías= mutableListOf<Averia>()
-        val estado= listOf("Pendiente", "Asignada", "Presupuestada", "En reparación", "reparado")
-        var averiaRef= ref(NODE)
-        var tecnicoId= auth.currentUser?.uid
-        //Añadoo comprobación porque equatTo no admite nulos
-        if (tecnicoId==null){
-            fallo("No existe el técnico")
-            return
-        }
-        var tecnicoAsignado= averiaRef.orderByChild("tecnicoId").equalTo(tecnicoId).get().addOnSuccessListener {
-            snapshot ->
-            Log.d("TecnicoRepo", "hijos: ${snapshot.childrenCount}")
 
-            for (child in snapshot.children){
-                var averia= child.getValue(Averia::class.java)
-                if(averia!=null){
-                    listaAverías.add(averia)
-                }
-            }
-            exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
-
-
-        }.addOnFailureListener { e->fallo("No se encuentran averías para este técnico") }
-
-    }
 
 
     fun obtenerAveriaUser(

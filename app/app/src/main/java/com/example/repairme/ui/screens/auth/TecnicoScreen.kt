@@ -210,7 +210,7 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (St
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
     ) {
         Button(
@@ -253,10 +253,10 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (St
 }
 
 @Composable
-fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:()-> Unit) {
+fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:(String)-> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
     ) {
         Button(
