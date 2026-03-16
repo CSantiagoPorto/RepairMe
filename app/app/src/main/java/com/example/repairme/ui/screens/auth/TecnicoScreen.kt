@@ -170,7 +170,7 @@ fun CardItem(
 
 @Composable
 fun BottomNavButton(
-    icon: ImageVector, // Revisar
+    icon: ImageVector,
     label: String,
     color: Color,
     onClick: () -> Unit
@@ -236,8 +236,14 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (St
                     currentState = averia.estado,
                     orangePrimary = orangePrimary,
                     onStateChange = { newState ->
-                     //   repo.editarAveria()
-
+                        // 1. Creamos el objeto actualizado
+                        val averiaActualizada = averia.copy(estado = newState)
+                        // 2. Lo enviamos a firebase
+                        repo.editarAveria(
+                            averiaEditada = averiaActualizada,
+                            exito = {/* Se refresca solo por el listener*/},
+                            fallo = {}
+                        )
                     },
                     onAveriaClick = {onAveriaClick(averia.id)}
                 )
@@ -274,7 +280,8 @@ fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable { onAveriaClick("ID_$index") },
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(
@@ -302,7 +309,7 @@ fun RepairItem(
         "En reparación",
         "Reparado"
     )
-
+    // El boton cambia a verde si el estado es reparado
     val buttonColor = if (currentState == "Reparado") {
         Color(0xFF4CAF50) // Verde
     } else {
@@ -352,6 +359,7 @@ fun RepairItem(
                         DropdownMenuItem(
                             text = { Text(state) },
                             onClick = {
+                                // Aqui llamamos a la funcion que actualiza el Firebase
                                 onStateChange(state)
                                 expanded = false
                             }
