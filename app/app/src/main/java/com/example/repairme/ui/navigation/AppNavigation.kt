@@ -19,6 +19,7 @@ import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 import com.example.repairme.ui.screens.AdminScreen
 import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
+import com.example.repairme.ui.screens.DetalleReparacionesFinalizadas
 import com.example.repairme.ui.screens.RegisterTecnicoScreen
 import com.example.repairme.ui.screens.RepairsScreen
 import com.example.repairme.ui.screens.ProfileScreen
@@ -70,7 +71,9 @@ class AppNavigation {
                 TecnicoScreen(
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
-                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) }
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")}
+
                 )
             }
 
@@ -111,6 +114,12 @@ class AppNavigation {
                     onRegisterSucess={navController.popBackStack()}
                 )
             }
+            composable(Rutas.TESTCRUD.ruta) {
+                TestCrudScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
 
             composable (Rutas.DETALLE_AVERIA_TECNICO.ruta,
                 listOf(navArgument("averiaId"){type= NavType.StringType})){
@@ -120,6 +129,16 @@ class AppNavigation {
                     averiaId = averiaId,
                     onVolver = { navController.popBackStack() }
                 )
+            }
+            composable(Rutas.DETALLE_AVERIA_FINALIZADA.ruta,
+                listOf(navArgument("averiaId"){type= NavType.StringType})){
+                backStackEntry->
+                val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
+                DetalleReparacionesFinalizadas(
+                    averiaId=averiaId,
+                    onVolver = {navController.popBackStack()}
+                )
+
             }
 
             composable(Rutas.PROFILE.ruta) {
