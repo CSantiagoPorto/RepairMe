@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Averia
 import com.example.repairme.ui.theme.Naranja
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.filled.Info
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +41,7 @@ fun AdminScreen(
     onVerAverias: ()->Unit={},
     onVerTecnicos:()-> Unit={},
     onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
 
     onLogOut: ()->Unit={}
 ){
@@ -162,6 +165,31 @@ fun AdminScreen(
                     Icon(
                         imageVector = Icons.Filled.Person,
                         contentDescription = "Mi perfil",
+                        tint = Naranja,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            }
+
+            Card(
+                onClick = { onGestionServicios() }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Gestionar servicios",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Naranja
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = "Servicios",
                         tint = Naranja,
                         modifier = Modifier.size(40.dp)
                     )
