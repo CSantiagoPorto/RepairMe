@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.repairme.data.model.Averia
@@ -39,6 +41,7 @@ import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.theme.GrisFondoPantalla
+import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
 import com.google.firebase.Timestamp
@@ -177,8 +180,14 @@ fun DetalleReparacionesFinalizadas(
                                 horizontalArrangement = Arrangement.Center) {
                                 Button(onClick = {
 
-                                }) {
-                                    Text("Generar presupuesto en pdf", color = botonNaranja)
+                                },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Naranja,
+                                        contentColor = Color.White
+                                    )
+
+                                    ) {
+                                    Text("Generar presupuesto en pdf")
                                 }
                             }
                         }
@@ -188,8 +197,12 @@ fun DetalleReparacionesFinalizadas(
                                 horizontalArrangement = Arrangement.Center) {
                                 Button(onClick = {
 
-                                }) {
-                                    Text("Generar factura en pdf", color = botonNaranja)
+                                },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Naranja,
+                                        contentColor = Color.White
+                                    )) {
+                                    Text("Generar factura en pdf")
                                 }
                             }
                         }
