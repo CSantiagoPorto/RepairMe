@@ -19,11 +19,7 @@ import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 import com.example.repairme.ui.screens.AdminScreen
 import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
-<<<<<<< dev-alex
-=======
 import com.example.repairme.ui.screens.DetalleReparacionesFinalizadas
-import com.example.repairme.ui.screens.RegisterTecnicoScreen
->>>>>>> main
 import com.example.repairme.ui.screens.RepairsScreen
 import com.example.repairme.ui.screens.ProfileScreen
 import com.example.repairme.ui.screens.ServicesScreen
