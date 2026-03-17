@@ -17,6 +17,8 @@ sealed class Rutas (val ruta:String) {
     data object PROFILE : Rutas("profile")
 
     data object SERVICES : Rutas("services")
+
+    data object SERVICES_ADMIN : Rutas("services_admin")
 }
 
 

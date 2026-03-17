@@ -19,10 +19,10 @@ import com.example.repairme.ui.screens.auth.TecnicoScreen
 import com.example.repairme.ui.screens.auth.LoginScreen
 import com.example.repairme.ui.screens.AdminScreen
 import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
-import com.example.repairme.ui.screens.RegisterTecnicoScreen
 import com.example.repairme.ui.screens.RepairsScreen
 import com.example.repairme.ui.screens.ProfileScreen
 import com.example.repairme.ui.screens.ServicesScreen
+import com.example.repairme.ui.screens.AdminServicesScreen
 
 class AppNavigation {
 
@@ -79,7 +79,8 @@ class AppNavigation {
                     onLogOut = { navController.navigate(Rutas.LOGIN.ruta) },
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
                     onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
-                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) }
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) }
                 )
             }
 
@@ -97,6 +98,7 @@ class AppNavigation {
                     onVolver = { navController.popBackStack() }
                 )
             }
+
             composable (Rutas.REPAIRSSCREEN.ruta){
 
                 RepairsScreen(
@@ -114,7 +116,7 @@ class AppNavigation {
 
             composable (Rutas.DETALLE_AVERIA_TECNICO.ruta,
                 listOf(navArgument("averiaId"){type= NavType.StringType})){
-               backStackEntry->
+                    backStackEntry->
                 val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
                 DetalleAveriaTecnicoScreen(
                     averiaId = averiaId,
@@ -130,6 +132,12 @@ class AppNavigation {
 
             composable(Rutas.SERVICES.ruta){
                 ServicesScreen(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
+            composable(Rutas.SERVICES_ADMIN.ruta){
+                AdminServicesScreen(
                     onVolver = { navController.popBackStack() }
                 )
             }
