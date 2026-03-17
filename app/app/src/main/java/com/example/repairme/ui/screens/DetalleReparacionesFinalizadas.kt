@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,6 +38,8 @@ import com.example.repairme.data.model.LineaPresupuesto
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.UserRepository
+import com.example.repairme.ui.theme.GrisFondoPantalla
+import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
 import com.google.firebase.Timestamp
 
@@ -93,7 +96,7 @@ fun DetalleReparacionesFinalizadas(
     LaunchedEffect(Unit) {
         cargarAveriaUserTecnico()
     }
-    Scaffold(topBar ={
+    Scaffold(containerColor = GrisFondoPantalla,topBar ={
         TopAppBar(title = {
             Text("Detalle de la reparaciones finalizadas",
                 color = naranjaLetras,
@@ -130,14 +133,39 @@ fun DetalleReparacionesFinalizadas(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         item{
-                            Text(text = averia?.equipoNombre?:"Desconocido")
-                            Text(text = averia?.tituloAveria?:"Sin nombre")
-                            Text(text = averia?.descripcion?:"No hay descripción")
-                            Text(text = "Fecha de entrega : ${pasarFechaEntregaAString(averia?.fechaEntrega ?: 0L)}")
-                            Text(text = cliente?.name?:"No se encontró  en nombre")
-                            Text(text = cliente?.apellidos ?:"No se encontraron los apellidos")
-                            Text(text = cliente?.dni?:"No se encontró ningún dni asociado")
-                            Text(text = tecnico?.name?:"No se encontró el técnico")
+                            Card(modifier = Modifier.fillMaxWidth()) {
+                                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(text = "Datos del cliente", fontWeight = FontWeight.Bold, color = naranjaLetras)
+
+                                    Text(text = cliente?.name?:"No se encontró  en nombre")
+                                    Text(text = cliente?.apellidos ?:"No se encontraron los apellidos")
+                                    Text(text = cliente?.dni?:"No se encontró ningún dni asociado")
+                                }
+
+                            }//Acaba card cliente
+
+                            Card(modifier = Modifier.fillMaxWidth()) {
+                                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+
+                                    Text(text = "Datos del técnico", fontWeight = FontWeight.Bold, color = naranjaLetras )
+                                    Text(text = tecnico?.name?:"No se encontró el técnico")
+
+                                }
+                            }//Termina card técnico
+
+                            Card(modifier = Modifier.fillMaxWidth()) {
+                                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(text = "Datos de la avería", fontWeight = FontWeight.Bold, color = naranjaLetras )
+                                    Text(text = averia?.equipoNombre?:"Desconocido")
+                                    Text(text = averia?.tituloAveria?:"Sin nombre")
+                                    Text(text = averia?.descripcion?:"No hay descripción")
+                                    Text(text = "Fecha de entrega : ${pasarFechaEntregaAString(averia?.fechaEntrega ?: 0L)}")
+
+
+                                }
+                            }
+
+
 
                           //  Hay que añadir la fecha de entrega y hay que convertirla antes porque es un Long
 
@@ -145,10 +173,24 @@ fun DetalleReparacionesFinalizadas(
 
 
                         item {
-                            Button(onClick = {
+                            Row(modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center) {
+                                Button(onClick = {
 
-                            }) {
-                                Text("Enviar presupuesto")
+                                }) {
+                                    Text("Generar presupuesto en pdf", color = botonNaranja)
+                                }
+                            }
+                        }
+
+                        item {
+                            Row(modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center) {
+                                Button(onClick = {
+
+                                }) {
+                                    Text("Generar factura en pdf", color = botonNaranja)
+                                }
                             }
                         }
 
