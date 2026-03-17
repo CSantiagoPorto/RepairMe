@@ -34,7 +34,8 @@ import androidx.compose.foundation.lazy.items
 fun TecnicoScreen(
     onAddEquipo: () -> Unit = {},
     onAveriaClick: (String) -> Unit={},
-    onIrPerfil: () -> Unit = {}
+    onIrPerfil: () -> Unit = {},
+    onReparacionesFinalizadasClick:(String)-> Unit={}
 
 ) {
     val orangePrimary = Color(0xFFE67E22)
@@ -68,7 +69,7 @@ fun TecnicoScreen(
         // Main Content
         when (currentScreen) {
             "repair" -> RepairListScreen(orangePrimary= orangePrimary, onBack =  { currentScreen = null }, onAveriaClick=onAveriaClick)
-            "repaired" -> RepairedListScreen(orangePrimary=orangePrimary, onBack =  { currentScreen = null }, onAveriaClick={})
+            "repaired" -> RepairedListScreen(orangePrimary=orangePrimary, onBack =  { currentScreen = null }, onAveriaClick=onReparacionesFinalizadasClick)
             else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
         }
 
@@ -296,7 +297,7 @@ fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable { onAveriaClick("ID_$averia") },
+                        .clickable { onAveriaClick(averia.id) },
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(
