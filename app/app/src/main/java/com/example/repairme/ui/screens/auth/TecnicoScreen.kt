@@ -28,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.repository.RepairRepository
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.IconButton
 
 
 @Composable
@@ -35,7 +37,8 @@ fun TecnicoScreen(
     onAddEquipo: () -> Unit = {},
     onAveriaClick: (String) -> Unit={},
     onIrPerfil: () -> Unit = {},
-    onReparacionesFinalizadasClick:(String)-> Unit={}
+    onReparacionesFinalizadasClick:(String)-> Unit={},
+    onLogOut: () -> Unit = {}
 
 ) {
     val orangePrimary = Color(0xFFE67E22)
@@ -55,15 +58,26 @@ fun TecnicoScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+                .padding(16.dp)
         ) {
             Text(
                 text = "ClearRepair",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = orangePrimary
+                color = orangePrimary,
+                modifier = Modifier.align(Alignment.Center)
             )
+
+            IconButton(
+                onClick = { onLogOut() },
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ExitToApp,
+                    contentDescription = "Cerrar sesión",
+                    tint = orangePrimary
+                )
+            }
         }
 
         // Main Content

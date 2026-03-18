@@ -25,6 +25,7 @@ import com.example.repairme.ui.screens.ProfileScreen
 import com.example.repairme.ui.screens.ServicesScreen
 import com.example.repairme.ui.screens.AdminServicesScreen
 import com.example.repairme.ui.screens.ClientesPantallaAdminScreen
+import com.google.firebase.auth.FirebaseAuth
 
 class AppNavigation {
 
@@ -64,7 +65,13 @@ class AppNavigation {
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
-                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) }
+                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) {
+                            popUpTo(0)
+                        }
+                    }
                 )
             }
 
@@ -73,14 +80,25 @@ class AppNavigation {
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
-                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")}
+                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) {
+                            popUpTo(0)
+                        }
+                    }
 
                 )
             }
 
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(
-                    onLogOut = { navController.navigate(Rutas.LOGIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) {
+                            popUpTo(0)
+                        }
+                    },
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
                     onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },

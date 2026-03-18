@@ -55,6 +55,8 @@ import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.grisfondo
 import com.example.repairme.ui.theme.naranjaLetras
 import kotlin.collections.forEach
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.IconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +68,8 @@ fun UserScreen(
     onVerPresupuestos:(Averia)->Unit={},
     onGoToTestCrud: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
-    onIrServicios: () -> Unit = {}
+    onIrServicios: () -> Unit = {},
+    onLogOut: () -> Unit = {}
 
 ) {
     var equiposExpandido by remember { mutableStateOf(false) }
@@ -142,6 +145,15 @@ fun UserScreen(
                         fontWeight = FontWeight.Bold,
                         // textAlign = TextAlign.Center
                     )
+                },
+                actions = {
+                    IconButton(onClick = { onLogOut() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ExitToApp,
+                            contentDescription = "Cerrar sesión",
+                            tint = naranjaLetras
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = grisfondo
