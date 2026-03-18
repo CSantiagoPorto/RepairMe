@@ -378,6 +378,7 @@ fun UserScreen(
     }//Termina Scaffold
     @Composable
     fun DialogoPresupuestos(averia: Averia, onRechazar:()->Unit, onAceptar:()-> Unit){
+        Log.d("DEBUG_DIALOG", "estado: ${averia.estado}, presupuestoAceptado: ${averia.presupuestoAceptado}")
 
 
         AlertDialog(onDismissRequest = {onRechazar()},
@@ -395,26 +396,22 @@ fun UserScreen(
                 Text("Total: ${subtotal + iva} €")
 
             }},
+
             confirmButton = {
-                if (averia.presupuestoAceptado == null) {
+
                     TextButton(onClick = { onAceptar() }) {
                         Text(text = "Confirmar")
                     }
-                }
+
             },
 
 
-
-            /*dismissButton = {
-                TextButton(onClick = {
-                    onRechazar()
-                }) {Text(text = "Cancelar") }
-            },*/
             dismissButton = {
-                if(averia.presupuestoAceptado==null){
-                    TextButton(onClick = {onRechazar}) {Text(text = "Cancelar") }
-                }
+
+                    TextButton(onClick = { onRechazar() }) { Text(text = "Cancelar") }
+
             },
+
             title = { Text(text = "Detalle del presupuesto") }
 
         )

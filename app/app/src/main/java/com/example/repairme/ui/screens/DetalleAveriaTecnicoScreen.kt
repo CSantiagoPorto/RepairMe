@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,6 +38,8 @@ import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.LineaPresupuesto
 import com.example.repairme.data.repository.RepairRepository
+import androidx.compose.ui.graphics.Color
+import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
 
 
@@ -76,7 +79,7 @@ fun DetalleAveriaTecnicoScreen(
 
     Scaffold(topBar ={
         TopAppBar(title = {
-            Text("Detalle de la reparación",
+            Text("Presupuestar reparación",
                 color = naranjaLetras,
                 fontWeight = FontWeight.Bold)
         },
@@ -133,22 +136,29 @@ fun DetalleAveriaTecnicoScreen(
                             )
                         }
                         item {
-                            Button(onClick={
-                                var precioNumero= precioUnidad.toDoubleOrNull()?:0.0
-                                var cantidadNumero= cantidad.toDoubleOrNull()?:1.0
-                                val totalFila=precioNumero*cantidadNumero
-                                val lineaEscribir= LineaPresupuesto(
-                                    concepto=concepto,
-                                    cantidad=cantidadNumero.toInt(),
-                                    precioUnitario = precioNumero
-                                )
-                                lineas= lineas+lineaEscribir
-                                //Lineas está vacía de inicio, vamos sumando y limpiamos
-                                concepto = ""
-                                cantidad = ""
-                                precioUnidad = ""
+                            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Button(
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = naranjaLetras,
+                                        contentColor = Color.White
+                                    ),
+                                    onClick={
+                                    var precioNumero= precioUnidad.toDoubleOrNull()?:0.0
+                                    var cantidadNumero= cantidad.toDoubleOrNull()?:1.0
+                                    val totalFila=precioNumero*cantidadNumero
+                                    val lineaEscribir= LineaPresupuesto(
+                                        concepto=concepto,
+                                        cantidad=cantidadNumero.toInt(),
+                                        precioUnitario = precioNumero
+                                    )
+                                    lineas= lineas+lineaEscribir
+                                    //Lineas está vacía de inicio, vamos sumando y limpiamos
+                                    concepto = ""
+                                    cantidad = ""
+                                    precioUnidad = ""
 
-                            }){Text("Añadir")}
+                                }){Text("Añadir")}
+                            }
                         }
 
                         item {//Así la tabla tiene cabecera por si la queremos mudar de aquí
@@ -178,7 +188,13 @@ fun DetalleAveriaTecnicoScreen(
                         }
 
                         item {
-                            Button(onClick = {
+                            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Button(
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = naranjaLetras,
+                                    contentColor = Color.White
+                                ),
+                                onClick = {
                                  averia?.let {
                                     resultado->
                                      var averiaPresupuestada=averia!!.copy(
@@ -197,6 +213,7 @@ fun DetalleAveriaTecnicoScreen(
                                 }
                             }) {
                                 Text("Enviar presupuesto")
+                            }
                             }
                         }
 

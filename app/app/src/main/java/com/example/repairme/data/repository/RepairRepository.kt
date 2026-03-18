@@ -52,16 +52,21 @@ class RepairRepository : OperationsTemplateRepository() {
         val averiaRef= ref(NODE)
         //Quiero que me muestre primero las pendientes de asignar, así que hago una lista de estados
         val estado= listOf("Pendiente", "Asignada", "Presupuestada", "En reparación", "reparado")
-        averiaRef.orderByChild("estado").get().addOnSuccessListener {
-            snapshot->
-            for (child in snapshot.children){
-                val averia= child.getValue(Averia::class.java)
-                if(averia!=null){
-                    listaAverías.add(averia)
+        averiaRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val listaAverías = mutableListOf<Averia>()
+                for (child in snapshot.children) {
+                    val averia = child.getValue(Averia::class.java)
+                    if (averia != null) listaAverías.add(averia)
                 }
+                exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
             }
-            exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
-        }.addOnFailureListener{e->fallo("No se encontraron las averías")}
+            override fun onCancelled(error: DatabaseError) {
+                fallo(error.message)
+            }
+        })
+
+
     }
 
 

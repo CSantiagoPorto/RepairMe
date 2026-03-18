@@ -73,7 +73,7 @@ fun AdminScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    Text(text = "Reparaciones",
+                    Text(text = "Ver reparaciones",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Naranja
@@ -86,13 +86,14 @@ fun AdminScreen(
                     )
                 }
             }
+
            Card (onClick = {onVerTecnicos()}){ Row (modifier = Modifier
                .fillMaxWidth()
                .padding(20.dp),
                horizontalArrangement = Arrangement.SpaceBetween,
                verticalAlignment = Alignment.CenterVertically)
            {
-               Text(text = "Técnicos",
+               Text(text = "Asignar técnicos",
                    fontSize = 18.sp,
                    fontWeight = FontWeight.SemiBold,
                    color = Naranja
