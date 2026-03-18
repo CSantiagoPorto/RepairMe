@@ -24,6 +24,7 @@ import com.example.repairme.ui.screens.RepairsScreen
 import com.example.repairme.ui.screens.ProfileScreen
 import com.example.repairme.ui.screens.ServicesScreen
 import com.example.repairme.ui.screens.AdminServicesScreen
+import com.example.repairme.ui.screens.ClientesPantallaAdminScreen
 
 class AppNavigation {
 
@@ -83,7 +84,8 @@ class AppNavigation {
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
                     onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
-                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) }
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onVerClientes = {navController.navigate(Rutas.CLIENTES_ADMIN.ruta)}
                 )
             }
 
@@ -167,6 +169,13 @@ class AppNavigation {
                     onBack = { navController.popBackStack() }
                 )
             }
+
+            composable(Rutas.CLIENTES_ADMIN.ruta) {
+                ClientesPantallaAdminScreen(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
 
         }
     }
