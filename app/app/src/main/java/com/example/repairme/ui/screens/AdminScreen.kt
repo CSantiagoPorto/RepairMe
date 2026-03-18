@@ -58,7 +58,8 @@ fun AdminScreen(
         }//Cierra topBar
 
     ){ innerPadding->
-        Column ( modifier= Modifier.padding(innerPadding))
+        Column ( modifier= Modifier.padding(innerPadding).padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp))
         {
             Text("Bienvenido, Admin")
             Card(//Esta va a ser la car de reparaciones
@@ -93,7 +94,7 @@ fun AdminScreen(
                horizontalArrangement = Arrangement.SpaceBetween,
                verticalAlignment = Alignment.CenterVertically)
            {
-               Text(text = "Asignar técnicos",
+               Text(text = "Añadir técnicos",
                    fontSize = 18.sp,
                    fontWeight = FontWeight.SemiBold,
                    color = Naranja
