@@ -64,7 +64,8 @@ class AppNavigation {
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
-                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) }
+                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onLogOut = { navController.navigate(Rutas.LOGIN.ruta) }
                 )
             }
 
@@ -73,7 +74,8 @@ class AppNavigation {
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
-                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")}
+                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
+                    onLogOut = { navController.navigate(Rutas.LOGIN.ruta) }
 
                 )
             }
