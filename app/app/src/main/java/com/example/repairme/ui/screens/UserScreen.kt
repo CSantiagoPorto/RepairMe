@@ -46,6 +46,8 @@ import com.example.repairme.data.model.Equipo
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.data.repository.RepairRepository
+import com.example.repairme.ui.componentes.AppBottomBar
+import com.example.repairme.ui.componentes.NavigationItem
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.grisfondo
@@ -136,20 +138,43 @@ fun UserScreen(
                 )
             )
         },
-        bottomBar = {//RECUERDA PREGUNTARLES A LOS CHICOS SI ESTO LO HACEMOS COMPARTIBLE
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BottomNavButton(icon = Icons.Filled.Computer, label = "Mis equipos", color = Naranja, onClick = {})
-                BottomNavButton(icon = Icons.Filled.Build, label = "Mis reparaciones", color = Naranja, onClick = {})
-                BottomNavButton(icon = Icons.Filled.Notifications, label = "Mis notificaciones", color = Naranja, onClick = {})
-                BottomNavButton(icon = Icons.Filled.Person, label = "Mi Perfil", color = Naranja, onClick = {})
-            }
+        bottomBar = {
+            // USO DEL MOLDE: Implementamos AppBottomBar con los ítems del usuario
+            AppBottomBar(
+                items = listOf(
+                    NavigationItem(
+                        label = "Mis equipos",
+                        icon = Icons.Filled.Computer,
+                        onClick = { 
+                            equiposExpandido = !equiposExpandido 
+                            reparacionesExpandido = false
+                            presupuestosExpandido = false
+                        }
+                    ),
+                    NavigationItem(
+                        label = "Mis reparaciones",
+                        icon = Icons.Filled.Build,
+                        onClick = { 
+                            reparacionesExpandido = !reparacionesExpandido 
+                            equiposExpandido = false
+                            presupuestosExpandido = false
+                        }
+                    ),
+                    NavigationItem(
+                        label = "Mi Perfil",
+                        icon = Icons.Filled.Person,
+                        onClick = onIrPerfil
+                    )
+                ),
+                selectedIndex = when {
+                    equiposExpandido -> 0
+                    reparacionesExpandido -> 1
+                    else -> -1
+                },
+                onNotificationsClick = {
+                    // Añadir acción para el botón de notificaciones
+                }
+            )
         }
     ) { innerPadding ->
         Column(

@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.repository.RepairRepository
+import com.example.repairme.ui.componentes.AppBottomBar
+import com.example.repairme.ui.componentes.NavigationItem
 
 @Composable
 fun TecnicoScreen(
@@ -37,13 +39,10 @@ fun TecnicoScreen(
     var currentScreen by remember { mutableStateOf<String?>(null) }
     
     // 1. ESTADO COMPARTIDO: Elevamos la lista de averías a la pantalla principal.
-    // Al usar una única lista, cualquier cambio en una avería se reflejará en todas las sub-pantallas.
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     val repo = remember { RepairRepository() }
 
     // 2. SINCRONIZACIÓN EN TIEMPO REAL:
-    // 'obtenerAveriasTecnico' usa un listener de Firebase (ValueEventListener).
-    // Esto significa que si el estado cambia en la nube, 'listaAverias' se actualiza sola.
     LaunchedEffect(Unit) {
         if (!isPreview) {
             repo.obtenerAveriasTecnico(
@@ -51,7 +50,6 @@ fun TecnicoScreen(
                 exito = { averias -> listaAverias = averias }
             )
         } else {
-            // Datos de prueba para que el Preview no salga vacío
             listaAverias = listOf(
                 Averia(id = "1", equipoNombre = "Laptop Dell", estado = "En reparación", tituloAveria = "Pantalla rota"),
                 Averia(id = "2", equipoNombre = "iPhone 13", estado = "Reparado", tituloAveria = "Cambio batería")
@@ -59,76 +57,78 @@ fun TecnicoScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(grayBackground)
-    ) {
-        // Top Bar
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "ClearRepair",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = orangePrimary
+    Scaffold(
+        containerColor = grayBackground,
+        bottomBar = {
+            // 3. USO DEL MOLDE: Implementamos AppBottomBar con los ítems del técnico
+            // Aquí definimos los botones dinámicos y el de notificaciones es fijo por el molde.
+            AppBottomBar(
+                items = listOf(
+                    NavigationItem(
+                        label = "Reparar",
+                        icon = Icons.Filled.Build,
+                        onClick = { currentScreen = "repair" }
+                    ),
+                    NavigationItem(
+                        label = "Reparados",
+                        icon = Icons.Filled.Computer,
+                        onClick = { currentScreen = "repaired" }
+                    ),
+                    NavigationItem(
+                        label = "Perfil",
+                        icon = Icons.Filled.Person,
+                        onClick = onIrPerfil
+                    )
+                ),
+                selectedIndex = when(currentScreen) {
+                    "repair" -> 0
+                    "repaired" -> 1
+                    else -> -1
+                },
+                onNotificationsClick = {
+                    // Acción para el botón de notificaciones (fijo en el molde)
+                }
             )
         }
-
-        // 3. NAVEGACIÓN Y FILTRADO:
-        // Dependiendo de la pantalla, pasamos la lista filtrada.
-        // El "salto automático" ocurre porque al cambiar el estado, el filtro deja de incluir ese item.
-        when (currentScreen) {
-            "repair" -> RepairListScreen(
-                listaAverias = listaAverias,
-                repo = repo,
-                orangePrimary = orangePrimary,
-                onBack = { currentScreen = null },
-                onAveriaClick = onAveriaClick
-            )
-            "repaired" -> RepairedListScreen(
-                listaAverias = listaAverias,
-                orangePrimary = orangePrimary,
-                onBack = { currentScreen = null },
-                onAveriaClick = onAveriaClick
-            )
-            else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Barra de navegación inferior
-        Row(
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            BottomNavButton(
-                icon = Icons.Filled.Build,
-                label = "Reparar",
-                color = if (currentScreen == "repair") orangePrimary else Color.Gray,
-                onClick = { currentScreen = "repair" }
-            )
-            BottomNavButton(
-                icon = Icons.Filled.Computer,
-                label = "Reparados",
-                color = if (currentScreen == "repaired") orangePrimary else Color.Gray,
-                onClick = { currentScreen = "repaired" }
-            )
-            BottomNavButton(
-                icon = Icons.Filled.Person,
-                label = "Perfil",
-                color = Color.Gray,
-                onClick = onIrPerfil
-            )
+            // Top Bar
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "ClearRepair",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = orangePrimary
+                )
+            }
+
+            // 4. NAVEGACIÓN Y FILTRADO:
+            when (currentScreen) {
+                "repair" -> RepairListScreen(
+                    listaAverias = listaAverias,
+                    repo = repo,
+                    orangePrimary = orangePrimary,
+                    onBack = { currentScreen = null },
+                    onAveriaClick = onAveriaClick
+                )
+                "repaired" -> RepairedListScreen(
+                    listaAverias = listaAverias,
+                    orangePrimary = orangePrimary,
+                    onBack = { currentScreen = null },
+                    onAveriaClick = onAveriaClick
+                )
+                else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
+            }
         }
     }
 }
@@ -196,33 +196,6 @@ fun CardItem(
 }
 
 @Composable
-fun BottomNavButton(
-    icon: ImageVector,
-    label: String,
-    color: Color,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick() }
-            .padding(8.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = color,
-            modifier = Modifier.size(28.dp)
-        )
-        Text(
-            text = label,
-            fontSize = 10.sp,
-            color = color
-        )
-    }
-}
-
-@Composable
 fun RepairListScreen(
     listaAverias: List<Averia>,
     repo: RepairRepository,
@@ -252,8 +225,7 @@ fun RepairListScreen(
             modifier = Modifier.padding(vertical = 12.dp)
         )
         
-        // 4. FILTRADO PARA SECCIÓN "REPARAR":
-        // Excluimos las averías que ya están marcadas como "Reparado".
+        // FILTRADO PARA SECCIÓN "REPARAR":
         val enReparacion = listaAverias.filter { it.estado != "Reparado" }
 
         if (enReparacion.isEmpty()) {
@@ -268,9 +240,6 @@ fun RepairListScreen(
                         currentState = averia.estado,
                         orangePrimary = orangePrimary,
                         onStateChange = { newState ->
-                            // 5. CAMBIO DE ESTADO: 
-                            // Al actualizar en Firebase, el listener de la pantalla principal 
-                            // detectará el cambio y moverá la avería automáticamente a "Reparados".
                             val averiaActualizada = averia.copy(estado = newState)
                             repo.editarAveria(
                                 averiaEditada = averiaActualizada,
@@ -315,8 +284,7 @@ fun RepairedListScreen(
             modifier = Modifier.padding(vertical = 12.dp)
         )
 
-        // 6. FILTRADO PARA SECCIÓN "REPARADOS":
-        // Aquí solo mostramos lo que tenga el estado exactamente como "Reparado".
+        // FILTRADO PARA SECCIÓN "REPARADOS":
         val reparados = listaAverias.filter { it.estado == "Reparado" }
 
         if (reparados.isEmpty()) {
