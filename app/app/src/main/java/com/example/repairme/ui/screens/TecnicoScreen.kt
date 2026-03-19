@@ -1,53 +1,69 @@
-package com.example.repairme.ui.screens.auth
+package com.example.repairme.ui.screens
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Computer
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.repository.RepairRepository
-import androidx.compose.foundation.lazy.items
-
 
 @Composable
 fun TecnicoScreen(
     onAddEquipo: () -> Unit = {},
-    onAveriaClick: (String) -> Unit={},
+    onAveriaClick: (String) -> Unit = {},
     onIrPerfil: () -> Unit = {}
-
 ) {
     val orangePrimary = Color(0xFFE67E22)
     val grayBackground = Color(0xFFF5F5F5)
+    val isPreview = LocalInspectionMode.current
 
     var currentScreen by remember { mutableStateOf<String?>(null) }
+    
+    // 1. ESTADO COMPARTIDO: Elevamos la lista de averías a la pantalla principal.
+    // Al usar una única lista, cualquier cambio en una avería se reflejará en todas las sub-pantallas.
+    var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
+    val repo = remember { RepairRepository() }
 
-
+    // 2. SINCRONIZACIÓN EN TIEMPO REAL:
+    // 'obtenerAveriasTecnico' usa un listener de Firebase (ValueEventListener).
+    // Esto significa que si el estado cambia en la nube, 'listaAverias' se actualiza sola.
+    LaunchedEffect(Unit) {
+        if (!isPreview) {
+            repo.obtenerAveriasTecnico(
+                fallo = {},
+                exito = { averias -> listaAverias = averias }
+            )
+        } else {
+            // Datos de prueba para que el Preview no salga vacío
+            listaAverias = listOf(
+                Averia(id = "1", equipoNombre = "Laptop Dell", estado = "En reparación", tituloAveria = "Pantalla rota"),
+                Averia(id = "2", equipoNombre = "iPhone 13", estado = "Reparado", tituloAveria = "Cambio batería")
+            )
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(grayBackground)) {
+            .background(grayBackground)
+    ) {
         // Top Bar
         Box(
             modifier = Modifier
@@ -64,16 +80,29 @@ fun TecnicoScreen(
             )
         }
 
-        // Main Content
+        // 3. NAVEGACIÓN Y FILTRADO:
+        // Dependiendo de la pantalla, pasamos la lista filtrada.
+        // El "salto automático" ocurre porque al cambiar el estado, el filtro deja de incluir ese item.
         when (currentScreen) {
-            "repair" -> RepairListScreen(orangePrimary= orangePrimary, onBack =  { currentScreen = null }, onAveriaClick=onAveriaClick)
-            "repaired" -> RepairedListScreen(orangePrimary=orangePrimary, onBack =  { currentScreen = null }, onAveriaClick={})
+            "repair" -> RepairListScreen(
+                listaAverias = listaAverias,
+                repo = repo,
+                orangePrimary = orangePrimary,
+                onBack = { currentScreen = null },
+                onAveriaClick = onAveriaClick
+            )
+            "repaired" -> RepairedListScreen(
+                listaAverias = listaAverias,
+                orangePrimary = orangePrimary,
+                onBack = { currentScreen = null },
+                onAveriaClick = onAveriaClick
+            )
             else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Bottom Navigation Bar
+        // Barra de navegación inferior
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,20 +114,20 @@ fun TecnicoScreen(
             BottomNavButton(
                 icon = Icons.Filled.Build,
                 label = "Reparar",
-                color = orangePrimary,
+                color = if (currentScreen == "repair") orangePrimary else Color.Gray,
                 onClick = { currentScreen = "repair" }
             )
             BottomNavButton(
                 icon = Icons.Filled.Computer,
                 label = "Reparados",
-                color = orangePrimary,
+                color = if (currentScreen == "repaired") orangePrimary else Color.Gray,
                 onClick = { currentScreen = "repaired" }
             )
             BottomNavButton(
                 icon = Icons.Filled.Person,
                 label = "Perfil",
-                color = orangePrimary,
-                onClick = { }
+                color = Color.Gray,
+                onClick = onIrPerfil
             )
         }
     }
@@ -112,7 +141,6 @@ fun HomeContent(orangePrimary: Color, onCardClick: (String) -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Card 1: Equipos en reparación
         CardItem(
             title = "Equipos en\nreparación",
             icon = Icons.Filled.Build,
@@ -120,10 +148,9 @@ fun HomeContent(orangePrimary: Color, onCardClick: (String) -> Unit) {
             onClick = { onCardClick("repair") }
         )
 
-        // Card 2: Equipos reparados
         CardItem(
             title = "Equipos\nreparados",
-            icon = Icons.Filled.Computer, //cambiar el icono de este
+            icon = Icons.Filled.Computer,
             accentColor = orangePrimary,
             onClick = { onCardClick("repaired") }
         )
@@ -142,8 +169,8 @@ fun CardItem(
             .fillMaxWidth()
             .height(120.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp), // Añadir background redondeado y elevation 4,dp?
-
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
@@ -196,18 +223,13 @@ fun BottomNavButton(
 }
 
 @Composable
-fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (String) -> Unit) {
-    val equipmentStates = remember { mutableStateOf(List(10) { "Esperando confirmación" }) }
-    var listaAverias by remember{mutableStateOf(listOf<Averia>()) }
-    var repo= remember { RepairRepository() }
-    LaunchedEffect(Unit) {
-        repo.obtenerAveriasTecnico(
-            fallo = {},
-            exito = {averias->listaAverias=averias}
-            //La lambda me trae el dato de fb,
-        )
-    }
-
+fun RepairListScreen(
+    listaAverias: List<Averia>,
+    repo: RepairRepository,
+    orangePrimary: Color,
+    onBack: () -> Unit,
+    onAveriaClick: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -229,31 +251,48 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit,onAveriaClick: (St
             color = orangePrimary,
             modifier = Modifier.padding(vertical = 12.dp)
         )
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(listaAverias) { averia ->
-                RepairItem(
-                    title = "Equipo ${averia.equipoNombre}",
-                    currentState = averia.estado,
-                    orangePrimary = orangePrimary,
-                    onStateChange = { newState ->
-                        // 1. Creamos el objeto actualizado
-                        val averiaActualizada = averia.copy(estado = newState)
-                        // 2. Lo enviamos a firebase
-                        repo.editarAveria(
-                            averiaEditada = averiaActualizada,
-                            exito = {/* Se refresca solo por el listener*/},
-                            fallo = {}
-                        )
-                    },
-                    onAveriaClick = {onAveriaClick(averia.id)}
-                )
+        
+        // 4. FILTRADO PARA SECCIÓN "REPARAR":
+        // Excluimos las averías que ya están marcadas como "Reparado".
+        val enReparacion = listaAverias.filter { it.estado != "Reparado" }
+
+        if (enReparacion.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No hay equipos en reparación", color = Color.Gray)
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(enReparacion) { averia ->
+                    RepairItem(
+                        title = "Equipo ${averia.equipoNombre}",
+                        currentState = averia.estado,
+                        orangePrimary = orangePrimary,
+                        onStateChange = { newState ->
+                            // 5. CAMBIO DE ESTADO: 
+                            // Al actualizar en Firebase, el listener de la pantalla principal 
+                            // detectará el cambio y moverá la avería automáticamente a "Reparados".
+                            val averiaActualizada = averia.copy(estado = newState)
+                            repo.editarAveria(
+                                averiaEditada = averiaActualizada,
+                                exito = {},
+                                fallo = {}
+                            )
+                        },
+                        onAveriaClick = { onAveriaClick(averia.id) }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:()-> Unit) {
+fun RepairedListScreen(
+    listaAverias: List<Averia>,
+    orangePrimary: Color,
+    onBack: () -> Unit,
+    onAveriaClick: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -275,20 +314,52 @@ fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick:(
             color = orangePrimary,
             modifier = Modifier.padding(vertical = 12.dp)
         )
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(10) { index ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { onAveriaClick("ID_$index") },
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text(
-                        text = "Equipo reparado ${index + 1}",
-                        modifier = Modifier.padding(16.dp),
-                        fontSize = 14.sp
-                    )
+
+        // 6. FILTRADO PARA SECCIÓN "REPARADOS":
+        // Aquí solo mostramos lo que tenga el estado exactamente como "Reparado".
+        val reparados = listaAverias.filter { it.estado == "Reparado" }
+
+        if (reparados.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No hay equipos reparados todavía", color = Color.Gray)
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(reparados) { averia ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .clickable { onAveriaClick(averia.id) },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = averia.equipoNombre,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = averia.tituloAveria,
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                            Text(
+                                text = "Completado",
+                                fontSize = 12.sp,
+                                color = Color(0xFF4CAF50),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -301,7 +372,7 @@ fun RepairItem(
     currentState: String = "Esperando confirmación",
     orangePrimary: Color = Color(0xFFE67E22),
     onStateChange: (String) -> Unit = {},
-    onAveriaClick: () -> Unit={}
+    onAveriaClick: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
     val states = listOf(
@@ -309,7 +380,6 @@ fun RepairItem(
         "En reparación",
         "Reparado"
     )
-    // El boton cambia a verde si el estado es reparado
     val buttonColor = if (currentState == "Reparado") {
         Color(0xFF4CAF50) // Verde
     } else {
@@ -321,7 +391,9 @@ fun RepairItem(
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(8.dp),
-        onClick = {onAveriaClick()}
+        onClick = { onAveriaClick() },
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -342,7 +414,8 @@ fun RepairItem(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = buttonColor
                     ),
-                    modifier = Modifier.height(36.dp)
+                    modifier = Modifier.height(36.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp)
                 ) {
                     Text(
                         text = currentState,
@@ -359,7 +432,6 @@ fun RepairItem(
                         DropdownMenuItem(
                             text = { Text(state) },
                             onClick = {
-                                // Aqui llamamos a la funcion que actualiza el Firebase
                                 onStateChange(state)
                                 expanded = false
                             }
@@ -373,11 +445,8 @@ fun RepairItem(
 
 @Preview(showSystemUi = true)
 @Composable
-fun TecnicoScreenPreview(
-    onAddEquipo: () -> Unit = {},
-
-    onAveriaClick: (String) -> Unit = {}
-
-) {
-    TecnicoScreen()
+fun TecnicoScreenPreview() {
+    MaterialTheme {
+        TecnicoScreen()
+    }
 }

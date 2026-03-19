@@ -44,11 +44,8 @@ import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Equipo
 import com.example.repairme.data.model.EstadoAveria
-import com.example.repairme.data.model.LineaPresupuesto
-import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.data.repository.RepairRepository
-import com.example.repairme.ui.screens.auth.BottomNavButton
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.grisfondo
