@@ -9,7 +9,8 @@ import com.google.firebase.database.ValueEventListener
 
 class TecnicoRepository: OperationsTemplateRepository() {
 
-    private val auth = FirebaseAuth.getInstance()
+    // Usamos bylzay para que se conecte a la base de datos cuando sea necesario
+    private val auth by lazy { FirebaseAuth.getInstance() }
     private val NODE = "users"
 
     //Necesitamos grabar un equipo. Cada equipo tiene que ir vinculado a un id de usuario

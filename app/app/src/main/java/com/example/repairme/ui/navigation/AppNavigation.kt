@@ -9,14 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.repairme.data.repository.DeviceRepository
-import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.RegisterTecnicoScreen
 import com.example.repairme.ui.screens.TestCrudScreen
 import com.example.repairme.ui.screens.UserScreen
-import com.example.repairme.ui.screens.auth.TecnicoScreen
-import com.example.repairme.ui.screens.auth.LoginScreen
+import com.example.repairme.ui.screens.TecnicoScreen
 import com.example.repairme.ui.screens.AdminScreen
 import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
 import com.example.repairme.ui.screens.DetalleReparacionesFinalizadas
@@ -25,6 +23,8 @@ import com.example.repairme.ui.screens.ProfileScreen
 import com.example.repairme.ui.screens.ServicesScreen
 import com.example.repairme.ui.screens.AdminServicesScreen
 import com.example.repairme.ui.screens.ClientesPantallaAdminScreen
+import com.example.repairme.ui.screens.LoginScreen
+import com.google.firebase.auth.FirebaseAuth
 
 class AppNavigation {
 
@@ -64,7 +64,13 @@ class AppNavigation {
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
-                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) }
+                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) {
+                            popUpTo(0)
+                        }
+                    }
                 )
             }
 
@@ -73,14 +79,25 @@ class AppNavigation {
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
-                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")}
+                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) {
+                            popUpTo(0)
+                        }
+                    }
 
                 )
             }
 
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(
-                    onLogOut = { navController.navigate(Rutas.LOGIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) {
+                            popUpTo(0)
+                        }
+                    },
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
                     onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },

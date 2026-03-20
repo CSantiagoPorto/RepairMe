@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.repairme.R
 import com.example.repairme.data.model.Usuario
@@ -39,6 +40,7 @@ import com.example.repairme.ui.theme.naranjaLetras
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import androidx.compose.material3.OutlinedTextField
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
