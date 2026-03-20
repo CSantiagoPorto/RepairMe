@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens.auth
+package com.example.repairme.ui.screens
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column

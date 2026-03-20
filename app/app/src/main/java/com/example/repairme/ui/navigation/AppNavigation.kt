@@ -9,14 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.repairme.data.repository.DeviceRepository
-import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.screens.AddEquipoScreen
 import com.example.repairme.ui.screens.RegisterScreen
 import com.example.repairme.ui.screens.RegisterTecnicoScreen
 import com.example.repairme.ui.screens.TestCrudScreen
 import com.example.repairme.ui.screens.UserScreen
-import com.example.repairme.ui.screens.auth.TecnicoScreen
-import com.example.repairme.ui.screens.auth.LoginScreen
+import com.example.repairme.ui.screens.TecnicoScreen
 import com.example.repairme.ui.screens.AdminScreen
 import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
 import com.example.repairme.ui.screens.DetalleReparacionesFinalizadas
@@ -25,6 +23,7 @@ import com.example.repairme.ui.screens.ProfileScreen
 import com.example.repairme.ui.screens.ServicesScreen
 import com.example.repairme.ui.screens.AdminServicesScreen
 import com.example.repairme.ui.screens.ClientesPantallaAdminScreen
+import com.example.repairme.ui.screens.LoginScreen
 import com.google.firebase.auth.FirebaseAuth
 
 class AppNavigation {
