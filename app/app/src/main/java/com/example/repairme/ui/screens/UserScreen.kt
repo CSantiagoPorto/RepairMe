@@ -93,11 +93,7 @@ fun UserScreen(
                     onVolver()
                 },
                 exito = { averias ->
-                    listaPresupuestadas = averias.filter {
-                        it.estado == EstadoAveria.Presupuestada.name||
-                                it.estado == EstadoAveria.EnReparacion.name||
-                                it.estado == EstadoAveria.Declinada.name
-                    }
+                    listaPresupuestadas = averias
                 }
             )
         }
@@ -261,11 +257,11 @@ fun UserScreen(
     }
     //Termina Scaffold
     @Composable
-    fun DialogoPresupuestos(averia: Averia, onRechazar:()->Unit, onAceptar:()-> Unit){
+    fun DialogoPresupuestos(averia: Averia, onCerrar:()->Unit, onRechazar:()->Unit, onAceptar:()-> Unit){
         Log.d("DEBUG_DIALOG", "estado: ${averia.estado}, presupuestoAceptado: ${averia.presupuestoAceptado}")
 
 
-        AlertDialog(onDismissRequest = {onRechazar()},
+        AlertDialog(onDismissRequest = {onCerrar()},
             text = {Column() {
                 averia.lineasPresupuesto.forEach {
                     linea->
@@ -282,18 +278,16 @@ fun UserScreen(
             }},
 
             confirmButton = {
-
+                if (averia.estado == EstadoAveria.Presupuestada.name) {
                     TextButton(onClick = { onAceptar() }) {
                         Text(text = "Confirmar")
                     }
-
+                }
             },
-
-
             dismissButton = {
-
+                if (averia.estado == EstadoAveria.Presupuestada.name) {
                     TextButton(onClick = { onRechazar() }) { Text(text = "Cancelar") }
-
+                }
             },
 
             title = { Text(text = "Detalle del presupuesto") }
@@ -305,10 +299,11 @@ fun UserScreen(
         averia ->
         DialogoPresupuestos(
             averia=averia,
+            onCerrar = { dialogoAveria = null },
             onRechazar = {
                 repo.editarAveria(
                     averiaEditada = averia.copy(
-                        presupuestoAceptado = true,
+                        presupuestoAceptado = false,
                         estado= EstadoAveria.Declinada.name
                 ),
                     exito = {
