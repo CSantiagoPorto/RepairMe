@@ -136,9 +136,12 @@ fun UserScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
+            // Test Crud card para testing
+            /*
             TextButton(onClick = { onGoToTestCrud() }) {
                 Text("TEST CRUD (dev)", color = Naranja)
             }
+            */
 
             // Card de Equipos
             UserCard(

@@ -1,5 +1,3 @@
-
-
 package com.example.repairme.ui.screens
 
 import android.widget.Toast
@@ -43,8 +41,6 @@ fun RegisterTecnicoScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var pass by rememberSaveable { mutableStateOf("") }
     var nombre by rememberSaveable { mutableStateOf("") }
-    var apellidos by rememberSaveable { mutableStateOf("") }
-
 
     // Variables para decir si OK o error
     var error by rememberSaveable { mutableStateOf<String?>(null) }
@@ -63,8 +59,7 @@ fun RegisterTecnicoScreen(
             return false
         }
         if (
-            nombre.trim().isEmpty() ||
-            apellidos.trim().isEmpty()
+            nombre.trim().isEmpty()
         ) {
             error = "Rellena todos los campos"
             return false
@@ -102,17 +97,6 @@ fun RegisterTecnicoScreen(
                 error = null
             },
             label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Apellidos
-        OutlinedTextField(
-            value = apellidos,
-            onValueChange = {
-                apellidos = it
-                error = null
-            },
-            label = { Text("Apellidos") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -162,13 +146,13 @@ fun RegisterTecnicoScreen(
                         email = email.trim(),
                         password = pass.trim(),
                         nombre = nombre.trim(),
-                        apellidos = apellidos.trim(),
+                        apellidos = "", // Empty porque Tecnico no tiene apellidos en su model
                         telefono = "", // Empty for tecnico
                         direccion = "", // Empty for tecnico
                         codigoPostal = "", // Empty for tecnico
                         localidad = "", // Empty for tecnico
                         dni = "", // Empty for tecnico
-                        role = "tecnico", // Set role to tecnico
+                        role = "tecnico", // Set role to TECNICO para que coincida con el model
                         creadoOK = {
                             ok = false
                             Toast.makeText(context, "Técnico creado", Toast.LENGTH_LONG).show()

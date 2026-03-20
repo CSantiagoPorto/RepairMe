@@ -313,9 +313,7 @@ fun PerfilTecnico(
         ) {
             Text("Perfil de técnico")
             DatoPerfil("Nombre", usuario.name)
-            DatoPerfil("Apellidos", usuario.apellidos)
             DatoPerfil("Email", usuario.email)
-            DatoPerfil("Teléfono", usuario.phone)
             DatoPerfil("Rol", usuario.role)
         }
     }
