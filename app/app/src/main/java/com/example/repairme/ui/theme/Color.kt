@@ -1,6 +1,8 @@
 package com.example.repairme.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import com.example.repairme.data.model.EstadoAveria
+import com.example.repairme.data.model.Averia
 
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -17,3 +19,13 @@ val GrisFondoPantalla = Color(0xFFD8D8D8)
 val naranjaLetras= Color(0xFFfc8138 )
 val grisfondo=Color(0xFFE5E5E5)
 val botonNaranja = Color(0xFFC58B4A)
+
+//Colores para los estados de las averías
+
+val ColorEstadoPendiente = Color(0xFFFFF9C4)
+val ColorEstadoAsignada = Color(0xFFBBDEFB)
+val ColorEstadoPresupuestada = Color(0xFFFFE0B2)
+val ColorEstadoEnReparacion = Color(0xFFB2DFDB)
+val ColorEstadoListaParaRecoger = Color(0xFFC8E6C9)
+val ColorEstadoDeclinada = Color(0xFFFFCDD2)
+
