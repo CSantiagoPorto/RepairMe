@@ -14,9 +14,7 @@ skinparam class {
 }
 
 
-' ───────────────────────────
-' MODELOS
-' ───────────────────────────
+
 
 package "model" #D6EAF8 {
 
@@ -88,9 +86,6 @@ package "model" #D6EAF8 {
 }
 
 
-' ───────────────────────────
-' REPOSITORIOS
-' ───────────────────────────
 
 package "repository" #D5F5E3 {
 
@@ -154,9 +149,7 @@ package "repository" #D5F5E3 {
 }
 
 
-' ───────────────────────────
-' NAVEGACIÓN
-' ───────────────────────────
+
 
 package "ui.navigation" #FDEBD0 {
 
@@ -186,9 +179,7 @@ package "ui.navigation" #FDEBD0 {
 }
 
 
-' ───────────────────────────
-' PANTALLAS
-' ───────────────────────────
+
 
 package "ui.screens" #FDEBD0 {
 

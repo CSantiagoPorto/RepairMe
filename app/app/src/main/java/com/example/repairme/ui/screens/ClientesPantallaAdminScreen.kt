@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -19,8 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.repairme.data.model.Averia
+import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.UserRepository
+import com.example.repairme.ui.theme.ColorEstadoAsignada
+import com.example.repairme.ui.theme.ColorEstadoDeclinada
+import com.example.repairme.ui.theme.ColorEstadoEnReparacion
+import com.example.repairme.ui.theme.ColorEstadoListaParaRecoger
+import com.example.repairme.ui.theme.ColorEstadoPendiente
+import com.example.repairme.ui.theme.ColorEstadoPresupuestada
+import com.example.repairme.ui.theme.GrisFondoPantalla
+import com.example.repairme.ui.theme.naranjaLetras
 
 @Composable
 fun ClientesPantallaAdminScreen(
@@ -82,11 +94,42 @@ fun ClientesPantallaAdminScreen(
                            Text("${cliente.name} ${cliente.apellidos}", fontWeight = FontWeight.Bold)
                            Text(cliente.email)
                            if (expandedClienteId == cliente.id){
-                               reparaciones.forEach { averia ->
-                                   Text("${averia.tituloAveria}----- ${averia.estado}")
+                               HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
 
-                               }
+                               if(reparaciones.isNotEmpty()){
+                                       reparaciones.forEach { averia ->
+                                           val colorEstado = when (averia.estado) {
+                                               EstadoAveria.Pendiente.name -> ColorEstadoPendiente
+                                               EstadoAveria.Asignada.name -> ColorEstadoAsignada
+                                               EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
+                                               EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion
+                                               EstadoAveria.ListaParaRecoger.name -> ColorEstadoListaParaRecoger
+                                               EstadoAveria.Declinada.name -> ColorEstadoDeclinada
+                                               else -> GrisFondoPantalla
+                                           }
+
+                                           Surface(
+                                               modifier = Modifier
+                                                   .fillMaxWidth()
+                                                   .padding(vertical = 3.dp),
+                                               color = colorEstado,
+                                               shape = RoundedCornerShape(9.dp)
+                                           ) {
+                                               Column(
+                                                   modifier = Modifier.padding(9.dp)
+                                               ) {Text(averia.tituloAveria, fontWeight = FontWeight.Bold)
+                                               Text(averia.estado, color = naranjaLetras)}
+
+                                           }
+                                       }
+
+                                   }else{
+                                       Text("No hay reparaciones que mostrar")
+                                   }
+
+
+
                                }
 
                        }
