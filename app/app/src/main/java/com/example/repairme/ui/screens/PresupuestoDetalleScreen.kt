@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,15 +33,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import com.example.repairme.data.model.Averia
+import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.naranjaLetras
+import com.example.repairme.utils.generarPdf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +53,8 @@ fun PresupuestoDetalleScreen(
     averiaId: String,
     onVolver: () -> Unit
 ){
+    //Para los pdfs necesito esta variable para abrir el directorio
+    var context= LocalContext.current
     var error by remember { mutableStateOf<String?>(null) }
 
     //Voy a necesitar métodos de dos repos usuarios y de repairs
@@ -159,7 +167,7 @@ fun PresupuestoDetalleScreen(
 
                         }
                         item {
-                            Card() {
+                            Card(modifier = Modifier.fillMaxWidth()) {
                                 Column() {
                                     Text(text = "Datos de la avería", fontWeight = FontWeight.Bold, color = naranjaLetras )
                                     averia!!.lineasPresupuesto.forEach{
@@ -169,33 +177,114 @@ fun PresupuestoDetalleScreen(
                                             Text("${linea.cantidad * linea.precioUnitario} €")
 
                                         }
+
                                     }
+                                    val subtotal = averia!!.lineasPresupuesto.sumOf { it.cantidad * it.precioUnitario }
+                                    val iva = subtotal * 0.21
+                                    Text("Subtotal: $subtotal €")
+                                    Text("IVA: $iva €")
+                                    Text("Total: ${subtotal + iva} €")
 
                                 }
                             }
                         }
 
 
+
+
                         item {
+                            if (averia?.estado == EstadoAveria.Presupuestada.name) {
+
                             Row(modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center) {
-                                Button(onClick = {
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                                TextButton(onClick = {
+                                    repairRepo.editarAveria(
+                                        averiaEditada = averia!!.copy(
+                                            presupuestoAceptado = true,
+                                            estado = EstadoAveria.EnReparacion.name
+                                        ),
+                                        exito = {
+                                            onVolver()
+
+
+                                        },
+                                        fallo = {
+                                            //ACUERDATE DE PONER MENSAJE
+                                        }
+                                    )
 
                                 },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Naranja,
                                         contentColor = Color.White
                                     )
-
-                                ) {
-                                    Text("Generar presupuesto en pdf")
+                                    ) {
+                                    Text(text = "Aceptar")
                                 }
+                                TextButton(onClick = {
+                                    repairRepo.editarAveria(
+                                        averiaEditada = averia!!.copy(
+                                            presupuestoAceptado = true,
+                                            estado = EstadoAveria.Declinada.name
+                                        ),
+                                        exito = {
+
+
+                                        },
+                                        fallo = {}
+                                    )
+
+                                },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Naranja,
+                                        contentColor = Color.White
+                                    )
+                                    ) {
+                                    Text(text = "Rechazar")
+                                }
+
+
+
+
                             }
                         }
-
-                        item {
-                            //Aquí van a ir los botones
                         }
+                       if(averia?.presupuestoAceptado==true){
+                           item {
+                               Row(modifier = Modifier.fillMaxWidth(),
+                                   horizontalArrangement = Arrangement.Center) {
+                                   Button(onClick = {
+                                       val archivo= generarPdf(
+                                           context=context,
+                                           averia=averia!!,
+                                           cliente=cliente!!,
+                                           tecnico=tecnico!!
+                                       )
+                                       val uri = FileProvider.getUriForFile(
+                                           context,
+                                           "${context.packageName}.provider",
+                                           archivo
+                                       )
+                                       val intent = Intent(Intent.ACTION_VIEW).apply {
+                                           setDataAndType(uri, "application/pdf")
+                                           addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                       }
+                                       context.startActivity(intent)
+
+
+                                   },
+                                       colors = ButtonDefaults.buttonColors(
+                                           containerColor = Naranja,
+                                           contentColor = Color.White
+                                       )
+
+                                   ) {
+                                       Text("Generar presupuesto en pdf")
+                                   }
+                               }
+                           }
+                       }
 
 
 
