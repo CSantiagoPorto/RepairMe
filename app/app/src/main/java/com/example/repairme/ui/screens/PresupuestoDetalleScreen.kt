@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -82,6 +83,7 @@ fun PresupuestoDetalleScreen(
     }
 
     LaunchedEffect(Unit) {
+        Log.d("PRESU_DETALLE DEVUELTA",": $averiaId")
         cargarAveriaUserTecnico()
     }
     Scaffold(containerColor = GrisFondoPantalla,topBar ={
@@ -106,9 +108,10 @@ fun PresupuestoDetalleScreen(
             when {
                 cargando -> CircularProgressIndicator()
                 error != null -> Text(
-                    text = "Error: $error",
+                    text = "Error: $error\nID recibido: '$averiaId'",
                     color = MaterialTheme.colorScheme.error
                 )
+
 
                 averiaId.isEmpty() -> Text("No  existe la avería")
                 else -> {
@@ -158,6 +161,7 @@ fun PresupuestoDetalleScreen(
                         item {
                             Card() {
                                 Column() {
+                                    Text(text = "Datos de la avería", fontWeight = FontWeight.Bold, color = naranjaLetras )
                                     averia!!.lineasPresupuesto.forEach{
                                         linea->
                                         Row() {

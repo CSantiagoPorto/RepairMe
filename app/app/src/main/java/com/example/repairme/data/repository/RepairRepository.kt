@@ -91,7 +91,9 @@ class RepairRepository : OperationsTemplateRepository() {
                    for(child in snapshot.children){
                        val averia= child.getValue(Averia::class.java)
                        if(averia!=null){
-                           listaAverías.add(averia)
+                           val averiaConId = if (averia.id.isEmpty()) averia.copy(id = child.key ?: "") else averia
+                           listaAverías.add(averiaConId)
+
                        }
                    }
                     Log.d("TESTCRUD", "lista final: ${listaAverías.size}")
@@ -113,12 +115,16 @@ class RepairRepository : OperationsTemplateRepository() {
 
         val averiaRef= ref("$NODE/$averiaId")
 
-       averiaRef.get().addOnSuccessListener {
-           snapshot ->
-           val averia= snapshot.getValue(Averia::class.java)
-           if(averia!=null){exito(averia)}
-           else fallo("Avería no encontrada")
-       }.addOnFailureListener {
+        averiaRef.get().addOnSuccessListener { snapshot ->
+            if (!snapshot.exists()) {
+                fallo("Nodo no existe. ID buscado: '$averiaId'")
+                return@addOnSuccessListener
+            }
+            val averia = snapshot.getValue(Averia::class.java)
+            if(averia != null){ exito(averia) }
+            else fallo("El nodo existe pero no se pudo deserializar")
+        }
+            .addOnFailureListener {
            e->fallo("Algo pasó ")
        }
 

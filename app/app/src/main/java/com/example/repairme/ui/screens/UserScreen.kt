@@ -231,11 +231,12 @@ fun UserScreen(
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         listaPresupuestadas.forEach { averia ->
+                            Log.d("LISTA_PRESU", "id: ${averia.id}, estado: ${averia.estado}")
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
-                                    .clickable { dialogoAveria = averia },
+                                    .padding(8.dp),
+                                    //.clickable { dialogoAveria = averia },
                                 shape = RoundedCornerShape(9.dp),
                                 border = BorderStroke(1.dp, Naranja)
                             ) {
@@ -246,10 +247,11 @@ fun UserScreen(
                                 )
                                     Text(text = averia.estado)
                                     if(averia.estado== EstadoAveria.Presupuestada.name){
-                                        TextButton(onClick = {onVerPresupuestos(averia)}) {
+                                        TextButton(onClick = { Log.d("AVERIA_ID", "id: ${averia.id}")
+                                            onVerPresupuestos(averia)}) {
                                             Text("Ver presupuesto")
                                         }
-                                        //Si esto sale bien me va a ostrar el botón sólo si el estado es presupuestado
+                                        //Si esto sale bien me va a mostrar el botón sólo si el estado es presupuestado
                                     }
 
                                 }
