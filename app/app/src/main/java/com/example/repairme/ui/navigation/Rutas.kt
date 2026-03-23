@@ -20,6 +20,10 @@ sealed class Rutas (val ruta:String) {
 
     data object SERVICES_ADMIN : Rutas("services_admin")
     data object CLIENTES_ADMIN : Rutas("clientesPantallaAdmin")
+    data object DETALLE_PRESUPUESTO : Rutas("detallePresuCliente/{averiaId}")//Esta es la nueva ruta para
+    //que ek cliente vea los presupuestos. Si está sin aceptar le sale con botones
+    //La clase contiene el botón para generar el pdf. Este archivo cuando funcione lo clonamos para
+    //que reutilizar en las facturas
 
 }
 

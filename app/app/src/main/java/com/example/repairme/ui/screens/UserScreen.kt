@@ -239,17 +239,23 @@ fun UserScreen(
                                 shape = RoundedCornerShape(9.dp),
                                 border = BorderStroke(1.dp, Naranja)
                             ) {
-                                Text(
-                                    text = "${averia.equipoNombre} ${averia.tituloAveria}",
-                                    modifier = Modifier.padding(16.dp)
+                                Column(modifier= Modifier.padding(16.dp)) {
+                                    Text(
+                                    text = "${averia.equipoNombre} ${averia.tituloAveria}"
+
                                 )
+                                    Text(text = averia.estado)
+                                    if(averia.estado== EstadoAveria.Presupuestada.name){
+                                        TextButton(onClick = {onVerPresupuestos(averia)}) {
+                                            Text("Ver presupuesto")
+                                        }
+                                        //Si esto sale bien me va a ostrar el botón sólo si el estado es presupuestado
+                                    }
+
+                                }
                             }
                         }
-                        /*Text(
-                        //Ahora mismo los equipos se muestran feos, en un text
-                        //Esto mejor convertirlo en otra card
-                        text = "${equipo.deviceBrand} ${equipo.deviceModel}"
-                    ) */
+
                     }
                 }
             }
