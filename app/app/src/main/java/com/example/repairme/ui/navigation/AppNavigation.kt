@@ -24,6 +24,7 @@ import com.example.repairme.ui.screens.ServicesScreen
 import com.example.repairme.ui.screens.AdminServicesScreen
 import com.example.repairme.ui.screens.ClientesPantallaAdminScreen
 import com.example.repairme.ui.screens.LoginScreen
+import com.example.repairme.ui.screens.PresupuestoDetalleScreen
 import com.google.firebase.auth.FirebaseAuth
 
 class AppNavigation {
@@ -65,6 +66,7 @@ class AppNavigation {
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onVerPresupuestos = {averia->navController.navigate("detallePresuCliente/${averia.id}")},
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) {
@@ -191,6 +193,16 @@ class AppNavigation {
                 ClientesPantallaAdminScreen(
                     onVolver = { navController.popBackStack() }
                 )
+            }
+            composable(Rutas.DETALLE_PRESUPUESTO.ruta,
+                listOf(navArgument("averiaId"){type= NavType.StringType})){
+                    backStackEntry->
+                val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
+                PresupuestoDetalleScreen(
+                    averiaId=averiaId,
+                    onVolver = {navController.popBackStack()}
+                )
+
             }
 
 

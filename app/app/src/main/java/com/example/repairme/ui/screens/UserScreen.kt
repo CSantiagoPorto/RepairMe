@@ -231,25 +231,33 @@ fun UserScreen(
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         listaPresupuestadas.forEach { averia ->
+                            Log.d("LISTA_PRESU", "id: ${averia.id}, estado: ${averia.estado}")
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
-                                    .clickable { dialogoAveria = averia },
+                                    .padding(8.dp),
+                                    //.clickable { dialogoAveria = averia },
                                 shape = RoundedCornerShape(9.dp),
                                 border = BorderStroke(1.dp, Naranja)
                             ) {
-                                Text(
-                                    text = "${averia.equipoNombre} ${averia.tituloAveria}",
-                                    modifier = Modifier.padding(16.dp)
+                                Column(modifier= Modifier.padding(16.dp)) {
+                                    Text(
+                                    text = "${averia.equipoNombre} ${averia.tituloAveria}"
+
                                 )
+                                    Text(text = averia.estado)
+                                    if(averia.estado== EstadoAveria.Presupuestada.name){
+                                        TextButton(onClick = { Log.d("AVERIA_ID", "id: ${averia.id}")
+                                            onVerPresupuestos(averia)}) {
+                                            Text("Ver presupuesto")
+                                        }
+                                        //Si esto sale bien me va a mostrar el botón sólo si el estado es presupuestado
+                                    }
+
+                                }
                             }
                         }
-                        /*Text(
-                        //Ahora mismo los equipos se muestran feos, en un text
-                        //Esto mejor convertirlo en otra card
-                        text = "${equipo.deviceBrand} ${equipo.deviceModel}"
-                    ) */
+
                     }
                 }
             }

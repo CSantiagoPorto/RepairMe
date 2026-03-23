@@ -27,7 +27,7 @@ fun ServicesScreen(
     val repo = remember { ServiceRepository() }
     var listaServicios by remember { mutableStateOf(listOf<Servicio>()) }
 
-    // 🔹 Cargar servicios de Firebase
+    //  Cargar servicios de Firebase
     LaunchedEffect(Unit) {
         repo.obtenerServicios(
             fallo = {},
