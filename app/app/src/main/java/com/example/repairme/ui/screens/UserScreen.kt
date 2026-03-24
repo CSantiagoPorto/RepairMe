@@ -44,9 +44,12 @@ fun UserScreen(
     onIrServicios: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
+    // Controlan si las secciones (cards) estan abierta o cerrada
     var equiposExpandido by remember { mutableStateOf(false) }
     var reparacionesExpandido by remember { mutableStateOf(false) }
     var presupuestosExpandido by remember { mutableStateOf(false) }
+
+    // Guardan los datos que vienen de firebase
     var listaEquipos by remember { mutableStateOf(listOf<Equipo>()) }
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     var listaPresupuestadas by remember { mutableStateOf(listOf<Averia>()) }
@@ -72,6 +75,7 @@ fun UserScreen(
 
     LaunchedEffect(reparacionesExpandido) {
         if (reparacionesExpandido) {
+            // Se usa el listener en tiempo real del repositorio
             repo.obtenerAveriaUser(
                 fallo = { mensaje ->
                     Log.d("Si ves este mensaje es porque no está obteniendo las averías", mensaje)
@@ -111,7 +115,7 @@ fun UserScreen(
             equiposExpandido = false
             presupuestosExpandido = false
         }),
-        NavItem("Presus", Icons.Filled.RequestQuote, {
+        NavItem("Presupuestos", Icons.Filled.RequestQuote, {
             presupuestosExpandido = !presupuestosExpandido
             equiposExpandido = false
             reparacionesExpandido = false
@@ -205,10 +209,21 @@ fun UserScreen(
                                 shape = RoundedCornerShape(9.dp),
                                 border = BorderStroke(1.dp, Naranja)
                             ) {
-                                Text(
-                                    text = "${averia.equipoNombre} ${averia.tituloAveria}",
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = "${averia.equipoNombre} - ${averia.tituloAveria}",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    // MOSTRAMOS EL ESTADO AQUÍ
+                                    Text(
+                                        text = "Estado: ${averia.estado}",
+                                        color = if (averia.estado == "reparado" || averia.estado == "Reparado") 
+                                            Color(0xFF4CAF50) else Naranja,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                             /*Text(
                             //Ahora mismo los equipos se muestran feos, en un text

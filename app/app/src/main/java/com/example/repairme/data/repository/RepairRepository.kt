@@ -1,7 +1,6 @@
 package com.example.repairme.data.repository
 
 import android.util.Log
-import android.util.Log.e
 import com.example.repairme.data.model.Averia
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -10,6 +9,7 @@ import com.google.firebase.database.ValueEventListener
 
 class RepairRepository : OperationsTemplateRepository() {
 
+    // Lazy: Solo se inicializa la primera vez
     private val auth by lazy { FirebaseAuth.getInstance() }
     private val NODE = "repairs"
 
@@ -57,7 +57,9 @@ class RepairRepository : OperationsTemplateRepository() {
                 val listaAverías = mutableListOf<Averia>()
                 for (child in snapshot.children) {
                     val averia = child.getValue(Averia::class.java)
-                    if (averia != null) listaAverías.add(averia)
+                    if (averia != null) {
+                        listaAverías.add(if (averia.id.isEmpty()) averia.copy(id = child.key ?: "") else averia)
+                    }
                 }
                 exito(listaAverías.sortedBy { estado.indexOf(it.estado) })
             }
@@ -65,12 +67,9 @@ class RepairRepository : OperationsTemplateRepository() {
                 fallo(error.message)
             }
         })
-
-
     }
 
-
-
+    // CAMBIO: Ahora usa addValueEventListener para que el usuario vea cambios en tiempo real
     fun obtenerAveriaUser(
         fallo: (String) -> Unit,
         exito: (List<Averia>) -> Unit
@@ -78,25 +77,23 @@ class RepairRepository : OperationsTemplateRepository() {
         val listaAverías= mutableListOf<Averia>()
         val userId= auth.currentUser?.uid
         val averiaRef= ref(NODE)
-        Log.d("TESTCRUD", "obtenerAveriaUser llamado, userId=$userId")
+        Log.d("TESTCRUD", "obtenerAveriaUser llamado (Realtime), userId=$userId")
         if(userId==null){
             fallo("No se encontró el usuario")
             return
         }
 
         averiaRef.orderByChild("userId").equalTo(userId)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("TESTCRUD", "onDataChange, hijos=${snapshot.childrenCount}")
-                   for(child in snapshot.children){
-                       val averia= child.getValue(Averia::class.java)
-                       if(averia!=null){
-                           val averiaConId = if (averia.id.isEmpty()) averia.copy(id = child.key ?: "") else averia
-                           listaAverías.add(averiaConId)
-
-                       }
-                   }
-                    Log.d("TESTCRUD", "lista final: ${listaAverías.size}")
+                    val listaAverías = mutableListOf<Averia>()
+                    for(child in snapshot.children){
+                        val averia = child.getValue(Averia::class.java)
+                        if(averia != null){
+                            val averiaConId = if (averia.id.isEmpty()) averia.copy(id = child.key ?: "") else averia
+                            listaAverías.add(averiaConId)
+                        }
+                    }
                     exito(listaAverías)
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -104,17 +101,14 @@ class RepairRepository : OperationsTemplateRepository() {
                     fallo(error.message)
                 }
             })
-
     }
+
     fun obtenerAveriaId(
         fallo: (String) -> Unit,
         exito: (Averia) -> Unit,
         averiaId:String
     ){
-
-
         val averiaRef= ref("$NODE/$averiaId")
-
         averiaRef.get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists()) {
                 fallo("Nodo no existe. ID buscado: '$averiaId'")
@@ -123,11 +117,9 @@ class RepairRepository : OperationsTemplateRepository() {
             val averia = snapshot.getValue(Averia::class.java)
             if(averia != null){ exito(averia) }
             else fallo("El nodo existe pero no se pudo deserializar")
-        }
-            .addOnFailureListener {
+        }.addOnFailureListener {
            e->fallo("Algo pasó ")
        }
-
     }
 
     // Obtener Averia tecnico en tiempo real
@@ -152,7 +144,7 @@ class RepairRepository : OperationsTemplateRepository() {
                     for (child in snapshot.children) {
                         val averia = child.getValue(Averia::class.java)
                         if (averia != null) {
-                            listaAverias.add(averia)
+                            listaAverias.add(if (averia.id.isEmpty()) averia.copy(id = child.key ?: "") else averia)
                         }
                     }
                     exito(listaAverias)
@@ -164,7 +156,6 @@ class RepairRepository : OperationsTemplateRepository() {
             })
     }
 
-
     //Editar avería completa
     fun editarAveria(
         averiaEditada:Averia,
@@ -175,7 +166,6 @@ class RepairRepository : OperationsTemplateRepository() {
             fallo("La avería no tiene id")
             return
         }
-
 
         setValue("$NODE/${averiaEditada.id}", averiaEditada,
             ok = { exito() },
@@ -199,7 +189,4 @@ class RepairRepository : OperationsTemplateRepository() {
             error = { msg-> fallo(msg) }
         )
     }
-
-
-
 }
