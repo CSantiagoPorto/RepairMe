@@ -72,6 +72,7 @@ fun ClientesPantallaAdminScreen(
 
                 items(clientesFiltrados) { cliente ->
                     var reparaciones by remember { mutableStateOf(listOf<Averia>()) }
+                    //Necesito que se me abran las reparaciones del cliente al pinchar
 
                     LaunchedEffect(expandedClienteId) {
                         if (expandedClienteId == cliente.id) {
@@ -86,8 +87,14 @@ fun ClientesPantallaAdminScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                         onClick = {
-                            expandedClienteId = if (expandedClienteId == cliente.id) null else cliente.id
-                        }
+                            if (expandedClienteId == cliente.id) {
+                                expandedClienteId = null
+                            } else {
+                                expandedClienteId = cliente.id
+                            }
+
+                        }//Si está abierta y se pulsa otra vez se pone a null y se cierra
+                        //Si está cerrada, la abre y guarda el id del cliente
 
                     ) {
                        Column(modifier = Modifier.padding(16.dp)) {
@@ -95,6 +102,8 @@ fun ClientesPantallaAdminScreen(
                            Text(cliente.email)
                            if (expandedClienteId == cliente.id){
                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                               //Cambios de color. Los colores los cambiamos luego a otros más bonitos
+                               //Preguntar a Alex por gama de colores
 
 
                                if(reparaciones.isNotEmpty()){

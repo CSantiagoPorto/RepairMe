@@ -22,15 +22,17 @@ import java.io.FileOutputStream
 //PROBLEMA: Necesito compartir los archivos con el visor
 
 fun generarPdf(
-    context: Context,//Necesito acceder a la carpeta context.cacheDir
+    context: Context,//Necesito acceder a la carpeta context.cacheDir, así que necesita acceso al sisema
     averia: Averia,
     cliente: Usuario,
     tecnico:Usuario
 ): File//Tengo que devolver el archivo
 {
     val archivo = File(context.cacheDir, "presupuesto_${averia.id}.pdf")
+    //Este es el objeto en sí y le defino dónde se guarda
     //Como nombre del archivo del presupuesto le pongo presupuesto más el id de la avería
     val outputStream = FileOutputStream(archivo)
+    //FileOit va a ser como el canal por el que va a llegar la escritura al archivo
     val document= Document()
     PdfWriter.getInstance(document, outputStream)
     document.open()

@@ -156,9 +156,9 @@ fun UserScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
-                        TextButton(onClick = { onAddEquipo() }) {
+                       /* TextButton(onClick = { onAddEquipo() }) {
                             Text("Añadir equipo", color = Naranja)
-                        }
+                        }*/
                         listaEquipos.forEach { equipo ->
                             Card(
                                 modifier = Modifier
@@ -249,7 +249,7 @@ fun UserScreen(
 
                                 )
                                     Text(text = averia.estado)
-                                    if(averia.estado== EstadoAveria.Presupuestada.name){
+                                    if(averia.estado== EstadoAveria.Presupuestada.name||averia.presupuestoAceptado==true){
                                         TextButton(onClick = { Log.d("AVERIA_ID", "id: ${averia.id}")
                                             onVerPresupuestos(averia)}) {
                                             Text("Ver presupuesto")
@@ -306,7 +306,7 @@ fun UserScreen(
         )
 
     }
-    dialogoAveria?.let {
+  /*  dialogoAveria?.let {
         averia ->
         DialogoPresupuestos(
             averia=averia,
@@ -338,7 +338,7 @@ fun UserScreen(
                 )
             }//Hay que cerrar el dialogo
         )
-    }
+    }*/
 }
 
 @Composable
