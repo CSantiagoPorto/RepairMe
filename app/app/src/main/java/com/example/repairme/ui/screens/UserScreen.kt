@@ -156,9 +156,9 @@ fun UserScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
-                        TextButton(onClick = { onAddEquipo() }) {
+                       /* TextButton(onClick = { onAddEquipo() }) {
                             Text("Añadir equipo", color = Naranja)
-                        }
+                        }*/
                         listaEquipos.forEach { equipo ->
                             Card(
                                 modifier = Modifier

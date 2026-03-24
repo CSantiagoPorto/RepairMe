@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -129,47 +130,84 @@ fun PresupuestoDetalleScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         item{
-                            Card(modifier = Modifier.fillMaxWidth()) {
-                                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(text = "Datos del cliente", fontWeight = FontWeight.Bold, color = naranjaLetras)
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(
+                                            text = "Datos del cliente",
+                                            fontWeight = FontWeight.Bold,
+                                            color = naranjaLetras
+                                        )
 
-                                    Text(text = cliente?.name?:"No se encontró  en nombre")
-                                    Text(text = cliente?.apellidos ?:"No se encontraron los apellidos")
-                                    Text(text = cliente?.dni?:"No se encontró ningún dni asociado")
+                                        Text(text = cliente?.name ?: "No se encontró  en nombre")
+                                        Text(
+                                            text = cliente?.apellidos
+                                                ?: "No se encontraron los apellidos"
+                                        )
+                                        Text(
+                                            text = cliente?.dni
+                                                ?: "No se encontró ningún dni asociado"
+                                        )
+
+                                    }
+
+                                }//Acaba card cliente
+
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+
+                                        Text(
+                                            text = "Datos del técnico",
+                                            fontWeight = FontWeight.Bold,
+                                            color = naranjaLetras
+                                        )
+                                        Text(text = tecnico?.name ?: "No se encontró el técnico")
+
+                                    }
+                                }//Termina card técnico
+
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(
+                                            text = "Datos de la avería",
+                                            fontWeight = FontWeight.Bold,
+                                            color = naranjaLetras
+                                        )
+                                        Text(text = averia?.equipoNombre ?: "Desconocido")
+                                        Text(text = averia?.tituloAveria ?: "Sin nombre")
+                                        Text(text = averia?.descripcion ?: "No hay descripción")
+
+
+                                    }
                                 }
 
-                            }//Acaba card cliente
 
-                            Card(modifier = Modifier.fillMaxWidth()) {
-                                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-
-                                    Text(text = "Datos del técnico", fontWeight = FontWeight.Bold, color = naranjaLetras )
-                                    Text(text = tecnico?.name?:"No se encontró el técnico")
-
-                                }
-                            }//Termina card técnico
-
-                            Card(modifier = Modifier.fillMaxWidth()) {
-                                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(text = "Datos de la avería", fontWeight = FontWeight.Bold, color = naranjaLetras )
-                                    Text(text = averia?.equipoNombre?:"Desconocido")
-                                    Text(text = averia?.tituloAveria?:"Sin nombre")
-                                    Text(text = averia?.descripcion?:"No hay descripción")
-
-
-
-                                }
                             }
-
-
-
-
-
                         }
                         item {
-                            Card(modifier = Modifier.fillMaxWidth()) {
-                                Column() {
-                                    Text(text = "Datos de la avería", fontWeight = FontWeight.Bold, color = naranjaLetras )
+                            Card(modifier = Modifier.fillMaxWidth(),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+                                Column( modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(text = "Desglose", fontWeight = FontWeight.Bold, color = naranjaLetras )
                                     averia!!.lineasPresupuesto.forEach{
                                         linea->
                                         Row() {
