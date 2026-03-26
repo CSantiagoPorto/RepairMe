@@ -37,7 +37,7 @@ fun generarPdf(
     val fuenteTabCuerpo = Font(Font.FontFamily.HELVETICA, 10f, Font.NORMAL, BaseColor(30, 30, 30))
     val fuenteTotal     = Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD,   BaseColor(230, 100, 30))
     val fechaFont       = Font(Font.FontFamily.HELVETICA, 9f,  Font.NORMAL, BaseColor(150, 150, 150))
-    val notaFont        = Font(Font.FontFamily.HELVETICA, 8f,  Font.ITALIC, BaseColor(160, 160, 160))
+    val notaFont        = Font(Font.FontFamily.HELVETICA, 9f,  Font.ITALIC, BaseColor(160, 160, 160))
 
     PdfWriter.getInstance(document, outputStream)
     document.open()

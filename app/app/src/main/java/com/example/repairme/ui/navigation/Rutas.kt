@@ -25,6 +25,8 @@ sealed class Rutas (val ruta:String) {
     //La clase contiene el botón para generar el pdf. Este archivo cuando funcione lo clonamos para
     //que reutilizar en las facturas
 
+    data object PRESUPUESTOS_ADMIN: Rutas("presupuestosAdmin")
+
 }
 
 

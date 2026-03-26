@@ -26,6 +26,8 @@ import com.example.repairme.ui.screens.ClientesPantallaAdminScreen
 import com.example.repairme.ui.screens.LoginScreen
 import com.example.repairme.ui.screens.PresupuestoDetalleScreen
 import com.google.firebase.auth.FirebaseAuth
+import com.example.repairme.ui.screens.PresupuestoQueVeElAdmin
+
 
 class AppNavigation {
 
@@ -104,7 +106,9 @@ class AppNavigation {
                     onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
-                    onVerClientes = {navController.navigate(Rutas.CLIENTES_ADMIN.ruta)}
+                    onVerClientes = {navController.navigate(Rutas.CLIENTES_ADMIN.ruta)},
+                    onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) }
+
                 )
             }
 
@@ -204,6 +208,15 @@ class AppNavigation {
                 )
 
             }
+            composable(Rutas.PRESUPUESTOS_ADMIN.ruta) {
+                PresupuestoQueVeElAdmin(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
+
+
+
 
 
         }
