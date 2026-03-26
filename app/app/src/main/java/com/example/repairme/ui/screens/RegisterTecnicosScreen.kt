@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -17,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.repairme.data.repository.AuthRepository
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 // Colores
 import com.example.repairme.ui.theme.Naranja
@@ -24,7 +27,7 @@ import com.example.repairme.ui.theme.GrisFondoPantalla
 
 // Para previsualizar la pantalla en design
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterTecnicoScreen(
     onNavigateBack: () -> Unit = {},//Con esta función volvemos al login
@@ -70,114 +73,145 @@ fun RegisterTecnicoScreen(
         return true
     }
 
-    // UI
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(GrisFondoPantalla)
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Titulo de la pantalla
-        Text(
-            text = "Registrar Técnico",
-            style = MaterialTheme.typography.headlineMedium,
-            color = Naranja,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
-
-        // Nombre
-        OutlinedTextField(
-            value = nombre,
-            onValueChange = {
-                nombre = it
-                error = null
-            },
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                error = null
-            },
-            label = { Text("Email") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !ok
-        )
-
-        OutlinedTextField(
-            value = pass,
-            onValueChange = {
-                pass = it
-                error = null
-            },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !ok
-        )
-
-        // Mensajes de error/ok
-        if (error != null) {
-            Text(
-                text = error!!,
-                color = MaterialTheme.colorScheme.error
+    Scaffold(
+        containerColor = GrisFondoPantalla,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Registrar Técnico",
+                        color = Naranja
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Naranja
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = GrisFondoPantalla
+                )
             )
         }
+    ) { innerPadding ->
+        // UI
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(GrisFondoPantalla)
+                .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
+                .padding(16.dp),
 
-        if (ok) {
-            Text("Registro enviado ✅")
-        }
-
-        // Botón de registro
-        Button(
-            onClick = {
-                if (validarCampos()) {
-                    ok = true
-                    repo.crearUsuario(
-                        email = email.trim(),
-                        password = pass.trim(),
-                        nombre = nombre.trim(),
-                        apellidos = "", // Empty porque Tecnico no tiene apellidos en su model
-                        telefono = "", // Empty for tecnico
-                        direccion = "", // Empty for tecnico
-                        codigoPostal = "", // Empty for tecnico
-                        localidad = "", // Empty for tecnico
-                        dni = "", // Empty for tecnico
-                        role = "tecnico", // Set role to TECNICO para que coincida con el model
-                        creadoOK = {
-                            ok = false
-                            Toast.makeText(context, "Técnico creado", Toast.LENGTH_LONG).show()
-                            onRegisterSucess()
-                        },
-                        creadoError = { mensaje ->
-                            ok = false
-                            error = mensaje
-                            Toast.makeText(context, "Error: $mensaje", Toast.LENGTH_LONG).show()
-                        }
-                    )
-                } else {
-                    ok = false
-                }
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Naranja,
-                contentColor = Color.White
-            ),
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Registrar Técnico")
+            // Titulo de la pantalla
+            // Lo dejo comentado porque ahora el título ya está en la TopAppBar
+            /*
+            Text(
+                text = "Registrar Técnico",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Naranja,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            */
+
+            // Nombre
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = {
+                    nombre = it
+                    error = null
+                },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    error = null
+                },
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !ok
+            )
+
+            OutlinedTextField(
+                value = pass,
+                onValueChange = {
+                    pass = it
+                    error = null
+                },
+                label = { Text("Contraseña") },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !ok
+            )
+
+            // Mensajes de error/ok
+            if (error != null) {
+                Text(
+                    text = error!!,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            if (ok) {
+                Text("Registro enviado ✅")
+            }
+
+            // Botón de registro
+            Button(
+                onClick = {
+                    if (validarCampos()) {
+                        ok = true
+                        repo.crearUsuario(
+                            email = email.trim(),
+                            password = pass.trim(),
+                            nombre = nombre.trim(),
+                            apellidos = "", // Empty porque Tecnico no tiene apellidos en su model
+                            telefono = "", // Empty for tecnico
+                            direccion = "", // Empty for tecnico
+                            codigoPostal = "", // Empty for tecnico
+                            localidad = "", // Empty for tecnico
+                            dni = "", // Empty for tecnico
+                            role = "tecnico", // Set role to TECNICO para que coincida con el model
+                            creadoOK = {
+                                ok = false
+                                Toast.makeText(context, "Técnico creado", Toast.LENGTH_LONG).show()
+                                onRegisterSucess()
+                            },
+                            creadoError = { mensaje ->
+                                ok = false
+                                error = mensaje
+                                Toast.makeText(context, "Error: $mensaje", Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    } else {
+                        ok = false
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Naranja,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Registrar Técnico")
+            }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun RegisterTecnicoScreenPreview() {

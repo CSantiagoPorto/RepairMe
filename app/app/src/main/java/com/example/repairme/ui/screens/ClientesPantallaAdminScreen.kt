@@ -6,12 +6,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,8 +39,10 @@ import com.example.repairme.ui.theme.ColorEstadoListaParaRecoger
 import com.example.repairme.ui.theme.ColorEstadoPendiente
 import com.example.repairme.ui.theme.ColorEstadoPresupuestada
 import com.example.repairme.ui.theme.GrisFondoPantalla
+import com.example.repairme.ui.theme.grisfondo
 import com.example.repairme.ui.theme.naranjaLetras
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientesPantallaAdminScreen(
     onVolver: () -> Unit = {}
@@ -42,8 +51,6 @@ fun ClientesPantallaAdminScreen(
     var listaClientes by remember { mutableStateOf(listOf<Usuario>()) }
     var busqueda by remember { mutableStateOf("") }
     var expandedClienteId by remember { mutableStateOf<String?>(null) }
-
-
 
     LaunchedEffect(Unit) {
         repo.obtenerUsuariosTodos(
@@ -54,12 +61,31 @@ fun ClientesPantallaAdminScreen(
 
     val clientesFiltrados = listaClientes.filter {
         it.name.contains(busqueda, ignoreCase = true) ||
-                it.apellidos.contains(busqueda, ignoreCase = true)||
+                it.apellidos.contains(busqueda, ignoreCase = true) ||
                 it.dni.equals(busqueda)
     }
 
     Scaffold(
-        topBar = { /* TopAppBar con título y botón volver */ }
+        containerColor = GrisFondoPantalla,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Clientes", color = naranjaLetras)
+                },
+                navigationIcon = {
+                    IconButton(onClick = onVolver) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = naranjaLetras
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = grisfondo
+                )
+            )
+        }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
             TextField(
@@ -97,51 +123,50 @@ fun ClientesPantallaAdminScreen(
                         //Si está cerrada, la abre y guarda el id del cliente
 
                     ) {
-                       Column(modifier = Modifier.padding(16.dp)) {
-                           Text("${cliente.name} ${cliente.apellidos}", fontWeight = FontWeight.Bold)
-                           Text(cliente.email)
-                           if (expandedClienteId == cliente.id){
-                               HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                               //Cambios de color. Los colores los cambiamos luego a otros más bonitos
-                               //Preguntar a Alex por gama de colores
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("${cliente.name} ${cliente.apellidos}", fontWeight = FontWeight.Bold)
+                            Text(cliente.email)
+                            if (expandedClienteId == cliente.id) {
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                //Cambios de color. Los colores los cambiamos luego a otros más bonitos
+                                //Preguntar a Alex por gama de colores
 
+                                if (reparaciones.isNotEmpty()) {
+                                    reparaciones.forEach { averia ->
+                                        val colorEstado = when (averia.estado) {
+                                            EstadoAveria.Pendiente.name -> ColorEstadoPendiente
+                                            EstadoAveria.Asignada.name -> ColorEstadoAsignada
+                                            EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
+                                            EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion
+                                            EstadoAveria.ListaParaRecoger.name -> ColorEstadoListaParaRecoger
+                                            EstadoAveria.Declinada.name -> ColorEstadoDeclinada
+                                            else -> GrisFondoPantalla
+                                        }
 
-                               if(reparaciones.isNotEmpty()){
-                                       reparaciones.forEach { averia ->
-                                           val colorEstado = when (averia.estado) {
-                                               EstadoAveria.Pendiente.name -> ColorEstadoPendiente
-                                               EstadoAveria.Asignada.name -> ColorEstadoAsignada
-                                               EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
-                                               EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion
-                                               EstadoAveria.ListaParaRecoger.name -> ColorEstadoListaParaRecoger
-                                               EstadoAveria.Declinada.name -> ColorEstadoDeclinada
-                                               else -> GrisFondoPantalla
-                                           }
+                                        Surface(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 3.dp),
+                                            color = colorEstado,
+                                            shape = RoundedCornerShape(9.dp)
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.padding(9.dp)
+                                            ) {
+                                                Text(averia.tituloAveria, fontWeight = FontWeight.Bold)
+                                                Text(averia.estado, color = naranjaLetras)
+                                            }
 
-                                           Surface(
-                                               modifier = Modifier
-                                                   .fillMaxWidth()
-                                                   .padding(vertical = 3.dp),
-                                               color = colorEstado,
-                                               shape = RoundedCornerShape(9.dp)
-                                           ) {
-                                               Column(
-                                                   modifier = Modifier.padding(9.dp)
-                                               ) {Text(averia.tituloAveria, fontWeight = FontWeight.Bold)
-                                               Text(averia.estado, color = naranjaLetras)}
+                                        }
+                                    }
 
-                                           }
-                                       }
+                                } else {
+                                    Text("No hay reparaciones que mostrar")
+                                }
 
-                                   }else{
-                                       Text("No hay reparaciones que mostrar")
-                                   }
+                            }
 
-
-
-                               }
-
-                       }
+                        }
                     }
                 }
 
