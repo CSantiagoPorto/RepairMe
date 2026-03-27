@@ -70,6 +70,7 @@ fun PresupuestoQueVeElAdmin(
     }
 
     //En la primera sección quiero que enseñe las que están pendientes de aceptar
+    //Pero si uso el buscador necesito que se borren
     //Así el admin puede llamar al cliente
     val pendientes = todasAverias
         .filter { it.estado == EstadoAveria.Presupuestada.name }
