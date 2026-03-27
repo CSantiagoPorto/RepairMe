@@ -8,6 +8,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Engineering
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,6 +36,8 @@ import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.UserRepository
+import com.example.repairme.ui.components.BaseScreen
+import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.ColorEstadoAsignada
 import com.example.repairme.ui.theme.ColorEstadoDeclinada
 import com.example.repairme.ui.theme.ColorEstadoEnReparacion
@@ -45,7 +51,16 @@ import com.example.repairme.ui.theme.naranjaLetras
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientesPantallaAdminScreen(
-    onVolver: () -> Unit = {}
+    onAddAveria: () -> Unit = {},
+    onVolver: () -> Unit = {},
+    onVerAveria: () -> Unit = {},
+    onVerTecnicos: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onVerClientes: () -> Unit = {},
+    onVerPresupuestos: () -> Unit = {},
+    onLogOut: () -> Unit = {}
+
 ) {
     val repo = remember { UserRepository() }
     var listaClientes by remember { mutableStateOf(listOf<Usuario>()) }
@@ -65,29 +80,20 @@ fun ClientesPantallaAdminScreen(
                 it.dni.equals(busqueda)
     }
 
-    Scaffold(
-        containerColor = GrisFondoPantalla,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("Clientes", color = naranjaLetras)
-                },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = naranjaLetras
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = grisfondo
-                )
-            )
-        }
-    ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
+    BaseScreen(
+        title = "Asignar técnico a una reparación",
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        bottomNavItems = listOf(
+            NavItem("Reparar", Icons.Filled.Build, onVolver),
+            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
+            NavItem("Clientes", Icons.Filled.Person, onVerClientes),
+            NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos)
+        )
+
+    ) { modifier ->
+        Column(modifier = modifier.padding(16.dp)) {
             TextField(
                 value = busqueda,
                 onValueChange = { busqueda = it },

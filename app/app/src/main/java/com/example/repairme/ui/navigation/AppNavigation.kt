@@ -131,7 +131,17 @@ class AppNavigation {
             composable (Rutas.REPAIRSSCREEN.ruta){
 
                 RepairsScreen(
-                    onVolver = {navController.popBackStack()}
+                    onVolver = { navController.popBackStack() },
+                    onVerAveria = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    }
+
                 )
 
             }
@@ -196,7 +206,17 @@ class AppNavigation {
 
             composable(Rutas.CLIENTES_ADMIN.ruta) {
                 ClientesPantallaAdminScreen(
-                    onVolver = { navController.popBackStack() }
+                    onVolver = { navController.popBackStack() },
+                    onVerAveria = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    }
+
                 )
             }
             composable(Rutas.DETALLE_PRESUPUESTO.ruta,

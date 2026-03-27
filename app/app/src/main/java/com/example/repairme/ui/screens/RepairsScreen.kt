@@ -14,6 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Engineering
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -46,6 +50,8 @@ import com.example.repairme.ui.theme.grisfondo
 import com.example.repairme.ui.theme.naranjaLetras
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.TecnicoRepository
+import com.example.repairme.ui.components.BaseScreen
+import com.example.repairme.ui.components.NavItem
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +59,14 @@ import com.example.repairme.data.repository.TecnicoRepository
 fun RepairsScreen(
     onAddAveria: () -> Unit = {},
     onVolver: () -> Unit = {},
-    onVerAvería: () -> Unit = {},
+    onVerAveria: () -> Unit = {},
+    onVerTecnicos: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onVerClientes: () -> Unit = {},
+    onVerPresupuestos: () -> Unit = {},
+    onLogOut: () -> Unit = {}
+
 
 
 
@@ -100,29 +113,22 @@ fun RepairsScreen(
 
 
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Asignar técnico a una reparación",
-                        color = naranjaLetras,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = grisfondo)
-            )
-        }
-    ) { innerPadding ->
+    BaseScreen(
+        title = "Asignar técnico a una reparación",
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        bottomNavItems = listOf(
+            NavItem("Reparar", Icons.Filled.Build, onVolver),
+            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
+            NavItem("Clientes", Icons.Filled.Person, onVerClientes),
+            NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos)
+        )
+
+    ) { modifier ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
