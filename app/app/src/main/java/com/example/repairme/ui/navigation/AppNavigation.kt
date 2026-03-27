@@ -83,6 +83,7 @@ class AppNavigation {
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES.ruta) },
                     onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()

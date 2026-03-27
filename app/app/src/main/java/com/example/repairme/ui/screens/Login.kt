@@ -1,46 +1,49 @@
 package com.example.repairme.ui.screens
+
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-
-
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.repairme.R
 import com.example.repairme.data.repository.AuthRepository
+import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.botonNaranja
-
 import com.example.repairme.ui.theme.naranjaLetras
-
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreen(onNavigateToRegistro:()-> Unit={},
-                onNavigateToUserScreen: ()-> Unit={},//Aquí está vacío pero luego en App navigation le vamos a dar destino
-                onNavigateToTecnicoScreen:()->Unit={},
-                onNavigateToAdminScreen:()->Unit={}
+fun LoginScreen(
+    onNavigateToRegistro:()-> Unit={},
+    onNavigateToUserScreen: ()-> Unit={},//Aquí está vacío pero luego en App navigation le vamos a dar destino
+    onNavigateToTecnicoScreen:()->Unit={},
+    onNavigateToAdminScreen:()->Unit={}
 ) {
 
     val repo = AuthRepository()
@@ -68,7 +71,7 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
             mensaje(context,"La contraseña debe tener al menos 8 caracteres")
             return
         }
-            mensaje(context,"Voy a validar")
+        mensaje(context,"Voy a validar")
         repo.validarCorreoPassword(
             correo = email,
             contraseña = contrasena,
@@ -87,87 +90,124 @@ fun LoginScreen(onNavigateToRegistro:()-> Unit={},
 
     }
 
+    //Añadir el Scaffold con el Botton Bar y el ToolBar
+    Scaffold(
+        containerColor = GrisFondoPantalla
+    ) { innerPadding ->
 
+        Column (
+            modifier = Modifier
+                .fillMaxSize()//Ocupa todo el espacio disponible
+                .background(GrisFondoPantalla)
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
 
+            // Parte con Logo de la app
+            Spacer(modifier = Modifier.height(20.dp))
 
-
-//Añadir el Scaffold con el Botton Bar y el ToolBar
-
-
-    Column (
-
-        modifier = Modifier.padding(start = 32.dp, end = 32.dp)
-            .fillMaxSize()//Ocupa todo el espacio disponible
-            .background(Color.LightGray),
-            horizontalAlignment = Alignment.CenterHorizontally,
-           // verticalArrangement = Arrangement.Center
-
-    ){
-        Spacer(modifier = Modifier.height(50.dp))
-        Text(text = "Iniciar Sesión",
-            style= TextStyle(color = naranjaLetras),
-            fontSize = 30.sp,
-            modifier = Modifier.padding(top=12.dp, bottom = 32.dp)
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-
-        TextField(
-            //modifier = Modifier.fillMaxSize(),
-            textStyle = TextStyle(textAlign = TextAlign.Center),
-            value = email,
-            onValueChange = {email=it},
-            label = {Text("email")}
-
-
-        )
-        //Spacer(modifier = Modifier.height(18.dp))
-
-        Spacer(modifier = Modifier.height(34.dp))
-        TextField(
-            //modifier = Modifier.fillMaxSize(),
-            visualTransformation = PasswordVisualTransformation(), //Así nos oculta la contraseña,
-            textStyle = TextStyle(textAlign = TextAlign.Center),
-            value = contrasena,
-            onValueChange = {contrasena=it},
-            label = {Text("contraseña")}
-
-
-        )
-        Spacer(modifier = Modifier.height(150.dp
-        ))
-        Button(
-            onClick = {
-                loguearse()
-
-            },
-            colors=ButtonDefaults.buttonColors(
-                containerColor = botonNaranja,
-                contentColor = Color.White
+            // logo de la app
+            Image(
+                painter = painterResource(id = R.drawable.clear_repair_principal),
+                contentDescription = "Logo ClearRepair",
+                modifier = Modifier.height(140.dp)
             )
-        ) { Text("Entrar") }
 
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(
-            text = "Regístrate aquí",
-            color = naranjaLetras,
-            //Esto tiene que ser cliclable
-            modifier = Modifier.clickable {
-                //Aquí tenemos que llamar a una función de navegación
-                onNavigateToRegistro()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // card para el formulario
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 24.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Text(
+                        text = "Iniciar Sesión",
+                        style= TextStyle(color = naranjaLetras),
+                        fontSize = 30.sp,
+                        modifier = Modifier.padding(top=12.dp, bottom = 12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    OutlinedTextField(
+                        textStyle = TextStyle(textAlign = TextAlign.Center),
+                        value = email,
+                        onValueChange = {email=it},
+                        label = {Text("email")},
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    OutlinedTextField(
+                        visualTransformation = PasswordVisualTransformation(), //Así nos oculta la contraseña,
+                        textStyle = TextStyle(textAlign = TextAlign.Center),
+                        value = contrasena,
+                        onValueChange = {contrasena=it},
+                        label = {Text("contraseña")},
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    )
+
+                    Spacer(modifier = Modifier.height(36.dp))
+
+                    Button(
+                        onClick = {
+                            loguearse()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        colors=ButtonDefaults.buttonColors(
+                            containerColor = botonNaranja,
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = "Entrar",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
-        )
 
-//TODO:
-        //verificar que los campos tengan contenido. Si no ---> Mensaje error
-        //Hay que enchufar con Firebase y validar
-        //Si es correcto lee el rol
-        //Cuando haya siguiente pantalla tiene que moverse a ahí
+            Spacer(modifier = Modifier.height(30.dp))
 
+            Text(
+                text = "Regístrate aquí",
+                color = naranjaLetras,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                //Esto tiene que ser cliclable
+                modifier = Modifier.clickable {
+                    //Aquí tenemos que llamar a una función de navegación
+                    onNavigateToRegistro()
+                }
+            )
 
-
-    }//Acaba la columna
-
-
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
 }
-
-
