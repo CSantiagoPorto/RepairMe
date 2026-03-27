@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Engineering
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,6 +23,8 @@ import com.example.repairme.data.repository.RepairRepository
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.UserRepository
+import com.example.repairme.ui.components.BaseScreen
+import com.example.repairme.ui.components.NavItem
 
 
 val AzulAdmin = Color(0xFF1B3A6B)
@@ -77,25 +83,20 @@ fun PresupuestoQueVeElAdmin(
 
 
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(GrisFondo)
-    ) {
+    BaseScreen (
+        title = "Presupuestos",
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        bottomNavItems = listOf(
+            NavItem("Reparar", Icons.Filled.Build, onVerAverias),
+            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
+            NavItem("Clientes", Icons.Filled.Person, onVerClientes)
+        )
+
+    ) {modifier ->
         // He cambiado la cabecera a azul para enseñaros como iría con el otro enfoque
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(AzulAdmin)
-                .padding(24.dp)
-        ) {
-            Text(
-                text = "Presupuestos",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-        }
+
 
 
         LazyColumn(
@@ -104,6 +105,26 @@ fun PresupuestoQueVeElAdmin(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "BUSCAR POR CLIENTE",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF9CA3AF),
+                    letterSpacing = 0.06.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = busqueda,
+                    onValueChange = { busqueda = it },
+                    label = { Text("Nombre del cliente") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
+                )
+
+
+            }
             item {
                 Text(
                     text = "PENDIENTES DE ACEPTAR",
@@ -137,26 +158,7 @@ fun PresupuestoQueVeElAdmin(
                     }
                 }
             }
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "BUSCAR POR CLIENTE",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF9CA3AF),
-                    letterSpacing = 0.06.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = busqueda,
-                    onValueChange = { busqueda = it },
-                    label = { Text("Nombre del cliente") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp)
-                )
 
-
-            }
             items(resultadosBusqueda) { averia ->
                 val cliente = mapaUsuarios[averia.userId]
                 Card(
