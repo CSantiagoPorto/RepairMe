@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,8 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.LineaPresupuesto
@@ -44,6 +47,7 @@ import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
+import com.example.repairme.utils.generarPdf
 import com.google.firebase.Timestamp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +67,8 @@ fun DetalleReparacionesFinalizadas(
     var cliente by remember { mutableStateOf<Usuario?>(null) }
     var tecnico by remember { mutableStateOf<Usuario?>(null) }
     //Le meto un indicador de carga por las pruebas
+    val context = LocalContext.current
+
 
     var cargando by remember { mutableStateOf(true) }
 
@@ -175,10 +181,27 @@ fun DetalleReparacionesFinalizadas(
                         }
 
 
-                        item {
+                       /* item {
                             Row(modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center) {
                                 Button(onClick = {
+                                    val archivo= generarPdf(
+                                        context=context,
+                                        averia=averia!!,
+                                        cliente=cliente!!,
+                                        tecnico=tecnico!!
+                                    )
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        archivo
+                                    )
+                                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(uri, "application/pdf")
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(intent)
+
 
                                 },
                                     colors = ButtonDefaults.buttonColors(
@@ -190,9 +213,9 @@ fun DetalleReparacionesFinalizadas(
                                     Text("Generar presupuesto en pdf")
                                 }
                             }
-                        }
+                        }*/
 
-                        item {
+                        /*item {
                             Row(modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center) {
                                 Button(onClick = {
@@ -205,7 +228,7 @@ fun DetalleReparacionesFinalizadas(
                                     Text("Generar factura en pdf")
                                 }
                             }
-                        }
+                        }*/
 
 
 
