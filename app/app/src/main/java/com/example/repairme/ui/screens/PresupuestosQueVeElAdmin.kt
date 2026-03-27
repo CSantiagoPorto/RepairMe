@@ -25,6 +25,7 @@ import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
+import com.example.repairme.ui.theme.GrisFondoPantalla
 
 
 val AzulAdmin = Color(0xFF1B3A6B)
@@ -51,15 +52,20 @@ fun PresupuestoQueVeElAdmin(
 
 
     LaunchedEffect(Unit) {
+
         repo.obtenerAveriasTodas(
             fallo = {},
-            exito = { todasAverias = it }
+            exito = { todasAverias = it },
+
+
         )
         userRepo.obtenerUsuariosTodos(
             fallo = {},
             exito = { lista -> mapaUsuarios = lista.associateBy { it.id } }
             //Esto nos va a convertir la lista en un mapa de usuarios y luego no hay que recorrer la lista entera todas las veces
         )
+
+
 
     }
 
@@ -76,8 +82,14 @@ fun PresupuestoQueVeElAdmin(
             cliente?.name?.contains(busqueda, ignoreCase = true) == true ||
                     cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true
         }
+
+
     val hacerUnMes = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
+
+
     val presupuestadasEsteMes = todasAverias.filter { averia ->
+        android.util.Log.d("FILTRO_MES", "id=${averia.id} createdAt=${averia.createdAt} lineas=${averia.lineasPresupuesto.size}")
+
         averia.lineasPresupuesto.isNotEmpty() && averia.createdAt >= hacerUnMes
     }
 
@@ -100,8 +112,9 @@ fun PresupuestoQueVeElAdmin(
 
 
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
+                .background(GrisFondoPantalla)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -125,36 +138,41 @@ fun PresupuestoQueVeElAdmin(
 
 
             }
-            item {
-                Text(
-                    text = "PENDIENTES DE ACEPTAR",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF9CA3AF),
-                    letterSpacing = 0.06.sp
-                )
+            if(busqueda.isBlank()){
+                item {
+                    Text(
+                        text = "PENDIENTES DE ACEPTAR",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF9CA3AF),
+                        letterSpacing = 0.06.sp
+                    )
+                }
             }
 
-            items(pendientes) { averia ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(2.dp, Color(0xFFFED7AA))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = averia.tituloAveria,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF92400E)
-                        )
-                        Text(
-                            text = averia.estado,
-                            fontSize = 12.sp,
-                            color = Color(0xFFB45309),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
+
+            if (busqueda.isBlank()){
+                items(pendientes) { averia ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        border = BorderStroke(2.dp, Color(0xFFFED7AA))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = averia.tituloAveria,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF92400E)
+                            )
+                            Text(
+                                text = averia.estado,
+                                fontSize = 12.sp,
+                                color = Color(0xFFB45309),
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -190,6 +208,7 @@ fun PresupuestoQueVeElAdmin(
                 }
             }
             item {
+
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "PRESUPUESTADAS ESTE MES",
@@ -209,7 +228,7 @@ fun PresupuestoQueVeElAdmin(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(0.5.dp, Color(0xFFE5E7EB))
+                    border = BorderStroke(2.dp, Color(0xFFFED7AA))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
