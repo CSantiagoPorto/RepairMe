@@ -34,7 +34,8 @@ class RepairRepository : OperationsTemplateRepository() {
 
         val repair= averia.copy(
             id=averiaUid,
-            userId= userId
+            userId= userId,
+            createdAt = System.currentTimeMillis()
         )
 
         setValue("$NODE/$averiaUid", repair,
