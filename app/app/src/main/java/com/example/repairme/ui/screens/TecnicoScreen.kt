@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,10 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Averia
+import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
+import com.example.repairme.ui.theme.AzulAdmin
 import com.example.repairme.ui.theme.Naranja
+import com.example.repairme.ui.theme.botonNaranja
 
 @Composable
 fun TecnicoScreen(
@@ -155,7 +159,9 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick: (S
     LaunchedEffect(Unit) {
         repo.obtenerAveriasTecnico(
             fallo = {},
-            exito = { averias -> listaAverias = averias }
+            exito = { averias -> listaAverias = averias.filter {
+                it.estado != EstadoAveria.Reparado.name && it.estado != EstadoAveria.Declinada.name
+            } }
         )
     }
 
@@ -167,7 +173,7 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick: (S
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(listaAverias) { averia ->
                 RepairItem(
-                    title = "Equipo ${averia.equipoNombre}",
+                    title = "${averia.equipoNombre}",
                     currentState = averia.estado,
                     orangePrimary = orangePrimary,
                     onStateChange = { newState ->
@@ -219,7 +225,12 @@ fun RepairItem(
     onAveriaClick: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val states = listOf("Esperando confirmación", "En reparación", "Reparado")
+    val states = listOf(
+        EstadoAveria.EnReparacion.name,
+        EstadoAveria.PendienteMaterial.name,
+        EstadoAveria.ListaParaRecoger.name,
+        EstadoAveria.Reparado.name
+    )
     val buttonColor = if (currentState == "Reparado") Color(0xFF4CAF50) else orangePrimary
 
     Card(
@@ -230,10 +241,18 @@ fun RepairItem(
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text(text = title, fontSize = 14.sp, modifier = Modifier.weight(1f))
+            //Si está en estado== asignada me va a mostrar el botón de presupuestar
+            if(currentState== EstadoAveria.Asignada.name){
+                Button(onClick = onAveriaClick, colors = ButtonDefaults.buttonColors(containerColor = AzulAdmin), modifier = Modifier.height(36.dp)
+                ) { Text("Presupuestar", fontSize = 12.sp, color = Color.White)}
+            }
+            Spacer(modifier = Modifier.width(12.dp))
             Box {
                 Button(onClick = { expanded = true }, colors = ButtonDefaults.buttonColors(containerColor = buttonColor), modifier = Modifier.height(36.dp)) {
                     Text(text = currentState, fontSize = 12.sp, color = Color.White)
+
                 }
+
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     states.forEach { state ->
                         DropdownMenuItem(text = { Text(state) }, onClick = { onStateChange(state); expanded = false })

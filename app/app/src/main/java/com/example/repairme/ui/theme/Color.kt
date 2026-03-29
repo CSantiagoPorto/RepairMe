@@ -18,7 +18,9 @@ val Naranja = Color(0xFFD98841)
 val GrisFondoPantalla = Color(0xFFD8D8D8)
 val naranjaLetras= Color(0xFFfc8138 )
 val grisfondo=Color(0xFFE5E5E5)
-val botonNaranja = Color(0xFFC58B4A)
+val botonNaranja = Color(0xFFF97316)
+val AzulAdmin = Color(0xFF1B3A6B)
+
 
 //Colores para los estados de las averías
 
