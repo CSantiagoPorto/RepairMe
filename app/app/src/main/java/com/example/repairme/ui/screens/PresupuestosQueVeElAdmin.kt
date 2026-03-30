@@ -26,11 +26,8 @@ import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.GrisFondoPantalla
+import com.example.repairme.ui.theme.botonNaranja
 
-
-val AzulAdmin = Color(0xFF1B3A6B)
-val GrisFondo = Color(0xFFF2F4F8)
-val NaranjaAdmin = Color(0xFFF97316)
 
 @Composable
 fun PresupuestoQueVeElAdmin(
@@ -202,7 +199,7 @@ fun PresupuestoQueVeElAdmin(
                         Text(
                             text = averia.estado,
                             fontSize = 12.sp,
-                            color = NaranjaAdmin,
+                            color = botonNaranja,
                             modifier = Modifier.padding(top = 2.dp)
                         )
                     }
@@ -248,7 +245,7 @@ fun PresupuestoQueVeElAdmin(
                             text = "Total: ${"%.2f".format(total)} €",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = NaranjaAdmin,
+                            color = botonNaranja,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
