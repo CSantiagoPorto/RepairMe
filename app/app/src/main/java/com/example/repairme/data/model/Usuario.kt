@@ -13,7 +13,8 @@ data class Usuario (
     val direccion: String = "",
     val codigoPostal: String = "",
     val localidad: String = "",
-    val dni: String = ""
+    val dni: String = "",
+    val estado: String = ""
 ){
 
 
