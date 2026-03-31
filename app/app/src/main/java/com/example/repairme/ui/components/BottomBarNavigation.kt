@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.R
 import com.example.repairme.ui.theme.Naranja
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 
 // Esta clase es un "contenedor" para guardar la información de cada botón de la barra inferior.
 data class NavItem(
@@ -34,6 +35,7 @@ fun BaseScreen(
     onGestionServicios: () -> Unit, // Accion boton gestion de servicios
     onLogOut: () -> Unit, // Accion boton salir
     bottomNavItems: List<NavItem>, // Lista de botones para la barra de abajo
+    onVolver: (() -> Unit)? = null,
     onNotificationsClick: () -> Unit = {}, // Accion boton notificaciones cuando ilo implementemos
     content: @Composable (Modifier) -> Unit // IMPORTANTE!! Aqui va el diseño de cada pantalla es el content que se va a mostrar
 ) {
@@ -57,6 +59,17 @@ fun BaseScreen(
                             fontWeight = FontWeight.Bold,
                             fontSize = 22.sp
                         )
+                    }
+                },
+                navigationIcon = {
+                    onVolver?.let {
+                        IconButton(onClick = it) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver",
+                                tint = Naranja
+                            )
+                        }
                     }
                 },
                 // Botones de accion a la derecha , info, perfil y salir.
@@ -98,8 +111,8 @@ fun BaseScreen(
 
                 // Ítem fijo de notificaciones, aparecerá siempre
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones") },
-                    label = { Text("Notificaciones", fontSize = 10.sp) },
+                    icon = { Icon(Icons.Filled.Notifications, contentDescription = "Avisos") },
+                    label = { Text("Avisos", fontSize = 10.sp) },
                     selected = false,
                     onClick = onNotificationsClick,
                     colors = NavigationBarItemDefaults.colors(

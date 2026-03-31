@@ -81,15 +81,16 @@ fun ClientesPantallaAdminScreen(
     }
 
     BaseScreen(
-        title = "Asignar técnico a una reparación",
+        title = "Clientes",
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
+        onVolver = onVolver,
         bottomNavItems = listOf(
             NavItem("Reparar", Icons.Filled.Build, onVolver),
             NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
             NavItem("Clientes", Icons.Filled.Person, onVerClientes),
-            NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos)
+            NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
         )
 
     ) { modifier ->
