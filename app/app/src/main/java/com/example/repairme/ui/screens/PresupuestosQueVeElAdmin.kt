@@ -98,6 +98,7 @@ fun PresupuestoQueVeElAdmin(
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
+        onVolver = onVolver,
         bottomNavItems = listOf(
             NavItem("Reparar", Icons.Filled.Build, onVerAverias),
             NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),

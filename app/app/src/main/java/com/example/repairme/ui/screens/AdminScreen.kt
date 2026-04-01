@@ -49,7 +49,7 @@ fun AdminScreen(
         NavItem("Reparar", Icons.Filled.Build, onVerAverias),
         NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
         NavItem("Clientes", Icons.Filled.Person, onVerClientes),
-        NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos)
+        NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
     )
 
     // 2. Llamamos al modelo "BaseScreen" y le pasamos los datos de la barra inferior
@@ -87,7 +87,7 @@ fun AdminScreen(
 
             // Card de Técnicos
             AdminCard(
-                titulo = "Añadir técnicos",
+                titulo = "Gestionar técnicos",
                 icono = Icons.Filled.Engineering,
                 onClick = onVerTecnicos
             )
