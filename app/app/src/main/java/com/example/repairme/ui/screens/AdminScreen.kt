@@ -42,6 +42,7 @@ fun AdminScreen(
     onGestionServicios: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
     // 1. Creamos la lista de botones para la barra inferior, pasando los 3 datos que se indican en el modelo 'NavItem'
@@ -59,7 +60,9 @@ fun AdminScreen(
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion
+        bottomNavItems = itemsNavegacion,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = 0
     ) { modifier ->
 
         // 3. Contenido de la pantalla (Cards)
