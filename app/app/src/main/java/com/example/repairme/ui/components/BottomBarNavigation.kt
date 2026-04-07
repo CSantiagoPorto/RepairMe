@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.R
 import com.example.repairme.ui.theme.Naranja
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 
 // Esta clase es un "contenedor" para guardar la información de cada botón de la barra inferior.
 data class NavItem(
@@ -34,7 +36,9 @@ fun BaseScreen(
     onGestionServicios: () -> Unit, // Accion boton gestion de servicios
     onLogOut: () -> Unit, // Accion boton salir
     bottomNavItems: List<NavItem>, // Lista de botones para la barra de abajo
+    onVolver: (() -> Unit)? = null,
     onNotificationsClick: () -> Unit = {}, // Accion boton notificaciones cuando ilo implementemos
+    notificationBadgeCount: Int = 0, // Número de notificaciones no leídas
     content: @Composable (Modifier) -> Unit // IMPORTANTE!! Aqui va el diseño de cada pantalla es el content que se va a mostrar
 ) {
     Scaffold(
@@ -59,6 +63,17 @@ fun BaseScreen(
                         )
                     }
                 },
+                navigationIcon = {
+                    onVolver?.let {
+                        IconButton(onClick = it) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver",
+                                tint = Naranja
+                            )
+                        }
+                    }
+                },
                 // Botones de accion a la derecha , info, perfil y salir.
                 actions = {
                     IconButton(onClick = onGestionServicios) {
@@ -68,7 +83,7 @@ fun BaseScreen(
                         Icon(Icons.Filled.Person, contentDescription = "Mi perfil", tint = Naranja)
                     }
                     IconButton(onClick = onLogOut) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Salir", tint = Naranja)
+                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Salir", tint = Naranja)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -96,9 +111,25 @@ fun BaseScreen(
                     )
                 }
 
-                // Ítem fijo de notificaciones, aparecerá siempre
+                // Ítem fijo de notificaciones, aparecerá siempre.
+                // Cuando haya notificaciones aoarecera el numero de notificaciones
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones") },
+                    icon = {
+                        BadgedBox(
+                            badge = {
+                                if (notificationBadgeCount > 0) {
+                                    Badge {
+                                        Text(
+                                            text = if (notificationBadgeCount > 99) "99+" else notificationBadgeCount.toString(),
+                                            fontSize = 10.sp
+                                        )
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones")
+                        }
+                    },
                     label = { Text("Notificaciones", fontSize = 10.sp) },
                     selected = false,
                     onClick = onNotificationsClick,

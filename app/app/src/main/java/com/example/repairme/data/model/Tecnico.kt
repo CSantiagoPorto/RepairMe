@@ -5,6 +5,6 @@ data class Tecnico(
     val nombre: String = "",
     val email: String = "",
     val fechaAlta: Long = 0L,
-    val enVacaciones: Boolean = false,
+    val estado: String = "Activo",
     val role: String= "TECNICO"
 )

@@ -36,6 +36,7 @@ fun PresupuestoQueVeElAdmin(
     onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onLogOut: () -> Unit = {}
 
@@ -98,6 +99,9 @@ fun PresupuestoQueVeElAdmin(
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
+        onVolver = onVolver,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = 0,
         bottomNavItems = listOf(
             NavItem("Reparar", Icons.Filled.Build, onVerAverias),
             NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),

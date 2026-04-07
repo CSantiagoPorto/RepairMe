@@ -168,10 +168,53 @@ class RepairRepository : OperationsTemplateRepository() {
             return
         }
 
-        setValue("$NODE/${averiaEditada.id}", averiaEditada,
-            ok = { exito() },
-            error = { msg-> fallo(msg) }
-        )
+        // Obtener la avería anterior para comparar el estado
+        ref("$NODE/${averiaEditada.id}").get().addOnSuccessListener { snapshot ->
+            val averiaAnterior = snapshot.getValue(Averia::class.java)
+
+            // Actualizar la avería
+            setValue("$NODE/${averiaEditada.id}", averiaEditada,
+                ok = {
+                    // Si el estado cambió, enviar notificación al cliente
+                    if (averiaAnterior != null && averiaAnterior.estado != averiaEditada.estado) {
+                        enviarNotificacionCambioEstado(averiaEditada, averiaAnterior.estado, averiaEditada.estado)
+                    }
+                    exito()
+                },
+                error = { msg-> fallo(msg) }
+            )
+        }.addOnFailureListener {
+            // Si no se puede obtener la avería anterior, actualizar de todas formas
+            setValue("$NODE/${averiaEditada.id}", averiaEditada,
+                ok = { exito() },
+                error = { msg-> fallo(msg) }
+            )
+        }
+    }
+
+    /**
+     * Envía una notificación al cliente cuando cambia el estado de su avería
+     */
+    private fun enviarNotificacionCambioEstado(
+        averia: Averia,
+        estadoAnterior: String,
+        estadoNuevo: String
+    ) {
+        try {
+            val notificationRepo = NotificationRepository()
+
+            // Enviar notificación al cliente
+            notificationRepo.notificarCambioEstado(
+                clienteId = averia.userId,
+                equipoNombre = averia.equipoNombre,
+                nuevoEstado = estadoNuevo,
+                averiaId = averia.id
+            )
+
+            Log.d("RepairRepository", "Notificación enviada: ${averia.equipoNombre} ahora está en $estadoNuevo")
+        } catch (e: Exception) {
+            Log.e("RepairRepository", "Error al enviar notificación: ${e.message}")
+        }
     }
 
     //Eliminar avería

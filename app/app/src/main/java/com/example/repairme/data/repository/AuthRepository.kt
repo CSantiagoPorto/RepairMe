@@ -4,6 +4,7 @@ import android.widget.Toast
 import com.example.repairme.data.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.example.repairme.data.model.EstadoTecnico
 
 class AuthRepository {
     // Esta clase se ocupa únicamente de Firebase.
@@ -70,7 +71,9 @@ class AuthRepository {
                 localidad = localidad,
                 dni = dni,
                 role = role,
-                createdAt = System.currentTimeMillis()
+                createdAt = System.currentTimeMillis(),
+                // si es tecnico lo creamos como ACTIVO, si no se crea vacío
+                estado = if (role.lowercase() == "tecnico") EstadoTecnico.Activo.name else ""
             )
             bbdd.getReference().child("users").child(uid).setValue(usuario).addOnSuccessListener {
                 creadoOK()

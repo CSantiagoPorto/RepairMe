@@ -26,6 +26,7 @@ import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Equipo
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.repository.DeviceRepository
+import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
@@ -42,6 +43,7 @@ fun UserScreen(
     onGoToTestCrud: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onIrServicios: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
     // Controlan si las secciones (cards) estan abierta o cerrada
@@ -54,8 +56,18 @@ fun UserScreen(
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     var listaPresupuestadas by remember { mutableStateOf(listOf<Averia>()) }
     var dialogoAveria by remember { mutableStateOf<Averia?>(null) }
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
     val repo = remember { RepairRepository() }//Necesito el repo para aceptar el presu
+    val notificationRepo = remember { NotificationRepository() }
 
+
+    LaunchedEffect(Unit) {
+        // Escuchar notificaciones no leídas en tiempo real
+        notificationRepo.escucharNotificacionesNoLeidas { count ->
+            notificacionesNoLeidas = count
+            Log.d("UserScreen", "Notificaciones no leídas: $count")
+        }
+    }
 
     LaunchedEffect(equiposExpandido) {
         val repo = DeviceRepository()
@@ -128,7 +140,9 @@ fun UserScreen(
         onIrPerfil = onIrPerfil,
         onGestionServicios = onIrServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion
+        bottomNavItems = itemsNavegacion,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->
         
         Column(

@@ -43,7 +43,11 @@ fun AdminScreen(
     onGestionServicios: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
+
     onVerListaRecoger: () -> Unit = {},
+
+    onIrNotificaciones: () -> Unit = {},
+
     onLogOut: () -> Unit = {}
 ) {
     // 1. Creamos la lista de botones para la barra inferior, pasando los 3 datos que se indican en el modelo 'NavItem'
@@ -51,8 +55,12 @@ fun AdminScreen(
         NavItem("Reparar", Icons.Filled.Build, onVerAverias),
         NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
         NavItem("Clientes", Icons.Filled.Person, onVerClientes),
+
         NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos),
-        NavItem("Para recoger", Icons.Filled.CheckCircle, onVerListaRecoger)
+        NavItem("Para recoger", Icons.Filled.CheckCircle, onVerListaRecoger),
+
+
+        NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
 
     )
 
@@ -63,7 +71,9 @@ fun AdminScreen(
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion
+        bottomNavItems = itemsNavegacion,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = 0
     ) { modifier ->
 
         // 3. Contenido de la pantalla (Cards)
@@ -91,7 +101,7 @@ fun AdminScreen(
 
             // Card de Técnicos
             AdminCard(
-                titulo = "Añadir técnicos",
+                titulo = "Gestionar técnicos",
                 icono = Icons.Filled.Engineering,
                 onClick = onVerTecnicos
             )
