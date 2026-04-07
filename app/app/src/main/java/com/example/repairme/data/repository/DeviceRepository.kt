@@ -149,4 +149,31 @@ class DeviceRepository : OperationsTemplateRepository() {
                 }
             })
     }
+    fun crearEquipoAdmin(
+        equipo: Equipo, //En vez de meterle mil parámetros le meto el objeto ya
+        error: (String) -> Unit,
+        exito: (String) -> Unit,
+        userId: (String)
+    ){
+
+
+        val dispositivoUid = newId(NODE)
+
+        if (dispositivoUid.isBlank()) {
+            error("Se produjo un error al creae el id del dispositivo")
+            return
+        }
+
+        var dispositivo = equipo.copy(
+            devicesId = dispositivoUid,
+            userId = userId
+        )
+
+        setValue("$NODE/$dispositivoUid", dispositivo,
+            ok = { exito(dispositivoUid) },
+            error = { error("Algo pasó y no se grabó en la bbdd") }
+        )
+    }
+
+
 }
