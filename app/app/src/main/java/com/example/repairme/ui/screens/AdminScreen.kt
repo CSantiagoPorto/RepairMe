@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
@@ -42,6 +43,7 @@ fun AdminScreen(
     onGestionServicios: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
+    onVerListaRecoger: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
     // 1. Creamos la lista de botones para la barra inferior, pasando los 3 datos que se indican en el modelo 'NavItem'
@@ -49,7 +51,9 @@ fun AdminScreen(
         NavItem("Reparar", Icons.Filled.Build, onVerAverias),
         NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
         NavItem("Clientes", Icons.Filled.Person, onVerClientes),
-        NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos)
+        NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos),
+        NavItem("Para recoger", Icons.Filled.CheckCircle, onVerListaRecoger)
+
     )
 
     // 2. Llamamos al modelo "BaseScreen" y le pasamos los datos de la barra inferior
@@ -104,6 +108,13 @@ fun AdminScreen(
                 titulo = "Presupuestos",
                 icono = Icons.Filled.RequestQuote,
                 onClick = onVerPresupuestos
+            )
+            //Card para ver las reparwaciones listas para recoger
+
+            AdminCard(
+                titulo = "Listas para recoger",
+                icono = Icons.Filled.CheckCircle,
+                onClick = onVerListaRecoger
             )
         }
     }
