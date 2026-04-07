@@ -28,6 +28,7 @@ import com.example.repairme.ui.screens.PresupuestoDetalleScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.example.repairme.ui.screens.PresupuestoQueVeElAdmin
 import com.example.repairme.ui.screens.ListaTecnicosScreen
+import com.example.repairme.ui.screens.NotificationsScreen
 
 
 class AppNavigation {
@@ -69,6 +70,7 @@ class AppNavigation {
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onIrNotificaciones = { navController.navigate("notifications") },
                     onVerPresupuestos = {averia->navController.navigate("detallePresuCliente/${averia.id}")},
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
@@ -85,6 +87,7 @@ class AppNavigation {
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onIrNotificaciones = { navController.navigate("notifications") },
                     onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
@@ -98,6 +101,7 @@ class AppNavigation {
 
             composable(Rutas.ADMINSCREEN.ruta){
                 AdminScreen(
+                    onIrNotificaciones = { navController.navigate("notifications") },
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) {
@@ -138,6 +142,7 @@ class AppNavigation {
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
                     onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
+                    onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) },
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
@@ -252,6 +257,19 @@ class AppNavigation {
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
                     }
 
+                )
+            }
+
+            // Pantalla de Notificaciones
+            composable("notifications") {
+                NotificationsScreen(
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onVolver = { navController.popBackStack() }
                 )
             }
 

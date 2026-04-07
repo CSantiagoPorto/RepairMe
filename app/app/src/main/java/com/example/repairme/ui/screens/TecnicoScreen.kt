@@ -38,6 +38,7 @@ fun TecnicoScreen(
     onAveriaClick: (String) -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
     onReparacionesFinalizadasClick: (String) -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
@@ -59,7 +60,9 @@ fun TecnicoScreen(
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion
+        bottomNavItems = itemsNavegacion,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = 0
     ) { modifier ->
         
         Column(

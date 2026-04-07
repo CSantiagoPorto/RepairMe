@@ -54,6 +54,7 @@ fun RepairsScreen(
     onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
     onLogOut: () -> Unit = {}
@@ -111,6 +112,8 @@ fun RepairsScreen(
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
         onVolver = onVolver,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = 0,
         bottomNavItems = listOf(
             NavItem("Reparar", Icons.Filled.Build, onVolver),
             NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
