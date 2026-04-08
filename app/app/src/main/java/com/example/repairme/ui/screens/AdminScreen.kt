@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.HomeRepairService
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.Card
@@ -43,6 +44,7 @@ fun AdminScreen(
     onGestionServicios: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
+    onNuevaAveria:()->Unit={},
 
     onVerListaRecoger: () -> Unit = {},
 
@@ -104,6 +106,12 @@ fun AdminScreen(
                 titulo = "Gestionar técnicos",
                 icono = Icons.Filled.Engineering,
                 onClick = onVerTecnicos
+            )
+            //Card para crear las avería nuevas
+            AdminCard(
+                titulo = "Crear Avería",
+                icono = Icons.Filled.HomeRepairService,
+                onClick = onNuevaAveria
             )
 
             // Card de Clientes
