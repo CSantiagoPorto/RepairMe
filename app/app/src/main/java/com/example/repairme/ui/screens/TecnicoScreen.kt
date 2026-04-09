@@ -180,7 +180,15 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick: (S
                     currentState = averia.estado,
                     orangePrimary = orangePrimary,
                     onStateChange = { newState ->
-                        repo.editarAveria(averia.copy(estado = newState), {}, {})
+                        val fechaListo= if(newState== EstadoAveria.ListaParaRecoger.name){
+                            System.currentTimeMillis()
+                        }else{
+                            averia.fechaListo//Si no está lista para recoger se conseva la fecha a null
+                        }
+                        repo.editarAveria(averia.copy(
+                            estado = newState,
+                            fechaListo = fechaListo),
+                            {}, {})
                     },
                     onAveriaClick = { onAveriaClick(averia.id) }
                 )

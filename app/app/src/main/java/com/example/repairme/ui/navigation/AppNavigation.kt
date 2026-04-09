@@ -27,8 +27,11 @@ import com.example.repairme.ui.screens.LoginScreen
 import com.example.repairme.ui.screens.PresupuestoDetalleScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.example.repairme.ui.screens.PresupuestoQueVeElAdmin
+
+import com.example.repairme.ui.screens.auth.admin.VerListasRecoger
 import com.example.repairme.ui.screens.ListaTecnicosScreen
 import com.example.repairme.ui.screens.NotificationsScreen
+import com.example.repairme.ui.screens.auth.admin.NuevaAveriaAdmin
 
 
 class AppNavigation {
@@ -113,7 +116,10 @@ class AppNavigation {
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
                     onVerClientes = {navController.navigate(Rutas.CLIENTES_ADMIN.ruta)},
-                    onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) }
+                    onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) },
+                    onVerListaRecoger = { navController.navigate(Rutas.LISTA_PARA_RECOGER_ADMIN.ruta) },
+                    onNuevaAveria ={navController.navigate(Rutas.CREAR_AVERIA_ADMIN.ruta)}
+
 
                 )
             }
@@ -259,6 +265,23 @@ class AppNavigation {
 
                 )
             }
+            composable(Rutas.LISTA_PARA_RECOGER_ADMIN.ruta) {
+                VerListasRecoger(
+                    onVolver = { navController.popBackStack() },
+                    onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    }
+                )
+            }
+
+
+
 
             // Pantalla de Notificaciones
             composable("notifications") {
@@ -271,6 +294,24 @@ class AppNavigation {
                     },
                     onVolver = { navController.popBackStack() }
                 )
+            }
+
+            composable (Rutas.CREAR_AVERIA_ADMIN.ruta){
+                NuevaAveriaAdmin (
+                    onVolver = { navController.popBackStack() },
+                    //onVerAveria = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
+                    onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    }
+
+                )
+
             }
 
 

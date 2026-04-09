@@ -233,4 +233,30 @@ class RepairRepository : OperationsTemplateRepository() {
             error = { msg-> fallo(msg) }
         )
     }
+
+    fun crearAveriaAdmin(
+        averia:Averia,
+        exito:()->Unit,
+        fallo:(String)->Unit,
+        userId: String//Si lo crea el admin hay que pasárselo ya sea por el buscador o porque lo acaba de crear
+
+    ){
+        val averiaUid= newId(NODE)
+
+        if(averiaUid.isBlank()){
+            fallo("Se produjo un error al crear el id de la avería")
+            return
+        }
+
+        val repair= averia.copy(
+            id=averiaUid,
+            userId= userId,
+            createdAt = System.currentTimeMillis()
+        )
+
+        setValue("$NODE/$averiaUid", repair,
+            ok = { exito() },
+            error = { msg -> fallo(msg) }
+        )
+    }
 }

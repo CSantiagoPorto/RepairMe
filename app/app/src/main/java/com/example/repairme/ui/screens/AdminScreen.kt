@@ -8,8 +8,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.HomeRepairService
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.Card
@@ -42,7 +44,12 @@ fun AdminScreen(
     onGestionServicios: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
+    onNuevaAveria:()->Unit={},
+
+    onVerListaRecoger: () -> Unit = {},
+
     onIrNotificaciones: () -> Unit = {},
+
     onLogOut: () -> Unit = {}
 ) {
     // 1. Creamos la lista de botones para la barra inferior, pasando los 3 datos que se indican en el modelo 'NavItem'
@@ -50,7 +57,13 @@ fun AdminScreen(
         NavItem("Reparar", Icons.Filled.Build, onVerAverias),
         NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
         NavItem("Clientes", Icons.Filled.Person, onVerClientes),
+
+        NavItem("Presupuestos", Icons.Filled.RequestQuote, onVerPresupuestos),
+        NavItem("Para recoger", Icons.Filled.CheckCircle, onVerListaRecoger),
+
+
         NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
+
     )
 
     // 2. Llamamos al modelo "BaseScreen" y le pasamos los datos de la barra inferior
@@ -94,6 +107,12 @@ fun AdminScreen(
                 icono = Icons.Filled.Engineering,
                 onClick = onVerTecnicos
             )
+            //Card para crear las avería nuevas
+            AdminCard(
+                titulo = "Crear Avería",
+                icono = Icons.Filled.HomeRepairService,
+                onClick = onNuevaAveria
+            )
 
             // Card de Clientes
             AdminCard(
@@ -107,6 +126,13 @@ fun AdminScreen(
                 titulo = "Presupuestos",
                 icono = Icons.Filled.RequestQuote,
                 onClick = onVerPresupuestos
+            )
+            //Card para ver las reparwaciones listas para recoger
+
+            AdminCard(
+                titulo = "Listas para recoger",
+                icono = Icons.Filled.CheckCircle,
+                onClick = onVerListaRecoger
             )
         }
     }

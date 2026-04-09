@@ -27,6 +27,9 @@ sealed class Rutas (val ruta:String) {
     //que reutilizar en las facturas
 
     data object PRESUPUESTOS_ADMIN: Rutas("presupuestosAdmin")
+    data object LISTA_PARA_RECOGER_ADMIN : Rutas("listaParaRecogerAdmin")
+    data object CREAR_AVERIA_ADMIN: Rutas("CrearAveria")
+
 
 }
 
