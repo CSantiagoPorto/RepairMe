@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Equipo
 import com.example.repairme.data.model.EstadoAveria
+import com.example.repairme.data.model.PrioridadAveria
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.AdminRepository
 import com.example.repairme.data.repository.DeviceRepository
@@ -55,12 +57,6 @@ import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
-import com.example.repairme.ui.theme.ColorEstadoAsignada
-import com.example.repairme.ui.theme.ColorEstadoDeclinada
-import com.example.repairme.ui.theme.ColorEstadoEnReparacion
-import com.example.repairme.ui.theme.ColorEstadoListaParaRecoger
-import com.example.repairme.ui.theme.ColorEstadoPendiente
-import com.example.repairme.ui.theme.ColorEstadoPresupuestada
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.naranjaLetras
@@ -79,7 +75,9 @@ fun NuevaAveriaAdmin(
 ) {
     val repoReparaciones = remember { RepairRepository() }
     val repoDispositivos = remember { DeviceRepository() }
-    val repoAdmin= remember { AdminRepository() }
+    val context = LocalContext.current
+
+    val repoAdmin= remember { AdminRepository(context) }
     val repoUsuario=remember { UserRepository() }
 
 
@@ -90,6 +88,7 @@ fun NuevaAveriaAdmin(
     var marca by rememberSaveable { mutableStateOf("") }
     var modelo by rememberSaveable { mutableStateOf("") }
     var numeroSerie by remember { mutableStateOf("") }
+    var prioridadSeleccionada by remember { mutableStateOf(PrioridadAveria.Media) }
 
 
     var añadirAveria by rememberSaveable { mutableStateOf(false) }
@@ -284,6 +283,7 @@ fun NuevaAveriaAdmin(
                         modifier = Modifier.fillMaxWidth()
                     )
 
+
                     // Número de serie (números y letras)
                     OutlinedTextField(
                         value = numeroSerie,
@@ -332,6 +332,32 @@ fun NuevaAveriaAdmin(
                                 .height(140.dp),
                             maxLines = 6
                         )
+                        Row() {
+                            Button(onClick = {
+                                prioridadSeleccionada= PrioridadAveria.Baja },
+                                colors= ButtonDefaults.buttonColors(
+                                    containerColor = if(prioridadSeleccionada == PrioridadAveria.Baja){
+                                        Naranja
+                                    }else{Color.Gray}
+                                )
+                                ) { Text("Baja")}
+                            Button(onClick = {
+                                prioridadSeleccionada= PrioridadAveria.Media },
+                                colors= ButtonDefaults.buttonColors(
+                                    containerColor = if(prioridadSeleccionada == PrioridadAveria.Media){
+                                        Naranja
+                                    }else{Color.Gray}
+                                )
+                                ) { Text("Media")}
+                            Button(onClick = {
+                                prioridadSeleccionada= PrioridadAveria.Alta },
+                                colors= ButtonDefaults.buttonColors(
+                                    containerColor = if(prioridadSeleccionada == PrioridadAveria.Alta){
+                                        Naranja
+                                    }else{Color.Gray}
+                                )
+                                ) { Text("Alta") }
+                        }
                     }
 
                     // Mensajes
@@ -389,6 +415,7 @@ fun NuevaAveriaAdmin(
                                                             descripcion = descripcionAveria,
                                                             equipoId = equipoId,
                                                             equipoNombre = "${marca} ${modelo}",
+                                                            prioridad = prioridadSeleccionada.name
 
                                                             ), userId = userId,
                                                         exito={ok=true},
@@ -433,6 +460,7 @@ fun NuevaAveriaAdmin(
                                                         descripcion = descripcionAveria,
                                                         equipoId = equipoId,
                                                         equipoNombre = "${marca} ${modelo}",
+                                                        prioridad = prioridadSeleccionada.name
 
                                                         ), userId = clienteSeleccionado.id,
                                                     exito = { ok = true },
@@ -457,7 +485,7 @@ fun NuevaAveriaAdmin(
                         ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Guardar equipo")
+                        Text("Guardar avería")
                     }
 
                     // Volver

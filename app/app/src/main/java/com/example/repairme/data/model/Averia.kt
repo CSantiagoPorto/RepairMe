@@ -10,6 +10,7 @@ data class Averia(
     val equipoNombre:String="",
     val descripcion: String = "",
     val estado: String = EstadoAveria.Pendiente.name,
+    val prioridad: String= PrioridadAveria.Media.name,
     val precioAproximado: Double = 0.0,
     val presupuestoDefinitivo: Double = 0.0,
     val presupuestoAceptado: Boolean? = null,
