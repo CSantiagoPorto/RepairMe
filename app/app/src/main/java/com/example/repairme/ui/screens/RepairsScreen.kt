@@ -1,18 +1,20 @@
 package com.example.repairme.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Person
@@ -20,8 +22,12 @@ import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,7 +50,6 @@ import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.data.model.EstadoTecnico
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepairsScreen(
@@ -58,10 +63,6 @@ fun RepairsScreen(
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
     onLogOut: () -> Unit = {}
-
-
-
-
 ) {
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     var cargando by remember { mutableStateOf(true) }
@@ -69,6 +70,9 @@ fun RepairsScreen(
     var averiaSeleccionada by remember { mutableStateOf<Averia?>(null) }
 
     var listaTecnicos by remember { mutableStateOf(listOf<Usuario>()) }
+    var busqueda by remember { mutableStateOf("") }
+    var filtroEstado by remember { mutableStateOf("Todos") }
+    var expandidoEstado by remember { mutableStateOf(false) }
 
     val repo =remember {  RepairRepository() }
     val repo2 = remember { TecnicoRepository() }
@@ -77,15 +81,15 @@ fun RepairsScreen(
     fun cargarAverias() {
         repo.obtenerAveriasTodas(
             fallo = { mensaje -> error = mensaje
-                    cargando=false},
+                cargando=false},
             exito = { averias -> listaAverias = averias
-            cargando=false}
+                cargando=false}
         )
     }
 
     LaunchedEffect(Unit) {
 
-      cargarAverias()
+        cargarAverias()
         repo2.obtenerTecnicos(
             fallo = { mensaje ->
                 error = mensaje
@@ -101,10 +105,19 @@ fun RepairsScreen(
         )
     }
 
+    val listaAveriasFiltradas = listaAverias.filter { averia ->
+        val coincideBusqueda =
+            averia.tituloAveria.contains(busqueda, ignoreCase = true) ||
+                    averia.equipoNombre.contains(busqueda, ignoreCase = true) ||
+                    averia.descripcion.contains(busqueda, ignoreCase = true)
 
+        val coincideEstado = when (filtroEstado) {
+            "Todos" -> true
+            else -> averia.estado == filtroEstado
+        }
 
-
-
+        coincideBusqueda && coincideEstado
+    }
 
     BaseScreen(
         title = "Reparaciones",
@@ -128,24 +141,87 @@ fun RepairsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            OutlinedTextField(
+                value = busqueda,
+                onValueChange = { busqueda = it },
+                label = { Text("Buscar por título, equipo o descripción") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = filtroEstado,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Filtrar por estado") },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable { expandidoEstado = true }
+                )
+
+                DropdownMenu(
+                    expanded = expandidoEstado,
+                    onDismissRequest = { expandidoEstado = false },
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                ) {
+                    listOf(
+                        "Todos",
+                        EstadoAveria.Pendiente.name,
+                        EstadoAveria.Asignada.name,
+                        EstadoAveria.Presupuestada.name,
+                        EstadoAveria.EnReparacion.name,
+                        EstadoAveria.ListaParaRecoger.name,
+                        EstadoAveria.Declinada.name
+                    ).forEach { opcion ->
+                        DropdownMenuItem(
+                            text = { Text(opcion) },
+                            onClick = {
+                                filtroEstado = opcion
+                                expandidoEstado = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            TextButton(
+                onClick = {
+                    busqueda = ""
+                    filtroEstado = "Todos"
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Limpiar filtros")
+            }
+
             when {
                 cargando -> CircularProgressIndicator()
                 error != null -> Text(text = "Error: $error", color = MaterialTheme.colorScheme.error)
-                listaAverias.isEmpty() -> Text("No hay reparaciones")
+                listaAveriasFiltradas.isEmpty() -> Text("No hay reparaciones")
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(listaAverias) { averia ->
+                        items(listaAveriasFiltradas) { averia ->
                             Card(modifier = Modifier.fillMaxWidth(),
                                 onClick ={ if(averia.tecnicoId.isBlank()){
                                     averiaSeleccionada=averia
                                 }else{averiaParaCambiarTecnico=averia}
                                 } ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
-                                    Row(
+                                    androidx.compose.foundation.layout.Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
@@ -192,7 +268,7 @@ fun RepairsScreen(
                     repo.editarAveria(
                         averiaEditada = averiaModificada,
                         exito={ averiaSeleccionada=null
-                              cargarAverias()},
+                            cargarAverias()},
                         fallo = {}
                     )
 
@@ -201,7 +277,7 @@ fun RepairsScreen(
         }
 
         averiaParaCambiarTecnico?.let {
-            averia->
+                averia->
             DialogoCambiarTecnico(
                 averia=averia,
                 tecnicos = listaTecnicos,
@@ -218,29 +294,29 @@ fun RepairsScreen(
 fun DialogoAsignar(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()->Unit, onAceptar:(String)-> Unit){
     var tecnicoSeleccionado by remember { mutableStateOf<String?>(null) }
 
-       AlertDialog(onDismissRequest = {onRechazar()},
-           text = {Column() {
-               tecnicos.forEach { tecnico->
-                   TextButton(onClick = {tecnicoSeleccionado=tecnico.id}) {
-                       Text(text = tecnico.name)
-                   }
-               }
-           }},
+    AlertDialog(onDismissRequest = {onRechazar()},
+        text = {Column() {
+            tecnicos.forEach { tecnico->
+                TextButton(onClick = {tecnicoSeleccionado=tecnico.id}) {
+                    Text(text = tecnico.name)
+                }
+            }
+        }},
 
-           confirmButton = {
-               TextButton(onClick = {
-                   tecnicoSeleccionado?.let { onAceptar(it) }
+        confirmButton = {
+            TextButton(onClick = {
+                tecnicoSeleccionado?.let { onAceptar(it) }
 
-               }) {Text(text ="Confirmar" ) }
+            }) {Text(text ="Confirmar" ) }
 
-           },
-           dismissButton = {
-               TextButton(onClick = {
-                   onRechazar()
-               }) {Text(text = "Cancelar") }
-           },
-           title =  {Text(text = "Asigne un técnico a la reparación")}
-       )
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                onRechazar()
+            }) {Text(text = "Cancelar") }
+        },
+        title =  {Text(text = "Asigne un técnico a la reparación")}
+    )
 
 }
 
@@ -254,7 +330,7 @@ fun DialogoCambiarTecnico(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()
 
         confirmButton = {
             TextButton(onClick = {
-               onAceptar()
+                onAceptar()
             }) {Text(text ="Confirmar" ) }
         },
         dismissButton = {
@@ -264,6 +340,5 @@ fun DialogoCambiarTecnico(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()
         },
         title =  {Text(text = "Esta reparación ya tiene técnico asignado \n Desea cambiarlo? \n El técnico asignado actualmente es: ${tecnicos.find { it.id == averia?.tecnicoId }?.name}") },
 
-    )
+        )
 }
-
