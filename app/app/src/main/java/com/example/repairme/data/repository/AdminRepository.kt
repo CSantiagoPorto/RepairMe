@@ -54,35 +54,31 @@ class AdminRepository(private val context: Context) : OperationsTemplateReposito
             authSecundaria.sendPasswordResetEmail(email)
             authSecundaria.signOut()//Hay que cerrarla y borrar la app
             appSecundaria.delete()
+            val usuario = Usuario(
+                id = uid,
+                name = nombre,
+                apellidos = apellidos,
+                email = email,
+                phone = telefono,
+                direccion = direccion,
+                codigoPostal = codigoPostal,
+                localidad = localidad,
+                dni = dni,
+                role = role,
+                createdAt = System.currentTimeMillis(),
+                // si es tecnico lo creamos como ACTIVO, si no se crea vacío
+                estado = if (role.lowercase() == "tecnico") EstadoTecnico.Activo.name else ""
+            )
+            setValue(uid, usuario,
+                ok = { exito(uid) },
+                error = { msg -> error(msg) }
+            )
         }.addOnFailureListener {
             fallo->
             error(fallo.message?: "Error al crear el admin un nuevo usuario")
         }
 
 
-
-        val uid= newId(NODE)
-
-        val usuario = Usuario(
-            id = uid,
-            name = nombre,
-            apellidos = apellidos,
-            email = email,
-            phone = telefono,
-            direccion = direccion,
-            codigoPostal = codigoPostal,
-            localidad = localidad,
-            dni = dni,
-            role = role,
-            createdAt = System.currentTimeMillis(),
-            // si es tecnico lo creamos como ACTIVO, si no se crea vacío
-            estado = if (role.lowercase() == "tecnico") EstadoTecnico.Activo.name else ""
-        )
-
-        setValue("$NODE/${uid}", usuario,
-            ok = { exito(uid) },
-            error = { msg -> error(msg) }
-        )
 
 
     }
