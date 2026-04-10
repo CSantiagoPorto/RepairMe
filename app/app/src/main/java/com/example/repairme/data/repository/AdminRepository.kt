@@ -10,7 +10,7 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class AdminRepository : OperationsTemplateRepository(){
+class AdminRepository(private val context: Context) : OperationsTemplateRepository(){
     private val auth = FirebaseAuth.getInstance()
     private val bbdd by lazy {
         FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
@@ -31,28 +31,56 @@ class AdminRepository : OperationsTemplateRepository(){
         error: (String) -> Unit,
         exito: (String) -> Unit
     ) {
-        val uid= newId(NODE)
 
-        val usuario = Usuario(
-            id = uid,
-            name = nombre,
-            apellidos = apellidos,
-            email = email,
-            phone = telefono,
-            direccion = direccion,
-            codigoPostal = codigoPostal,
-            localidad = localidad,
-            dni = dni,
-            role = role,
-            createdAt = System.currentTimeMillis(),
-            // si es tecnico lo creamos como ACTIVO, si no se crea vacío
-            estado = if (role.lowercase() == "tecnico") EstadoTecnico.Activo.name else ""
-        )
+        val opciones = FirebaseOptions.Builder()
+            .setApplicationId("1:494111396660:android:c664cf2d51e5747160cb61")
+            .setApiKey("AIzaSyA3EJzJZELSevtog0YP8vMkFjIT2win6IA")
+            .setDatabaseUrl("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+            .setProjectId("repairme-956fd")
+            .setStorageBucket("repairme-956fd.firebasestorage.app")
+            .setGcmSenderId("494111396660")
+            .build()
+        val appSecundaria = try {
+            FirebaseApp.getInstance("secundaria")
+        } catch (e: Exception) {
+            FirebaseApp.initializeApp(context,opciones, "secundaria")
+        }
+        val authSecundaria = FirebaseAuth.getInstance(appSecundaria)
 
-        setValue("$NODE/${uid}", usuario,
-            ok = { exito(uid) },
-            error = { msg -> error(msg) }
-        )
+        authSecundaria.createUserWithEmailAndPassword(email,java.util.UUID.randomUUID().toString()).addOnSuccessListener {
+            resultado->
+            val uid = resultado.user!!.uid
+            //Vamos a mandar un mail de reseteo
+            authSecundaria.sendPasswordResetEmail(email).addOnCompleteListener {
+                authSecundaria.signOut()//Hay que cerrarla y borrar la app
+                appSecundaria.delete()
+            }
+
+            val usuario = Usuario(
+                id = uid,
+                name = nombre,
+                apellidos = apellidos,
+                email = email,
+                phone = telefono,
+                direccion = direccion,
+                codigoPostal = codigoPostal,
+                localidad = localidad,
+                dni = dni,
+                role = role,
+                createdAt = System.currentTimeMillis(),
+                // si es tecnico lo creamos como ACTIVO, si no se crea vacío
+                estado = if (role.lowercase() == "tecnico") EstadoTecnico.Activo.name else ""
+            )
+            setValue("$NODE/$uid", usuario,
+                ok = { exito(uid) },
+                error = { msg -> error(msg) }
+            )
+        }.addOnFailureListener {
+            fallo->
+            error(fallo.message?: "Error al crear el admin un nuevo usuario")
+        }
+
+
 
 
     }

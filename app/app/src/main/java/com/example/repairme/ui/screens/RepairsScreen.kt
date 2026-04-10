@@ -49,6 +49,7 @@ import com.example.repairme.data.repository.TecnicoRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.data.model.EstadoTecnico
+import com.example.repairme.data.model.PrioridadAveria
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,7 +118,12 @@ fun RepairsScreen(
         }
 
         coincideBusqueda && coincideEstado
-    }
+    }.sortedWith(compareBy(
+        {if (it.tecnicoId.isBlank())0 else 1},
+        {try {
+            PrioridadAveria.valueOf(it.prioridad).ordinal
+        } catch (e: Exception) {Int.MAX_VALUE}}
+    ))
 
     BaseScreen(
         title = "Reparaciones",

@@ -299,7 +299,7 @@ class AppNavigation {
             composable (Rutas.CREAR_AVERIA_ADMIN.ruta){
                 NuevaAveriaAdmin (
                     onVolver = { navController.popBackStack() },
-                    //onVerAveria = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
                     onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
