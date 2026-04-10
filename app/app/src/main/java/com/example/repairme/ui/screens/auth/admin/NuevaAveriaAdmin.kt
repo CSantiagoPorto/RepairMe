@@ -296,7 +296,17 @@ fun NuevaAveriaAdmin(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
                         modifier = Modifier.fillMaxWidth()
                     )
-
+                    OutlinedTextField(
+                        value = tituloAveria,
+                        onValueChange = {
+                            tituloAveria = it
+                            error = null
+                            ok = false
+                        },
+                        label = { Text("Título de la avería") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                     // Añadir avería opcional (con un switch)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -418,7 +428,7 @@ fun NuevaAveriaAdmin(
                                                             prioridad = prioridadSeleccionada.name
 
                                                             ), userId = userId,
-                                                        exito={ok=true},
+                                                        exito={onVerAverias()},//Lo cambio para que navegue a la avería por si quiere asignar ya
                                                         fallo = {msg->error=msg}
                                                     )
                                                 }else{
@@ -463,11 +473,11 @@ fun NuevaAveriaAdmin(
                                                         prioridad = prioridadSeleccionada.name
 
                                                         ), userId = clienteSeleccionado.id,
-                                                    exito = { ok = true },
+                                                    exito = { onVerAverias()},
                                                     fallo = { msg -> error = msg }
                                                 )
                                             } else {
-                                                ok = true
+                                               onVerAverias()
                                             }
                                         },
                                         error = { msg -> error = msg }

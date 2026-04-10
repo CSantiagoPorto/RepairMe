@@ -51,9 +51,11 @@ class AdminRepository(private val context: Context) : OperationsTemplateReposito
             resultado->
             val uid = resultado.user!!.uid
             //Vamos a mandar un mail de reseteo
-            authSecundaria.sendPasswordResetEmail(email)
-            authSecundaria.signOut()//Hay que cerrarla y borrar la app
-            appSecundaria.delete()
+            authSecundaria.sendPasswordResetEmail(email).addOnCompleteListener {
+                authSecundaria.signOut()//Hay que cerrarla y borrar la app
+                appSecundaria.delete()
+            }
+
             val usuario = Usuario(
                 id = uid,
                 name = nombre,
@@ -69,7 +71,7 @@ class AdminRepository(private val context: Context) : OperationsTemplateReposito
                 // si es tecnico lo creamos como ACTIVO, si no se crea vacío
                 estado = if (role.lowercase() == "tecnico") EstadoTecnico.Activo.name else ""
             )
-            setValue(uid, usuario,
+            setValue("$NODE/$uid", usuario,
                 ok = { exito(uid) },
                 error = { msg -> error(msg) }
             )
