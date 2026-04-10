@@ -31,7 +31,12 @@ class AuthRepository {
                 bbdd.getReference("users").child(id).get().addOnSuccessListener { snapshot ->
                     val usuario = snapshot.getValue(Usuario::class.java)
                     if (usuario != null) {
-                        validacionOK(usuario.copy(id = id))
+                        if(usuario.estado== "Inactivo"){
+                            autenticacion.signOut()
+                            validacionError("Su cuenta ha sido desactivada. Si desea reactivarla pónase en contacto con el administrador")
+
+                        }else{validacionOK(usuario.copy(id = id))}
+
                     } else {
                         validacionError("No se encontró el usuario")
                     }

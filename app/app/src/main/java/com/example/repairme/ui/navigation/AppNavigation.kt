@@ -202,7 +202,12 @@ class AppNavigation {
 
             composable(Rutas.PROFILE.ruta) {
                 ProfileScreen(
-                    onVolver = { navController.popBackStack() }
+                    onVolver = { navController.popBackStack() },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    }
+
                 )
             }
 

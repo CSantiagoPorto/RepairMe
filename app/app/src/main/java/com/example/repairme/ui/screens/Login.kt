@@ -83,8 +83,8 @@ fun LoginScreen(
                     "TECNICO"-> onNavigateToTecnicoScreen()
                 }
             },
-            validacionError = {noEncontrado->
-                Toast.makeText(context, "Algo ha fallado y no se encontró el usuario",Toast.LENGTH_SHORT).show()
+            validacionError = {mensaje->
+                Toast.makeText(context, mensaje,Toast.LENGTH_SHORT).show()
             }
         )
 

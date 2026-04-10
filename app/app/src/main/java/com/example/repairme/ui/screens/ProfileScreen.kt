@@ -45,7 +45,8 @@ import androidx.compose.material3.OutlinedTextField
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onVolver: () -> Unit = {}
+    onVolver: () -> Unit = {},
+    onLogOut: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -162,7 +163,7 @@ fun ProfileScreen(
 
                 else -> {
                     when (usuario?.role?.lowercase()) {
-                        "user" -> PerfilUser(usuario = usuario!!, onVolver = onVolver)
+                        "user" -> PerfilUser(usuario = usuario!!, onVolver = onVolver, onLogOut = onLogOut)
                         "tecnico" -> PerfilTecnico(usuario = usuario!!, onVolver = onVolver)
                         "admin" -> PerfilAdmin(usuario = usuario!!, onVolver = onVolver)
                         else -> {
@@ -184,7 +185,8 @@ fun ProfileScreen(
 @Composable
 fun PerfilUser(
     usuario: Usuario,
-    onVolver: () -> Unit
+    onVolver: () -> Unit,
+    onLogOut: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -289,6 +291,35 @@ fun PerfilUser(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text("Guardar cambios")
+    }
+    Button(
+        onClick = {
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+            if (uid == null) {
+                Toast.makeText(context, "Usuario no válido", Toast.LENGTH_SHORT).show()
+                return@Button
+            }
+            FirebaseDatabase
+                .getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+                .getReference("users")
+                .child(uid)
+                .updateChildren(mapOf("estado" to "Inactivo") as Map<String, Any>)
+                .addOnSuccessListener {
+                    Log.d("PROFILE", "Perfil actualizado")
+                    Toast.makeText(context, "Perfil actualizado", Toast.LENGTH_SHORT).show()
+                    FirebaseAuth.getInstance().signOut()
+                    onLogOut()
+                }
+                .addOnFailureListener { e ->
+                    Log.d("PROFILE", "Error actualizando perfil: ${e.message}")
+                    Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
+                }
+
+        },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Dar de baja usuario")
     }
 
     Button(
