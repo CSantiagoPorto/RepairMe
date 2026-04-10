@@ -250,9 +250,9 @@ fun ListaTecnicosScreen(
                                                 text = { Text(EstadoTecnico.Activo.name) },
                                                 onClick = {
                                                     expandido = false
-                                                    repo.editarTecnicoParcial(
+                                                    repo.cambiarEstadoTecnico(
                                                         tecnicoId = tecnico.id,
-                                                        updates = mapOf("estado" to EstadoTecnico.Activo.name),
+                                                        nuevoEstado = EstadoTecnico.Activo.name,
                                                         fallo = { mensaje ->
                                                             error = mensaje
                                                         },
@@ -266,9 +266,9 @@ fun ListaTecnicosScreen(
                                                 text = { Text(EstadoTecnico.Inactivo.name) },
                                                 onClick = {
                                                     expandido = false
-                                                    repo.editarTecnicoParcial(
+                                                    repo.cambiarEstadoTecnico(
                                                         tecnicoId = tecnico.id,
-                                                        updates = mapOf("estado" to EstadoTecnico.Inactivo.name),
+                                                        nuevoEstado = EstadoTecnico.Inactivo.name,
                                                         fallo = { mensaje ->
                                                             error = mensaje
                                                         },
@@ -282,9 +282,9 @@ fun ListaTecnicosScreen(
                                                 text = { Text(EstadoTecnico.Vacaciones.name) },
                                                 onClick = {
                                                     expandido = false
-                                                    repo.editarTecnicoParcial(
+                                                    repo.cambiarEstadoTecnico(
                                                         tecnicoId = tecnico.id,
-                                                        updates = mapOf("estado" to EstadoTecnico.Vacaciones.name),
+                                                        nuevoEstado = EstadoTecnico.Vacaciones.name,
                                                         fallo = { mensaje ->
                                                             error = mensaje
                                                         },
