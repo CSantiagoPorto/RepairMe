@@ -210,6 +210,7 @@ fun ClientesPantallaAdminScreen(
                                     reparaciones.forEach { averia ->
                                         val colorEstado = when (averia.estado) {
                                             EstadoAveria.Pendiente.name -> ColorEstadoPendiente
+                                            EstadoAveria.PendienteReasignar.name -> ColorEstadoPendiente
                                             EstadoAveria.Asignada.name -> ColorEstadoAsignada
                                             EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
                                             EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion

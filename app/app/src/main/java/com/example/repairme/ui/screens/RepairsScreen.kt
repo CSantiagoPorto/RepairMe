@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RequestQuote
@@ -36,21 +38,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
-import com.example.repairme.data.repository.RepairRepository
-import com.example.repairme.data.repository.NotificationRepository
-import com.example.repairme.ui.theme.naranjaLetras
+import com.example.repairme.data.model.EstadoTecnico
+import com.example.repairme.data.model.PrioridadAveria
 import com.example.repairme.data.model.Usuario
+import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.TecnicoRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
-import com.example.repairme.data.model.EstadoTecnico
-import com.example.repairme.data.model.PrioridadAveria
+import com.example.repairme.ui.theme.naranjaLetras
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +72,7 @@ fun RepairsScreen(
     var cargando by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var averiaSeleccionada by remember { mutableStateOf<Averia?>(null) }
+    var averiaAEliminar by remember { mutableStateOf<Averia?>(null) }
 
     var listaTecnicos by remember { mutableStateOf(listOf<Usuario>()) }
     var busqueda by remember { mutableStateOf("") }
@@ -184,6 +187,7 @@ fun RepairsScreen(
                     listOf(
                         "Todos",
                         EstadoAveria.Pendiente.name,
+                        EstadoAveria.PendienteReasignar.name,
                         EstadoAveria.Asignada.name,
                         EstadoAveria.Presupuestada.name,
                         EstadoAveria.EnReparacion.name,
@@ -227,33 +231,55 @@ fun RepairsScreen(
                                     averiaSeleccionada=averia
                                 }else{averiaParaCambiarTecnico=averia}
                                 } ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    androidx.compose.foundation.layout.Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                Box(
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                            .padding(end = 24.dp)
                                     ) {
-                                        Text(
-                                            text = averia.tituloAveria,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            color = naranjaLetras
-                                        )
-                                        Text(
-                                            text = averia.estado,
-                                            fontSize = 12.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(text = averia.equipoNombre, fontSize = 14.sp)
-                                    if (averia.descripcion.isNotBlank()) {
+                                        androidx.compose.foundation.layout.Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                text = averia.tituloAveria,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp,
+                                                color = naranjaLetras
+                                            )
+                                            Text(
+                                                text = averia.estado,
+                                                fontSize = 12.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = averia.descripcion,
-                                            fontSize = 13.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                        Text(text = averia.equipoNombre, fontSize = 14.sp)
+                                        if (averia.descripcion.isNotBlank()) {
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Text(
+                                                text = averia.descripcion,
+                                                fontSize = 13.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
+
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Eliminar avería",
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .padding(8.dp)
+                                            .size(18.dp)
+                                            .clickable {
+                                                averiaAEliminar = averia
+                                            }
+                                    )
                                 }
                             }
                         }
@@ -301,6 +327,44 @@ fun RepairsScreen(
                 onAceptar = {
                     averiaParaCambiarTecnico=null
                     averiaSeleccionada=averia
+                }
+            )
+        }
+
+        averiaAEliminar?.let { averia ->
+            AlertDialog(
+                onDismissRequest = { averiaAEliminar = null },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            repo.eliminarAveria(
+                                averiaId = averia.id,
+                                exito = {
+                                    averiaAEliminar = null
+                                    cargarAverias()
+                                },
+                                fallo = { mensaje ->
+                                    error = mensaje
+                                    averiaAEliminar = null
+                                }
+                            )
+                        }
+                    ) {
+                        Text("Eliminar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { averiaAEliminar = null }
+                    ) {
+                        Text("Cancelar")
+                    }
+                },
+                title = {
+                    Text("Eliminar avería")
+                },
+                text = {
+                    Text("¿Seguro que quieres eliminar esta avería?")
                 }
             )
         }

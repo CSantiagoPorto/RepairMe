@@ -57,20 +57,19 @@ class DeviceRepository : OperationsTemplateRepository() {
             return
         }
 
+        //esto funciona ordenando por ese hijo, busca los que son de ese user y obtiene el objeto
         ref(NODE).orderByChild("userId").equalTo(userId).get().addOnSuccessListener { snapshot ->
             for (child in snapshot.children) {
                 val equipo = child.getValue(Equipo::class.java)
                 if (equipo != null) {
-                    listaEquipos.add(equipo)
+                    val equipoConId = equipo.copy(devicesId = child.key ?: "")
+                    listaEquipos.add(equipoConId)
                 }
             }
             exito(listaEquipos)
         }.addOnFailureListener { e ->
             error("Algo pasó y no se pudieron recuperar los equipos")
         }
-
-        //Esta línea  dispositivoRef.orderByChild("userId").equalTo(userId).get().addOnSuccessListener
-        //funciona ordenando por ese hijo, busca los que son de ese user y obtiene el objeto
     }
 
     //Para editar el equipo completo (reescribe el objeto Equipo)

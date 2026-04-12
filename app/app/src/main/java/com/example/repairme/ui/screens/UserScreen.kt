@@ -30,8 +30,7 @@ import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
-import com.example.repairme.ui.theme.GrisFondoPantalla
-import com.example.repairme.ui.theme.Naranja
+import com.example.repairme.ui.theme.*
 
 @Composable
 fun UserScreen(
@@ -54,12 +53,12 @@ fun UserScreen(
     // Guardan los datos que vienen de firebase
     var listaEquipos by remember { mutableStateOf(listOf<Equipo>()) }
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
+    var indiceEquipoExpandido by remember { mutableStateOf<Int?>(null) }
     var listaPresupuestadas by remember { mutableStateOf(listOf<Averia>()) }
     var dialogoAveria by remember { mutableStateOf<Averia?>(null) }
     var notificacionesNoLeidas by remember { mutableStateOf(0) }
     val repo = remember { RepairRepository() }//Necesito el repo para aceptar el presu
     val notificationRepo = remember { NotificationRepository() }
-
 
     LaunchedEffect(Unit) {
         // Escuchar notificaciones no leídas en tiempo real
@@ -70,9 +69,9 @@ fun UserScreen(
     }
 
     LaunchedEffect(equiposExpandido) {
-        val repo = DeviceRepository()
+        val repoEquipos = DeviceRepository()
         if (equiposExpandido) {//Esot sólo se va a cargar cuando la card se abra
-            repo.obtenerEquipos(
+            repoEquipos.obtenerEquipos(
                 error = { mensaje ->
                     Log.d("Si ves este mensaje es porque no está obteniendo los equipos", mensaje)
                     onVolver()
@@ -82,6 +81,20 @@ fun UserScreen(
                     listaEquipos = equipos
                 }
             )
+
+            // Cargamos también las averías del usuario para poder mostrarlas debajo de cada equipo
+            repo.obtenerAveriaUser(
+                fallo = { mensaje ->
+                    Log.d("Si ves este mensaje es porque no está obteniendo las averías de los equipos", mensaje)
+                    onVolver()
+                },
+                exito = { averias ->
+                    Log.d("Log de UserScreen", "Averías para equipos recibidas: ${averias.size}")
+                    listaAverias = averias
+                }
+            )
+        } else {
+            indiceEquipoExpandido = null
         }
     }
 
@@ -144,7 +157,7 @@ fun UserScreen(
         onNotificationsClick = onIrNotificaciones,
         notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->
-        
+
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -174,22 +187,100 @@ fun UserScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
-                       /* TextButton(onClick = { onAddEquipo() }) {
-                            Text("Añadir equipo", color = Naranja)
-                        }*/
-                        listaEquipos.forEach { equipo ->
+                        /* TextButton(onClick = { onAddEquipo() }) {
+                             Text("Añadir equipo", color = Naranja)
+                         }*/
+                        listaEquipos.forEachIndexed { index, equipo ->
+                            val nombreEquipo = "${equipo.deviceBrand} ${equipo.deviceModel}".trim()
+
+                            val averiasDelEquipo = listaAverias.filter { averia ->
+                                averia.equipoId == equipo.devicesId ||
+                                        averia.equipoNombre.trim().equals(nombreEquipo, ignoreCase = true)
+                            }
+
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
-                                    .clickable { onVerEquipos(equipo) },
+                                    .clickable {
+                                        indiceEquipoExpandido =
+                                            if (indiceEquipoExpandido == index) null else index
+                                    },
                                 shape = RoundedCornerShape(9.dp),
                                 border = BorderStroke(1.dp, Naranja)
                             ) {
-                                Text(
-                                    text = "${equipo.deviceBrand} ${equipo.deviceModel}",
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = "${equipo.deviceBrand} ${equipo.deviceModel}",
+                                    )
+
+                                    if (indiceEquipoExpandido == index) {
+                                        Spacer(modifier = Modifier.height(12.dp))
+
+                                        if (averiasDelEquipo.isEmpty()) {
+                                            Text(
+                                                text = "Este equipo no tiene averías",
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                fontSize = 14.sp
+                                            )
+                                        } else {
+                                            averiasDelEquipo.forEach { averia ->
+                                                val colorEstado = when (averia.estado) {
+                                                    EstadoAveria.Pendiente.name -> ColorEstadoPendiente
+                                                    EstadoAveria.PendienteReasignar.name -> ColorEstadoPendiente
+                                                    EstadoAveria.Asignada.name -> ColorEstadoAsignada
+                                                    EstadoAveria.PendienteMaterial.name -> ColorEstadoPendiente
+                                                    EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
+                                                    EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion
+                                                    EstadoAveria.Reparado.name -> ColorEstadoListaParaRecoger
+                                                    EstadoAveria.ListaParaRecoger.name -> ColorEstadoListaParaRecoger
+                                                    EstadoAveria.Declinada.name -> ColorEstadoDeclinada
+                                                    else -> GrisFondoPantalla
+                                                }
+
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                Surface(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(vertical = 3.dp)
+                                                        .clickable { onVerAverias(averia) },
+                                                    color = colorEstado,
+                                                    shape = RoundedCornerShape(9.dp)
+                                                ) {
+                                                    Column(
+                                                        modifier = Modifier.padding(9.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = averia.tituloAveria,
+                                                            fontWeight = FontWeight.Bold
+                                                        )
+
+                                                        if (averia.descripcion.isNotBlank()) {
+                                                            Spacer(modifier = Modifier.height(4.dp))
+                                                            Text(
+                                                                text = averia.descripcion,
+                                                                fontSize = 14.sp
+                                                            )
+                                                        }
+
+                                                        Spacer(modifier = Modifier.height(4.dp))
+                                                        Row {
+                                                            Text(
+                                                                text = "Estado: ",
+                                                                color = naranjaLetras
+                                                            )
+                                                            Text(
+                                                                text = averia.estado,
+                                                                color = naranjaLetras
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             /*Text(
                             //Ahora mismo los equipos se muestran feos, en un text
@@ -232,7 +323,7 @@ fun UserScreen(
                                     // MOSTRAMOS EL ESTADO AQUÍ
                                     Text(
                                         text = "Estado: ${averia.estado}",
-                                        color = if (averia.estado == "reparado" || averia.estado == "Reparado") 
+                                        color = if (averia.estado == "reparado" || averia.estado == "Reparado")
                                             Color(0xFF4CAF50) else Naranja,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Medium
@@ -268,15 +359,15 @@ fun UserScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
-                                    //.clickable { dialogoAveria = averia },
+                                //.clickable { dialogoAveria = averia },
                                 shape = RoundedCornerShape(9.dp),
                                 border = BorderStroke(1.dp, Naranja)
                             ) {
                                 Column(modifier= Modifier.padding(16.dp)) {
                                     Text(
-                                    text = "${averia.equipoNombre} ${averia.tituloAveria}"
+                                        text = "${averia.equipoNombre} ${averia.tituloAveria}"
 
-                                )
+                                    )
                                     Text(text = averia.estado)
                                     if(averia.estado== EstadoAveria.Presupuestada.name||averia.presupuestoAceptado==true){
                                         TextButton(onClick = { Log.d("AVERIA_ID", "id: ${averia.id}")
@@ -304,7 +395,7 @@ fun UserScreen(
         AlertDialog(onDismissRequest = {onCerrar()},
             text = {Column() {
                 averia.lineasPresupuesto.forEach {
-                    linea->
+                        linea->
                     Text("${linea.concepto}, ${linea.cantidad}, ${linea.precioUnitario}")
 
 
@@ -335,39 +426,39 @@ fun UserScreen(
         )
 
     }
-  /*  dialogoAveria?.let {
-        averia ->
-        DialogoPresupuestos(
-            averia=averia,
-            onCerrar = { dialogoAveria = null },
-            onRechazar = {
-                repo.editarAveria(
-                    averiaEditada = averia.copy(
-                        presupuestoAceptado = false,
-                        estado= EstadoAveria.Declinada.name
-                ),
-                    exito = {
-                        listaPresupuestadas=listaPresupuestadas.filter { it.id!=averia.id }
-                        dialogoAveria=null
-                    },
-                    fallo={dialogoAveria=null}
-                )
-            },
-            onAceptar = {
-                repo.editarAveria(
-                    averiaEditada = averia.copy(
-                        presupuestoAceptado = true,
-                        estado= EstadoAveria.EnReparacion.name
-                    ),
-                    exito = {
-                        listaPresupuestadas=listaPresupuestadas.filter { it.id!=averia.id }
-                        dialogoAveria=null
-                    },
-                    fallo={dialogoAveria=null}
-                )
-            }//Hay que cerrar el dialogo
-        )
-    }*/
+    /*  dialogoAveria?.let {
+          averia ->
+          DialogoPresupuestos(
+              averia=averia,
+              onCerrar = { dialogoAveria = null },
+              onRechazar = {
+                  repo.editarAveria(
+                      averiaEditada = averia.copy(
+                          presupuestoAceptado = false,
+                          estado= EstadoAveria.Declinada.name
+                  ),
+                      exito = {
+                          listaPresupuestadas=listaPresupuestadas.filter { it.id!=averia.id }
+                          dialogoAveria=null
+                      },
+                      fallo={dialogoAveria=null}
+                  )
+              },
+              onAceptar = {
+                  repo.editarAveria(
+                      averiaEditada = averia.copy(
+                          presupuestoAceptado = true,
+                          estado= EstadoAveria.EnReparacion.name
+                      ),
+                      exito = {
+                          listaPresupuestadas=listaPresupuestadas.filter { it.id!=averia.id }
+                          dialogoAveria=null
+                      },
+                      fallo={dialogoAveria=null}
+                  )
+              }//Hay que cerrar el dialogo
+          )
+      }*/
 }
 
 @Composable
@@ -387,7 +478,6 @@ fun UserCard(titulo: String, icono: ImageVector, onClick: () -> Unit) {
         }
     }
 }
-
 
 @Preview(showSystemUi = true)
 @Composable
