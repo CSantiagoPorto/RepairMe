@@ -15,10 +15,9 @@ sealed class Rutas (val ruta:String) {
     data object DETALLE_AVERIA_FINALIZADA: Rutas("detalleReparacionFinalizada/{averiaId}")
     data object DETALLE_AVERIA_TECNICO: Rutas("detalleAveriaTecnico/{averiaId}")
 
+    data object DETALLE_AVERIA_COMUN: Rutas("detalleAveriaComun/{averiaId}/{puedeEscribir}/{autorRol}/{autorNombre}")
     data object PROFILE : Rutas("profile")
-
     data object SERVICES : Rutas("services")
-
     data object SERVICES_ADMIN : Rutas("services_admin")
     data object CLIENTES_ADMIN : Rutas("clientesPantallaAdmin")
     data object DETALLE_PRESUPUESTO : Rutas("detallePresuCliente/{averiaId}")//Esta es la nueva ruta para

@@ -39,10 +39,7 @@ import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.LineaPresupuesto
 import com.example.repairme.data.repository.RepairRepository
 import androidx.compose.ui.graphics.Color
-import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +57,6 @@ fun DetalleAveriaTecnicoScreen(
     var precioUnidad by remember { mutableStateOf("") }
     var lineas by remember { mutableStateOf(listOf<LineaPresupuesto>()) }
 
-
     fun cargarAveria() {
         repo.obtenerAveriaId(
             averiaId = averiaId,
@@ -71,6 +67,7 @@ fun DetalleAveriaTecnicoScreen(
 
         )
     }
+
     LaunchedEffect(Unit) {
 
         cargarAveria()
@@ -118,6 +115,7 @@ fun DetalleAveriaTecnicoScreen(
                             Text(text = averia?.tituloAveria?:"Sin nombre")
                             Text(text = averia?.descripcion?:"No hay descripción")
                         }
+
                         item {
                             TextField(
                                 value = concepto,

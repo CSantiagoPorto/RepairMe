@@ -67,7 +67,7 @@ import com.example.repairme.ui.theme.naranjaLetras
 fun RepairsScreen(
     onAddAveria: () -> Unit = {},
     onVolver: () -> Unit = {},
-    onVerAveria: () -> Unit = {},
+    onVerAveria: (Averia) -> Unit = {},
     onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
@@ -305,6 +305,12 @@ fun RepairsScreen(
                                                 fontSize = 13.sp,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
+                                        }
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        TextButton(
+                                            onClick = { onVerAveria(averia) }
+                                        ) {
+                                            Text("Ver detalle")
                                         }
                                     }
 

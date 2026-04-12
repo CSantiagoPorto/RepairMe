@@ -32,6 +32,7 @@ import com.example.repairme.ui.screens.auth.admin.VerListasRecoger
 import com.example.repairme.ui.screens.ListaTecnicosScreen
 import com.example.repairme.ui.screens.NotificationsScreen
 import com.example.repairme.ui.screens.auth.admin.NuevaAveriaAdmin
+import com.example.repairme.ui.screens.DetalleAveriaComunScreen
 
 
 class AppNavigation {
@@ -71,6 +72,9 @@ class AppNavigation {
                 UserScreen(
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
+                    onVerAverias = { averia ->
+                        navController.navigate("detalleAveriaComun/${averia.id}/false/user/Cliente")
+                    },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
                     onIrNotificaciones = { navController.navigate("notifications") },
@@ -90,6 +94,9 @@ class AppNavigation {
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onVerDetalleAveria = { averiaId ->
+                        navController.navigate("detalleAveriaComun/$averiaId/true/tecnico/Técnico")
+                    },
                     onIrNotificaciones = { navController.navigate("notifications") },
                     onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
                     onLogOut = {
@@ -143,7 +150,9 @@ class AppNavigation {
 
                 RepairsScreen(
                     onVolver = { navController.popBackStack() },
-                    onVerAveria = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerAveria = { averia ->
+                        navController.navigate("detalleAveriaComun/${averia.id}/true/admin/Admin")
+                    },
                     onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
@@ -186,6 +195,28 @@ class AppNavigation {
                 val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
                 DetalleAveriaTecnicoScreen(
                     averiaId = averiaId,
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+            composable(
+                Rutas.DETALLE_AVERIA_COMUN.ruta,
+                listOf(
+                    navArgument("averiaId") { type = NavType.StringType },
+                    navArgument("puedeEscribir") { type = NavType.BoolType },
+                    navArgument("autorRol") { type = NavType.StringType },
+                    navArgument("autorNombre") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
+                val puedeEscribir = backStackEntry.arguments?.getBoolean("puedeEscribir") ?: false
+                val autorRol = backStackEntry.arguments?.getString("autorRol") ?: ""
+                val autorNombre = backStackEntry.arguments?.getString("autorNombre") ?: ""
+
+                DetalleAveriaComunScreen(
+                    averiaId = averiaId,
+                    puedeEscribirUpdate = puedeEscribir,
+                    autorRol = autorRol,
+                    autorNombre = autorNombre,
                     onVolver = { navController.popBackStack() }
                 )
             }

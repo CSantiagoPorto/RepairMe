@@ -37,6 +37,7 @@ import com.example.repairme.ui.theme.botonNaranja
 fun TecnicoScreen(
     onAddEquipo: () -> Unit = {},
     onAveriaClick: (String) -> Unit = {},
+    onVerDetalleAveria: (String) -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
@@ -74,7 +75,7 @@ fun TecnicoScreen(
         onNotificationsClick = onIrNotificaciones,
         notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->
-        
+
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -85,7 +86,8 @@ fun TecnicoScreen(
                 "repair" -> RepairListScreen(
                     orangePrimary = orangePrimary,
                     onBack = { currentScreen = null },
-                    onAveriaClick = onAveriaClick
+                    onAveriaClick = onAveriaClick,
+                    onVerDetalleAveria = onVerDetalleAveria
                 )
                 "repaired" -> RepairedListScreen(
                     orangePrimary = orangePrimary,
@@ -165,10 +167,15 @@ fun CardItem(
 // --- LÓGICA DE DATOS (BACKEND) RESTAURADA ---
 
 @Composable
-fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick: (String) -> Unit) {
+fun RepairListScreen(
+    orangePrimary: Color,
+    onBack: () -> Unit,
+    onAveriaClick: (String) -> Unit,
+    onVerDetalleAveria: (String) -> Unit
+) {
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     val repo = remember { RepairRepository() }
-    
+
     LaunchedEffect(Unit) {
         repo.obtenerAveriasTecnico(
             fallo = {},
@@ -200,7 +207,8 @@ fun RepairListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick: (S
                             fechaListo = fechaListo),
                             {}, {})
                     },
-                    onAveriaClick = { onAveriaClick(averia.id) }
+                    onAveriaClick = { onAveriaClick(averia.id) },
+                    onVerDetalleClick = { onVerDetalleAveria(averia.id) }
                 )
             }
         }
@@ -243,7 +251,8 @@ fun RepairItem(
     currentState: String = "Esperando confirmación",
     orangePrimary: Color = Color(0xFFE67E22),
     onStateChange: (String) -> Unit = {},
-    onAveriaClick: () -> Unit = {}
+    onAveriaClick: () -> Unit = {},
+    onVerDetalleClick: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
     val states = listOf(
@@ -260,24 +269,78 @@ fun RepairItem(
         onClick = { onAveriaClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(text = title, fontSize = 14.sp, modifier = Modifier.weight(1f))
-            //Si está en estado== asignada me va a mostrar el botón de presupuestar
-            if(currentState== EstadoAveria.Asignada.name){
-                Button(onClick = onAveriaClick, colors = ButtonDefaults.buttonColors(containerColor = AzulAdmin), modifier = Modifier.height(36.dp)
-                ) { Text("Presupuestar", fontSize = 12.sp, color = Color.White)}
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Box {
-                Button(onClick = { expanded = true }, colors = ButtonDefaults.buttonColors(containerColor = buttonColor), modifier = Modifier.height(36.dp)) {
-                    Text(text = currentState, fontSize = 12.sp, color = Color.White)
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f)
+                )
 
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Box {
+                    Surface(
+                        color = buttonColor,
+                        shape = RoundedCornerShape(50),
+                        modifier = Modifier
+                            .clickable { expanded = true }
+                    ) {
+                        Text(
+                            text = currentState,
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        states.forEach { state ->
+                            DropdownMenuItem(
+                                text = { Text(state) },
+                                onClick = {
+                                    onStateChange(state)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                //Si está en estado== asignada me va a mostrar el botón de presupuestar
+                if(currentState== EstadoAveria.Asignada.name){
+                    Button(
+                        onClick = onAveriaClick,
+                        colors = ButtonDefaults.buttonColors(containerColor = AzulAdmin),
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Text("Presupuestar", fontSize = 12.sp, color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
 
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    states.forEach { state ->
-                        DropdownMenuItem(text = { Text(state) }, onClick = { onStateChange(state); expanded = false })
-                    }
+                //para ver detalles de la avería (y actualizaciones)
+                Button(
+                    onClick = onVerDetalleClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = orangePrimary),
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    Text("Ver detalle", fontSize = 12.sp, color = Color.White)
                 }
             }
         }
