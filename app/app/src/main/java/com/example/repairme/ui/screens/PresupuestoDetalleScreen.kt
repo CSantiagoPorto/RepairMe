@@ -41,12 +41,14 @@ import androidx.core.content.FileProvider
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.Usuario
+import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.naranjaLetras
 import com.example.repairme.utils.generarPdf
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +63,12 @@ fun PresupuestoDetalleScreen(
     //Voy a necesitar métodos de dos repos usuarios y de repairs
     val repairRepo = remember { RepairRepository() }
     val userRepo = remember { UserRepository() }
+    val notificationRepo = remember { NotificationRepository() }
+    val auth = remember { FirebaseAuth.getInstance() }
     var averia by remember { mutableStateOf<Averia?>(null) }
     var cliente by remember { mutableStateOf<Usuario?>(null) }
     var tecnico by remember { mutableStateOf<Usuario?>(null) }
+    var usuarioActual by remember { mutableStateOf<Usuario?>(null) }
     //Le meto un indicador de carga por las pruebas
 
     var cargando by remember { mutableStateOf(true) }
@@ -86,6 +91,15 @@ fun PresupuestoDetalleScreen(
                     id = resultado.tecnicoId,
                     exito = { usuariot -> tecnico = usuariot }
                 )
+                // Obtener el usuario actual (el que está viendo la pantalla)
+                val currentUserId = auth.currentUser?.uid
+                if (currentUserId != null) {
+                    userRepo.obtenerCualquierUsuarioPorId(
+                        fallo = {},
+                        id = currentUserId,
+                        exito = { usuario -> usuarioActual = usuario }
+                    )
+                }
                 cargando = false
             }
         )
@@ -237,12 +251,21 @@ fun PresupuestoDetalleScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
                                 TextButton(onClick = {
+                                    Log.d("PresupuestoDetalle", "Aceptar presupuesto - usuarioActual: ${usuarioActual?.name}")
                                     repairRepo.editarAveria(
                                         averiaEditada = averia!!.copy(
                                             presupuestoAceptado = true,
                                             estado = EstadoAveria.EnReparacion.name
                                         ),
                                         exito = {
+                                            // Enviar notificación al admin cuando se acepta el presupuesto
+                                            val nombreUsuario = "${usuarioActual?.name} ${usuarioActual?.apellidos}".trim()
+                                            Log.d("PresupuestoDetalle", "Enviando notificación - nombreUsuario: $nombreUsuario, equipoNombre: ${averia!!.equipoNombre}")
+                                            notificationRepo.notificarPresupuestoAprobado(
+                                                equipoNombre = averia!!.equipoNombre,
+                                                nombreUsuario = nombreUsuario,
+                                                averiaId = averia!!.id
+                                            )
                                             onVolver()
 
 

@@ -300,8 +300,17 @@ fun RepairsScreen(
                     )
                     repo.editarAveria(
                         averiaEditada = averiaModificada,
-                        exito={ averiaSeleccionada=null
-                            cargarAverias()},
+                        exito={
+                            averiaSeleccionada=null
+                            cargarAverias()
+                            // Enviar notificación al técnico
+                            val notifRepo = NotificationRepository()
+                            notifRepo.notificarAsignacionTecnico(
+                                tecnicoId = tecnicoId,
+                                equipoNombre = averia.equipoNombre,
+                                averiaId = averia.id
+                            )
+                        },
                         fallo = {}
                     )
 
