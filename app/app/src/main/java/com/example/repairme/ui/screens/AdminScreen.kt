@@ -24,6 +24,11 @@ import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.Naranja
@@ -52,6 +58,17 @@ fun AdminScreen(
 
     onLogOut: () -> Unit = {}
 ) {
+    // Estado para las notificaciones no leídas
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
+    val notificationRepo = remember { NotificationRepository() }
+
+    // Escuchar notificaciones no leídas en tiempo real
+    LaunchedEffect(Unit) {
+        notificationRepo.escucharNotificacionesNoLeidas { count ->
+            notificacionesNoLeidas = count
+        }
+    }
+
     // 1. Creamos la lista de botones para la barra inferior, pasando los 3 datos que se indican en el modelo 'NavItem'
     val itemsNavegacion = listOf(
         NavItem("Reparar", Icons.Filled.Build, onVerAverias),
@@ -75,7 +92,7 @@ fun AdminScreen(
         onLogOut = onLogOut,
         bottomNavItems = itemsNavegacion,
         onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = 0
+        notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->
 
         // 3. Contenido de la pantalla (Cards)

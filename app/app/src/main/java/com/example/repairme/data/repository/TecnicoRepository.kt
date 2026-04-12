@@ -6,6 +6,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.example.repairme.data.model.EstadoAveria
+import com.example.repairme.data.model.EstadoTecnico
 
 class TecnicoRepository: OperationsTemplateRepository() {
 
@@ -105,6 +107,89 @@ class TecnicoRepository: OperationsTemplateRepository() {
         updateChildren("$NODE/$tecnicoId", updates,
             ok = { exito() },
             error = { msg -> fallo(msg) }
+        )
+    }
+
+    // Cambiar estado del técnico y, si pasa a Inactivo o Vacaciones,
+    // liberar sus averías y ponerlas como PendienteReasignar
+    fun cambiarEstadoTecnico(
+        tecnicoId: String,
+        nuevoEstado: String,
+        fallo: (String) -> Unit,
+        exito: () -> Unit
+    ) {
+        if (tecnicoId.isBlank()) {
+            fallo("El técnico no tiene id")
+            return
+        }
+
+        // primero actualizamos el estado del técnico
+        updateChildren(
+            "$NODE/$tecnicoId",
+            mapOf("estado" to nuevoEstado),
+            ok = {
+                // si sigue activo no cambiamos nada
+                if (
+                    nuevoEstado != EstadoTecnico.Inactivo.name &&
+                    nuevoEstado != EstadoTecnico.Vacaciones.name
+                ) {
+                    exito()
+                    return@updateChildren
+                }
+
+                // cuando cambia a Inactivo o Vacaciones, buscamos sus averías
+                val repairsNode = "repairs"
+
+                ref(repairsNode).orderByChild("tecnicoId").equalTo(tecnicoId)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (!snapshot.exists()) {
+                                exito()
+                                return
+                            }
+
+                            val idsAverias = snapshot.children.mapNotNull { it.key }
+
+                            if (idsAverias.isEmpty()) {
+                                exito()
+                                return
+                            }
+
+                            var pendientes = idsAverias.size
+                            var huboError = false
+
+                            idsAverias.forEach { averiaId ->
+                                updateChildren(
+                                    "$repairsNode/$averiaId",
+                                    mapOf(
+                                        "tecnicoId" to "",
+                                        "estado" to EstadoAveria.PendienteReasignar.name
+                                    ),
+                                    ok = {
+                                        pendientes--
+
+                                        if (pendientes == 0 && !huboError) {
+                                            exito()
+                                        }
+                                    },
+                                    error = { msg ->
+                                        if (!huboError) {
+                                            huboError = true
+                                            fallo(msg)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            fallo("No se pudieron actualizar las averías del técnico")
+                        }
+                    })
+            },
+            error = { msg ->
+                fallo(msg)
+            }
         )
     }
 

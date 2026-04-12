@@ -1,5 +1,5 @@
 package com.example.repairme.data.model
 
 enum class EstadoAveria {
-    Pendiente, Asignada, PendienteMaterial, Presupuestada, EnReparacion,Reparado, ListaParaRecoger, Declinada
+    Pendiente, PendienteReasignar, Asignada, PendienteMaterial, Presupuestada, EnReparacion,Reparado, ListaParaRecoger, Declinada
 }
