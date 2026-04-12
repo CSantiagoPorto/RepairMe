@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.repository.RepairRepository
+import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.ui.theme.naranjaLetras
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.TecnicoRepository
@@ -273,8 +274,17 @@ fun RepairsScreen(
                     )
                     repo.editarAveria(
                         averiaEditada = averiaModificada,
-                        exito={ averiaSeleccionada=null
-                            cargarAverias()},
+                        exito={
+                            averiaSeleccionada=null
+                            cargarAverias()
+                            // Enviar notificación al técnico
+                            val notifRepo = NotificationRepository()
+                            notifRepo.notificarAsignacionTecnico(
+                                tecnicoId = tecnicoId,
+                                equipoNombre = averia.equipoNombre,
+                                averiaId = averia.id
+                            )
+                        },
                         fallo = {}
                     )
 
