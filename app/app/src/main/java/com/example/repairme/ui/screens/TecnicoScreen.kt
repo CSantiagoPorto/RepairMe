@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.repository.RepairRepository
+import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.AzulAdmin
@@ -47,6 +48,15 @@ fun TecnicoScreen(
 
     // Estado para controlar qué pantalla se muestra dentro del técnico (Home, Reparar o Reparados)
     var currentScreen by remember { mutableStateOf<String?>(null) }
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
+    val notificationRepo = remember { NotificationRepository() }
+
+    // Escuchar notificaciones no leídas en tiempo real
+    LaunchedEffect(Unit) {
+        notificationRepo.escucharNotificacionesNoLeidas { count ->
+            notificacionesNoLeidas = count
+        }
+    }
 
     // 1. Configuramos los botones de la barra inferior para que cambien el 'currentScreen' internamente
     val itemsNavegacion = listOf(
@@ -62,7 +72,7 @@ fun TecnicoScreen(
         onLogOut = onLogOut,
         bottomNavItems = itemsNavegacion,
         onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = 0
+        notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->
         
         Column(

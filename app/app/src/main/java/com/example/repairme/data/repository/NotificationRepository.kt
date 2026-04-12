@@ -1,6 +1,8 @@
 package com.example.repairme.data.repository
 
+import android.util.Log
 import com.example.repairme.data.model.Notificacion
+import com.example.repairme.data.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -153,6 +155,44 @@ class NotificationRepository : OperationsTemplateRepository() {
             averiaId = averiaId
         )
         enviarNotificacion(notif)
+    }
+
+    /**
+     * Notifica al admin que un usuario ha aprobado un presupuesto.
+     */
+    fun notificarPresupuestoAprobado(
+        equipoNombre: String,
+        nombreUsuario: String,
+        averiaId: String
+    ) {
+        Log.d("NotificationRepo", "notificarPresupuestoAprobado llamado: usuario=$nombreUsuario, equipo=$equipoNombre, averiaId=$averiaId")
+
+        // Buscar todos los administradores y notificarles
+        ref(USERS_NODE).get().addOnSuccessListener { snapshot ->
+            var adminEncontrado = false
+            for (child in snapshot.children) {
+                val usuario = child.getValue(Usuario::class.java)
+                Log.d("NotificationRepo", "Usuario encontrado: role=${usuario?.role}, id=${child.key}")
+
+                if (usuario != null && usuario.role.lowercase() == "admin") {
+                    adminEncontrado = true
+                    val adminId = child.key ?: ""
+                    if (adminId.isNotEmpty()) {
+                        val notif = Notificacion(
+                            userId = adminId,
+                            titulo = "Presupuesto aprobado",
+                            mensaje = "El usuario $nombreUsuario ha aprobado el presupuesto para el equipo: $equipoNombre.",
+                            averiaId = averiaId
+                        )
+                        Log.d("NotificationRepo", "Enviando notificación a admin: $adminId")
+                        enviarNotificacion(notif)
+                    }
+                }
+            }
+            Log.d("NotificationRepo", "Admin encontrado: $adminEncontrado, Total usuarios: ${snapshot.childrenCount}")
+        }.addOnFailureListener { e ->
+            Log.e("NotificationRepo", "Error al buscar admins: ${e.message}")
+        }
     }
 }
 
