@@ -306,13 +306,26 @@ fun UserScreen(
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         listaAverias.forEach { averia ->
-                            Card(
+                            val colorEstado = when (averia.estado) {
+                                EstadoAveria.Pendiente.name -> ColorEstadoPendiente
+                                EstadoAveria.PendienteReasignar.name -> ColorEstadoPendiente
+                                EstadoAveria.Asignada.name -> ColorEstadoAsignada
+                                EstadoAveria.PendienteMaterial.name -> ColorEstadoPendiente
+                                EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
+                                EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion
+                                EstadoAveria.Reparado.name -> ColorEstadoListaParaRecoger
+                                EstadoAveria.ListaParaRecoger.name -> ColorEstadoListaParaRecoger
+                                EstadoAveria.Declinada.name -> ColorEstadoDeclinada
+                                else -> GrisFondoPantalla
+                            }
+
+                            Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
                                     .clickable { onVerAverias(averia) },
-                                shape = RoundedCornerShape(9.dp),
-                                border = BorderStroke(1.dp, Naranja)
+                                color = colorEstado,
+                                shape = RoundedCornerShape(9.dp)
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
@@ -321,13 +334,20 @@ fun UserScreen(
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     // MOSTRAMOS EL ESTADO AQUÍ
-                                    Text(
-                                        text = "Estado: ${averia.estado}",
-                                        color = if (averia.estado == "reparado" || averia.estado == "Reparado")
-                                            Color(0xFF4CAF50) else Naranja,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Medium
-                                    )
+                                    Row {
+                                        Text(
+                                            text = "Estado: ",
+                                            color = naranjaLetras,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = averia.estado,
+                                            color = naranjaLetras,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
                                 }
                             }
                             /*Text(
@@ -355,20 +375,43 @@ fun UserScreen(
                     Column(modifier = Modifier.padding(8.dp)) {
                         listaPresupuestadas.forEach { averia ->
                             Log.d("LISTA_PRESU", "id: ${averia.id}, estado: ${averia.estado}")
-                            Card(
+
+                            val colorEstado = when (averia.estado) {
+                                EstadoAveria.Pendiente.name -> ColorEstadoPendiente
+                                EstadoAveria.PendienteReasignar.name -> ColorEstadoPendiente
+                                EstadoAveria.Asignada.name -> ColorEstadoAsignada
+                                EstadoAveria.PendienteMaterial.name -> ColorEstadoPendiente
+                                EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
+                                EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion
+                                EstadoAveria.Reparado.name -> ColorEstadoListaParaRecoger
+                                EstadoAveria.ListaParaRecoger.name -> ColorEstadoListaParaRecoger
+                                EstadoAveria.Declinada.name -> ColorEstadoDeclinada
+                                else -> GrisFondoPantalla
+                            }
+
+                            Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
                                 //.clickable { dialogoAveria = averia },
-                                shape = RoundedCornerShape(9.dp),
-                                border = BorderStroke(1.dp, Naranja)
+                                color = colorEstado,
+                                shape = RoundedCornerShape(9.dp)
                             ) {
                                 Column(modifier= Modifier.padding(16.dp)) {
                                     Text(
                                         text = "${averia.equipoNombre} ${averia.tituloAveria}"
 
                                     )
-                                    Text(text = averia.estado)
+                                    Row {
+                                        Text(
+                                            text = "Estado: ",
+                                            color = naranjaLetras
+                                        )
+                                        Text(
+                                            text = averia.estado,
+                                            color = naranjaLetras
+                                        )
+                                    }
                                     if(averia.estado== EstadoAveria.Presupuestada.name||averia.presupuestoAceptado==true){
                                         TextButton(onClick = { Log.d("AVERIA_ID", "id: ${averia.id}")
                                             onVerPresupuestos(averia)}) {

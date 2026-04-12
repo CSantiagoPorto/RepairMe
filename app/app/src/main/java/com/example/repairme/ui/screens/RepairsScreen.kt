@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -30,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,10 +48,18 @@ import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.EstadoTecnico
 import com.example.repairme.data.model.PrioridadAveria
 import com.example.repairme.data.model.Usuario
+import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.TecnicoRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
+import com.example.repairme.ui.theme.ColorEstadoAsignada
+import com.example.repairme.ui.theme.ColorEstadoDeclinada
+import com.example.repairme.ui.theme.ColorEstadoEnReparacion
+import com.example.repairme.ui.theme.ColorEstadoListaParaRecoger
+import com.example.repairme.ui.theme.ColorEstadoPendiente
+import com.example.repairme.ui.theme.ColorEstadoPresupuestada
+import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.naranjaLetras
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,16 +87,20 @@ fun RepairsScreen(
     var filtroEstado by remember { mutableStateOf("Todos") }
     var expandidoEstado by remember { mutableStateOf(false) }
 
-    val repo =remember {  RepairRepository() }
+    val repo = remember { RepairRepository() }
     val repo2 = remember { TecnicoRepository() }
     var averiaParaCambiarTecnico by remember { mutableStateOf<Averia?>(null) }
 
     fun cargarAverias() {
         repo.obtenerAveriasTodas(
-            fallo = { mensaje -> error = mensaje
-                cargando=false},
-            exito = { averias -> listaAverias = averias
-                cargando=false}
+            fallo = { mensaje ->
+                error = mensaje
+                cargando = false
+            },
+            exito = { averias ->
+                listaAverias = averias
+                cargando = false
+            }
         )
     }
 
@@ -122,12 +134,18 @@ fun RepairsScreen(
         }
 
         coincideBusqueda && coincideEstado
-    }.sortedWith(compareBy(
-        {if (it.tecnicoId.isBlank())0 else 1},
-        {try {
-            PrioridadAveria.valueOf(it.prioridad).ordinal
-        } catch (e: Exception) {Int.MAX_VALUE}}
-    ))
+    }.sortedWith(
+        compareBy(
+            { if (it.tecnicoId.isBlank()) 0 else 1 },
+            {
+                try {
+                    PrioridadAveria.valueOf(it.prioridad).ordinal
+                } catch (e: Exception) {
+                    Int.MAX_VALUE
+                }
+            }
+        )
+    )
 
     BaseScreen(
         title = "Reparaciones",
@@ -226,11 +244,32 @@ fun RepairsScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(listaAveriasFiltradas) { averia ->
-                            Card(modifier = Modifier.fillMaxWidth(),
-                                onClick ={ if(averia.tecnicoId.isBlank()){
-                                    averiaSeleccionada=averia
-                                }else{averiaParaCambiarTecnico=averia}
-                                } ) {
+
+                            val colorEstado = when (averia.estado) {
+                                EstadoAveria.Pendiente.name -> ColorEstadoPendiente
+                                EstadoAveria.PendienteReasignar.name -> ColorEstadoPendiente
+                                EstadoAveria.Asignada.name -> ColorEstadoAsignada
+                                EstadoAveria.PendienteMaterial.name -> ColorEstadoPendiente
+                                EstadoAveria.Presupuestada.name -> ColorEstadoPresupuestada
+                                EstadoAveria.EnReparacion.name -> ColorEstadoEnReparacion
+                                EstadoAveria.Reparado.name -> ColorEstadoListaParaRecoger
+                                EstadoAveria.ListaParaRecoger.name -> ColorEstadoListaParaRecoger
+                                EstadoAveria.Declinada.name -> ColorEstadoDeclinada
+                                else -> GrisFondoPantalla
+                            }
+
+                            Surface(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    if (averia.tecnicoId.isBlank()) {
+                                        averiaSeleccionada = averia
+                                    } else {
+                                        averiaParaCambiarTecnico = averia
+                                    }
+                                },
+                                color = colorEstado,
+                                shape = MaterialTheme.shapes.medium
+                            ) {
                                 Box(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
@@ -253,11 +292,12 @@ fun RepairsScreen(
                                             Text(
                                                 text = averia.estado,
                                                 fontSize = 12.sp,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                color = naranjaLetras
                                             )
                                         }
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(text = averia.equipoNombre, fontSize = 14.sp)
+
                                         if (averia.descripcion.isNotBlank()) {
                                             Spacer(modifier = Modifier.height(4.dp))
                                             Text(
@@ -287,21 +327,21 @@ fun RepairsScreen(
                 }
             }
         }
-        averiaSeleccionada?.let {//Let hace que sólo se ejecute si no es null
-                averia->
+        averiaSeleccionada?.let { //Let hace que sólo se ejecute si no es null
+                averia ->
             DialogoAsignar(
-                averia=averia,
+                averia = averia,
                 tecnicos = listaTecnicos,
-                onRechazar = { averiaSeleccionada=null },
-                onAceptar = {tecnicoId->
-                    val averiaModificada=averia.copy(
-                        tecnicoId=tecnicoId,
+                onRechazar = { averiaSeleccionada = null },
+                onAceptar = { tecnicoId ->
+                    val averiaModificada = averia.copy(
+                        tecnicoId = tecnicoId,
                         estado = EstadoAveria.Asignada.name
                     )
                     repo.editarAveria(
                         averiaEditada = averiaModificada,
-                        exito={
-                            averiaSeleccionada=null
+                        exito = {
+                            averiaSeleccionada = null
                             cargarAverias()
                             // Enviar notificación al técnico
                             val notifRepo = NotificationRepository()
@@ -319,14 +359,14 @@ fun RepairsScreen(
         }
 
         averiaParaCambiarTecnico?.let {
-                averia->
+                averia ->
             DialogoCambiarTecnico(
-                averia=averia,
+                averia = averia,
                 tecnicos = listaTecnicos,
-                onRechazar = {averiaParaCambiarTecnico=null},
+                onRechazar = { averiaParaCambiarTecnico = null },
                 onAceptar = {
-                    averiaParaCambiarTecnico=null
-                    averiaSeleccionada=averia
+                    averiaParaCambiarTecnico = null
+                    averiaSeleccionada = averia
                 }
             )
         }
@@ -370,55 +410,58 @@ fun RepairsScreen(
         }
     }
 }
+
 @Composable
-fun DialogoAsignar(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()->Unit, onAceptar:(String)-> Unit){
+fun DialogoAsignar(averia: Averia?, tecnicos: List<Usuario>, onRechazar: () -> Unit, onAceptar: (String) -> Unit) {
     var tecnicoSeleccionado by remember { mutableStateOf<String?>(null) }
 
-    AlertDialog(onDismissRequest = {onRechazar()},
-        text = {Column() {
-            tecnicos.forEach { tecnico->
-                TextButton(onClick = {tecnicoSeleccionado=tecnico.id}) {
-                    Text(text = tecnico.name)
+    AlertDialog(
+        onDismissRequest = { onRechazar() },
+        text = {
+            Column() {
+                tecnicos.forEach { tecnico ->
+                    TextButton(onClick = { tecnicoSeleccionado = tecnico.id }) {
+                        Text(text = tecnico.name)
+                    }
                 }
             }
-        }},
+        },
 
         confirmButton = {
             TextButton(onClick = {
                 tecnicoSeleccionado?.let { onAceptar(it) }
 
-            }) {Text(text ="Confirmar" ) }
+            }) { Text(text = "Confirmar") }
 
         },
         dismissButton = {
             TextButton(onClick = {
                 onRechazar()
-            }) {Text(text = "Cancelar") }
+            }) { Text(text = "Cancelar") }
         },
-        title =  {Text(text = "Asigne un técnico a la reparación")}
+        title = { Text(text = "Asigne un técnico a la reparación") }
     )
 
 }
 
 @Composable
-fun DialogoCambiarTecnico(averia: Averia?, tecnicos:List<Usuario>, onRechazar:()->Unit, onAceptar:()-> Unit){
+fun DialogoCambiarTecnico(averia: Averia?, tecnicos: List<Usuario>, onRechazar: () -> Unit, onAceptar: () -> Unit) {
     var tecnicoSeleccionado by remember { mutableStateOf<String?>(null) }
     AlertDialog(
 
-
-        onDismissRequest = {onRechazar()},
+        onDismissRequest = { onRechazar() },
 
         confirmButton = {
             TextButton(onClick = {
                 onAceptar()
-            }) {Text(text ="Confirmar" ) }
+            }) { Text(text = "Confirmar") }
         },
         dismissButton = {
             TextButton(onClick = {
                 onRechazar()
-            }) {Text(text = "Cancelar") }
+            }) { Text(text = "Cancelar") }
         },
-        title =  {Text(text = "Esta reparación ya tiene técnico asignado \n Desea cambiarlo? \n El técnico asignado actualmente es: ${tecnicos.find { it.id == averia?.tecnicoId }?.name}") },
+        title = { Text(text = "Esta reparación ya tiene técnico asignado \n Desea cambiarlo? \n El técnico asignado actualmente es: ${tecnicos.find { it.id == averia?.tecnicoId }?.name}") },
 
         )
 }
