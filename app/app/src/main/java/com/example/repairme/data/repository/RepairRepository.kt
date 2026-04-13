@@ -2,6 +2,7 @@ package com.example.repairme.data.repository
 
 import android.util.Log
 import com.example.repairme.data.model.Averia
+import com.example.repairme.data.model.AveriaUpdate
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -190,6 +191,24 @@ class RepairRepository : OperationsTemplateRepository() {
                 error = { msg-> fallo(msg) }
             )
         }
+    }
+
+    // Para actualizar la averia
+    fun agregarUpdateAveria(
+        averia: Averia,
+        update: AveriaUpdate,
+        exito: () -> Unit,
+        fallo: (String) -> Unit
+    ) {
+        val averiaActualizada = averia.copy(
+            updates = averia.updates + update
+        )
+
+        editarAveria(
+            averiaEditada = averiaActualizada,
+            exito = exito,
+            fallo = fallo
+        )
     }
 
     /**
