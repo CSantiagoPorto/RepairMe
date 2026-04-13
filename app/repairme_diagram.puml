@@ -13,13 +13,10 @@ skinparam class {
     FontColor #2c3e50
 }
 
-
-
-
 package "model" #D6EAF8 {
 
     class Usuario <<data class>> {
-        - id : String
+        @Exclude - id : String
         - name : String
         - email : String
         - phone : String
@@ -30,6 +27,7 @@ package "model" #D6EAF8 {
         - codigoPostal : String
         - localidad : String
         - dni : String
+        - estado : String = ""
     }
 
     class Equipo <<data class>> {
@@ -49,10 +47,12 @@ package "model" #D6EAF8 {
         - equipoNombre : String
         - descripcion : String
         - estado : String = "Pendiente"
+        - prioridad : String = "Media"
         - precioAproximado : Double
         - presupuestoDefinitivo : Double
         - presupuestoAceptado : Boolean?
         - createdAt : Long
+        - fechaListo : Long
         - fechaEntrega : Long
         - updates : List<AveriaUpdate>
         - lineasPresupuesto : List<LineaPresupuesto>
@@ -70,22 +70,52 @@ package "model" #D6EAF8 {
         - precioUnitario : Double
     }
 
+    class Notificacion <<data class>> {
+        - id : String
+        - userId : String
+        - titulo : String
+        - mensaje : String
+        - leida : Boolean = false
+        - createdAt : Long
+        - averiaId : String
+    }
+
+    class Servicio <<data class>> {
+        - id : String
+        - titulo : String
+        - descripcion : String
+        - activo : Boolean = true
+    }
+
     enum EstadoAveria {
         Pendiente
         Asignada
-        PrecioEnviado
+        PendienteMaterial
         Presupuestada
         EnReparacion
+        Reparado
         ListaParaRecoger
         Declinada
+    }
+
+    enum PrioridadAveria {
+        Alta
+        Media
+        Baja
+    }
+
+    enum EstadoTecnico {
+        Activo
+        Inactivo
+        Vacaciones
     }
 
     Averia "1" *-- "0..*" AveriaUpdate
     Averia "1" *-- "0..*" LineaPresupuesto
     Averia --> EstadoAveria
+    Averia --> PrioridadAveria
+    Usuario --> EstadoTecnico
 }
-
-
 
 package "repository" #D5F5E3 {
 
@@ -93,63 +123,97 @@ package "repository" #D5F5E3 {
         # ref(path: String) : DatabaseReference
         # newId(node: String) : String
         # setValue(path: String, value: Any, ok: () -> Unit, error: (String) -> Unit)
+        # updateChildren(path: String, updates: Map<String, Any?>, ok: () -> Unit, error: (String) -> Unit)
         # delete(path: String, ok: () -> Unit, error: (String) -> Unit)
     }
 
     class AuthRepository {
         - autenticacion : FirebaseAuth
         --
-        + validarCorreoPassword(correo: String, contraseña: String,\n  validacionOK: (Usuario) -> Unit, validacionError: (String) -> Unit)
-        + crearUsuario(email: String, password: String, nombre: String,\n  apellidos: String, telefono: String, direccion: String,\n  cp: String, localidad: String, dni: String,\n  creadoOK: () -> Unit, creadoError: (String) -> Unit)
+        + validarCorreoPassword(correo, contrasena, validacionOK, validacionError)
+        + crearUsuario(email, password, nombre, apellidos, telefono, direccion, cp, localidad, dni, creadoOK, creadoError)
+    }
+
+    class AdminRepository {
+        - context : Context
+        - auth : FirebaseAuth
+        - NODE : String = "users"
+        --
+        + crearUsuarioAdmin(email, nombre, apellidos, telefono, direccion, codigoPostal, localidad, dni, role, exito, error)
+        + editarUsuarioParcial(userId: String, updates: Map<String, Any?>, exito, error)
+        + darDeBajaUsuario(userId: String, exito, error)
     }
 
     class DeviceRepository {
         - auth : FirebaseAuth
         - NODE : String = "devices"
         --
-        + crearEquipo(equipo: Equipo, error: (String) -> Unit, exito: (String) -> Unit)
-        + obtenerEquipos(error: (String) -> Unit, exito: (List<Equipo>) -> Unit)
-        + eliminarEquipo(devicesId: String, error: (String) -> Unit, exito: () -> Unit)
+        + crearEquipo(equipo: Equipo, error, exito)
+        + crearEquipoAdmin(equipo: Equipo, userId: String, exito, error)
+        + obtenerEquipos(error, exito)
+        + eliminarEquipo(devicesId: String, error, exito)
     }
 
     class RepairRepository {
         - auth : FirebaseAuth
         - NODE : String = "repairs"
         --
-        + abrirAveria(averia: Averia, exito: () -> Unit, fallo: (String) -> Unit)
-        + obtenerAveriasTodas(fallo: (String) -> Unit, exito: (List<Averia>) -> Unit)
-        + obtenerAveriaUser(fallo: (String) -> Unit, exito: (List<Averia>) -> Unit)
-        + obtenerAveriaId(fallo: (String) -> Unit, exito: (Averia) -> Unit, averiaId: String)
-        + obtenerAveriasTecnico(fallo: (String) -> Unit, exito: (List<Averia>) -> Unit)
-        + editarAveria(averiaEditada: Averia, exito: () -> Unit, fallo: (String) -> Unit)
-        + eliminarAveria(averiaId: String, exito: () -> Unit, fallo: (String) -> Unit)
+        + abrirAveria(averia: Averia, exito, fallo)
+        + crearAveriaAdmin(averia: Averia, userId: String, exito, fallo)
+        + obtenerAveriasTodas(fallo, exito)
+        + obtenerAveriaUser(fallo, exito)
+        + obtenerAveriaId(averiaId: String, fallo, exito)
+        + obtenerAveriasTecnico(fallo, exito)
+        + editarAveria(averiaEditada: Averia, exito, fallo)
+        + eliminarAveria(averiaId: String, exito, fallo)
     }
 
     class UserRepository {
         - auth : FirebaseAuth
         - NODE : String = "users"
         --
-        + obtenerCualquierUsuarioPorId(id: String,\n  exito: (Usuario) -> Unit, fallo: (String) -> Unit)
+        + obtenerCualquierUsuarioPorId(id: String, exito, fallo)
+        + obtenerUsuariosTodos(fallo, exito)
+        + obtenerAveriasPorUsuario(userId: String, fallo, exito)
     }
 
     class TecnicoRepository {
         - auth : FirebaseAuth
         - NODE : String = "users"
         --
-        + obtenerTecnicos(fallo: (String) -> Unit, exito: (List<Usuario>) -> Unit)
-        + editarTecnicoParcial(tecnicoId: String, updates: Map<String, Any>,\n  fallo: (String) -> Unit, exito: () -> Unit)
-        + eliminarTecnico(tecnicoId: String, fallo: (String) -> Unit, exito: () -> Unit)
+        + obtenerTecnicos(fallo, exito)
+        + editarTecnico(tecnicoEditado: Usuario, fallo, exito)
+        + editarTecnicoParcial(tecnicoId: String, updates: Map<String, Any?>, fallo, exito)
+        + eliminarTecnico(tecnicoId: String, fallo, exito)
+    }
+
+    class ServiceRepository {
+        - NODE : String = "services"
+        --
+        + obtenerServicios(fallo, exito)
+        + crearServicio(servicio: Servicio, exito, fallo)
+        + editarServicio(servicio: Servicio, exito, fallo)
+        + eliminarServicio(id: String, exito, fallo)
+    }
+
+    class NotificationRepository {
+        - NODE : String = "notifications"
+        --
+        + enviarNotificacion(notificacion: Notificacion, exito, fallo)
+        + obtenerMisNotificaciones(fallo, exito)
+        + escucharNotificacionesNoLeidas(userId: String, onChange: (Int) -> Unit)
+        + marcarComoLeida(notifId: String, exito, fallo)
     }
 
     OperationsTemplateRepository <|-- AuthRepository
+    OperationsTemplateRepository <|-- AdminRepository
     OperationsTemplateRepository <|-- DeviceRepository
     OperationsTemplateRepository <|-- RepairRepository
     OperationsTemplateRepository <|-- UserRepository
     OperationsTemplateRepository <|-- TecnicoRepository
+    OperationsTemplateRepository <|-- ServiceRepository
+    OperationsTemplateRepository <|-- NotificationRepository
 }
-
-
-
 
 package "ui.navigation" #FDEBD0 {
 
@@ -168,6 +232,14 @@ package "ui.navigation" #FDEBD0 {
         DETALLE_AVERIA_TECNICO
         DETALLE_AVERIA_FINALIZADA
         PROFILE
+        CLIENTES_ADMIN
+        LISTA_TECNICOS
+        PRESUPUESTOS_ADMIN
+        LISTA_PARA_RECOGER
+        CREAR_AVERIA_ADMIN
+        SERVICES_ADMIN
+        NOTIFICATIONS
+        DETALLE_PRESU_CLIENTE
     }
 
     class AppNavigation {
@@ -177,9 +249,6 @@ package "ui.navigation" #FDEBD0 {
 
     AppNavigation --> Rutas
 }
-
-
-
 
 package "ui.screens" #FDEBD0 {
 
@@ -214,16 +283,11 @@ package "ui.screens" #FDEBD0 {
         - listaEquipos : List<Equipo>
         - listaAverias : List<Averia>
         - listaPresupuestadas : List<Averia>
-        - dialogoAveria : Averia?
         --
         + onAddEquipo : () -> Unit
         + onVolver : () -> Unit
-        + onVerEquipos : (Equipo) -> Unit
-        + onVerAverias : (Averia) -> Unit
-        + onGoToTestCrud : () -> Unit
         + onIrPerfil : () -> Unit
-        -- inner composable --
-        + DialogoPresupuestos(averia, onRechazar, onAceptar)
+        + onLogOut : () -> Unit
     }
 
     class AddEquipoScreen <<Composable>> {
@@ -231,46 +295,44 @@ package "ui.screens" #FDEBD0 {
         - modelo : String
         - numeroSerie : String
         - anadirAveria : Boolean
+        - tituloAveria : String
         - descripcionAveria : String
+        - prioridadSeleccionada : PrioridadAveria
         --
         + onGuardar : (Equipo) -> Unit
         + onVolver : () -> Unit
     }
 
     class AdminScreen <<Composable>> {
-        - currentScreen : String?
         --
         + onLogOut : () -> Unit
         + onVerAverias : () -> Unit
         + onVerTecnicos : () -> Unit
+        + onVerClientes : () -> Unit
+        + onVerPresupuestos : () -> Unit
+        + onListaRecoger : () -> Unit
+        + onCrearAveria : () -> Unit
+        + onGestionServicios : () -> Unit
         + onIrPerfil : () -> Unit
     }
 
     class TecnicoScreen <<Composable>> {
-        - currentScreen : String?
         --
-        + onAddEquipo : () -> Unit
         + onAveriaClick : (String) -> Unit
         + onReparacionesFinalizadasClick : (String) -> Unit
         + onIrPerfil : () -> Unit
+        + onLogOut : () -> Unit
     }
 
-    class RepairListScreen <<Composable>> {
+    class RepairsScreen <<Composable>> {
         - listaAverias : List<Averia>
-        - repo : RepairRepository
+        - busqueda : String
         --
-        + orangePrimary : Color
-        + onBack : () -> Unit
-        + onAveriaClick : (String) -> Unit
-    }
-
-    class RepairedListScreen <<Composable>> {
-        - listaReparadas : List<Averia>
-        - repo : RepairRepository
-        --
-        + orangePrimary : Color
-        + onBack : () -> Unit
-        + onAveriaClick : (String) -> Unit
+        + onVolver : () -> Unit
+        + onVerTecnicos : () -> Unit
+        + onVerClientes : () -> Unit
+        + onVerPresupuestos : () -> Unit
+        + onLogOut : () -> Unit
     }
 
     class DetalleAveriaTecnicoScreen <<Composable>> {
@@ -287,23 +349,17 @@ package "ui.screens" #FDEBD0 {
         - cliente : Usuario?
         - tecnico : Usuario?
         - cargando : Boolean
-        - error : String?
         --
         + averiaId : String
         + onVolver : () -> Unit
-        -- methods --
-        - cargarAveriaUserTecnico()
-        - pasarFechaEntregaAString(timestamp: Long) : String
     }
 
     class ProfileScreen <<Composable>> {
+        - usuario : Usuario?
+        - cargando : Boolean
         --
         + onVolver : () -> Unit
-    }
-
-    class RepairsScreen <<Composable>> {
-        --
-        + onVolver : () -> Unit
+        + onLogOut : () -> Unit
     }
 
     class RegisterTecnicoScreen <<Composable>> {
@@ -312,6 +368,80 @@ package "ui.screens" #FDEBD0 {
         + onRegisterSucess : () -> Unit
     }
 
+    class ClientesPantallaAdminScreen <<Composable>> {
+        - listaClientes : List<Usuario>
+        - busqueda : String
+        - tipoBusqueda : String
+        - expandedClienteId : String?
+        --
+        + onVolver : () -> Unit
+        + onVerTecnicos : () -> Unit
+        + onVerPresupuestos : () -> Unit
+        + onLogOut : () -> Unit
+    }
+
+    class ListaTecnicosScreen <<Composable>> {
+        - listaTecnicos : List<Usuario>
+        - filtroEstado : String
+        - busqueda : String
+        --
+        + onVolver : () -> Unit
+        + onRegistrarTecnico : () -> Unit
+        + onLogOut : () -> Unit
+    }
+
+    class NuevaAveriaAdmin <<Composable>> {
+        - clienteSeleccionado : Usuario
+        - mostrarNuevoFormulario : Boolean
+        - marca : String
+        - modelo : String
+        - numeroSerie : String
+        - tituloAveria : String
+        - prioridadSeleccionada : PrioridadAveria
+        - anadirAveria : Boolean
+        --
+        + onVolver : () -> Unit
+        + onVerAverias : () -> Unit
+        + onVerTecnicos : () -> Unit
+        + onVerClientes : () -> Unit
+        + onLogOut : () -> Unit
+    }
+
+    class PresupuestosQueVeElAdmin <<Composable>> {
+        - listaPresupuestos : List<Averia>
+        --
+        + onVolver : () -> Unit
+        + onLogOut : () -> Unit
+    }
+
+    class PresupuestoDetalleScreen <<Composable>> {
+        - averia : Averia?
+        - lineas : List<LineaPresupuesto>
+        --
+        + averiaId : String
+        + onVolver : () -> Unit
+    }
+
+    class ListaParaRecogerAdminScreen <<Composable>> {
+        - listaAverias : List<Averia>
+        --
+        + onVolver : () -> Unit
+        + onLogOut : () -> Unit
+    }
+
+    class AdminServicesScreen <<Composable>> {
+        - listaServicios : List<Servicio>
+        --
+        + onVolver : () -> Unit
+        + onLogOut : () -> Unit
+    }
+
+    class NotificationsScreen <<Composable>> {
+        - listaNotificaciones : List<Notificacion>
+        --
+        + onVolver : () -> Unit
+        + onIrAAveria : (String) -> Unit
+    }
 }
 
 @enduml

@@ -84,4 +84,35 @@ class AdminRepository(private val context: Context) : OperationsTemplateReposito
 
 
     }
+    fun darDeBajaUsuario(
+        userId: String,
+        exito: () -> Unit,
+        error: (String) -> Unit
+    ) {
+        updateChildren(
+            path = "users/$userId/estado",
+            updates = mapOf("estadp" to "Inactivo"),
+            ok = { exito() },
+            error = { msg -> error(msg) }
+        )
+    }
+
+    fun editarUsuarioParcial(
+        userId: String,
+        updates: Map<String, Any>,
+        exito: () -> Unit,
+        error: (String) -> Unit
+    ) {
+        updateChildren(
+            path = "users/$userId",
+            updates = updates,
+            ok = { exito() },
+            error = { msg -> error(msg) }
+        )
+    }
+
+
+
+
+
 }
