@@ -313,6 +313,7 @@ fun PresupuestoDetalleScreen(
                         }
                         }
                        if(averia?.lineasPresupuesto?.isNotEmpty() ==true ){
+                           //No lo pongo con presupuesto aceptado porque entonces no nos enseña el presupuesto de las pendientes de aceptar
                            item {
                                Row(modifier = Modifier.fillMaxWidth(),
                                    horizontalArrangement = Arrangement.Center) {
