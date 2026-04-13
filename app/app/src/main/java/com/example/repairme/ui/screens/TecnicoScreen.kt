@@ -36,6 +36,7 @@ import com.example.repairme.ui.theme.botonNaranja
 @Composable
 fun TecnicoScreen(
     onAddEquipo: () -> Unit = {},
+    onIrHome: () -> Unit = {},
     onAveriaClick: (String) -> Unit = {},
     onVerDetalleAveria: (String) -> Unit = {},
     onIrPerfil: () -> Unit = {},
@@ -68,10 +69,10 @@ fun TecnicoScreen(
     // 2. Usamos el modelo BaseScreen que unifica la TopBar (con Logo) y la BottomBar (con Notificaciones fijas)
     BaseScreen(
         title = "ClearRepair",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion,
         onNotificationsClick = onIrNotificaciones,
         notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->

@@ -64,13 +64,12 @@ import com.example.repairme.ui.theme.naranjaLetras
 
 @Composable
 fun NuevaAveriaAdmin(
+    onIrHome: () -> Unit = {},
     onVolver: () -> Unit = {},
     onVerAverias: () -> Unit = {},
-    onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
-    onVerClientes: () -> Unit = {},
-    onVerPresupuestos:()->Unit={},
+    onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
     val repoReparaciones = remember { RepairRepository() }
@@ -104,6 +103,8 @@ fun NuevaAveriaAdmin(
     var nuevoNombre by remember { mutableStateOf("") }
     var nuevoApellidos by remember { mutableStateOf("") }
     var nuevoEmail by remember { mutableStateOf("") }
+
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
 
     LaunchedEffect(Unit) {
@@ -141,18 +142,14 @@ fun NuevaAveriaAdmin(
 
     BaseScreen(
         title = "Crear Reparación",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
         onVolver = onVolver,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = notificacionesNoLeidas
 
-        notificationBadgeCount = 0,
-        bottomNavItems = listOf(
-            NavItem("Reparar", Icons.Filled.Build, onVolver),
-            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
-            NavItem("Clientes", Icons.Filled.Person, onVerClientes),
-            NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
-        )
 
     ) { modifier ->
         Column(modifier = modifier.padding(16.dp)) {

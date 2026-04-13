@@ -43,12 +43,11 @@ import com.example.repairme.ui.theme.botonNaranja
 
 @Composable
 fun VerListasRecoger(
+    onIrHome: () -> Unit = {},
     onVolver: () -> Unit = {},
-    onVerAverias: () -> Unit = {},
-    onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
-    onVerClientes: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ){
     val repo = remember { RepairRepository() }
@@ -56,6 +55,7 @@ fun VerListasRecoger(
     var busqueda by remember { mutableStateOf("") }
     val userRepo = remember { UserRepository() }
     var mapaUsuarios by remember { mutableStateOf(mapOf<String, Usuario>()) }
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
     val listasParaRecoger= todasAverias.filter {
         it.estado== EstadoAveria.ListaParaRecoger.name}.sortedBy { it.fechaListo }
     //Neceito filtrar y ordenar la lista para que nos enseñe las que están listas
@@ -82,14 +82,13 @@ fun VerListasRecoger(
 
     BaseScreen (
         title = "Listas para recoger",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
-        bottomNavItems = listOf(
-            NavItem("Reparar", Icons.Filled.Build, onVerAverias),
-            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
-            NavItem("Clientes", Icons.Filled.Person, onVerClientes)
-        )
+        onVolver = onVolver,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = notificacionesNoLeidas
 
     ) {modifier ->
         // He cambiado la cabecera a azul para enseñaros como iría con el otro enfoque

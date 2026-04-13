@@ -31,13 +31,11 @@ import com.example.repairme.ui.theme.botonNaranja
 
 @Composable
 fun PresupuestoQueVeElAdmin(
+    onIrHome: () -> Unit = {},
     onVolver: () -> Unit = {},
-    onVerAverias: () -> Unit = {},
-    onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onVerClientes: () -> Unit = {},
     onLogOut: () -> Unit = {}
 
 ) {
@@ -46,6 +44,7 @@ fun PresupuestoQueVeElAdmin(
     var busqueda by remember { mutableStateOf("") }
     val userRepo = remember { UserRepository() }
     var mapaUsuarios by remember { mutableStateOf(mapOf<String, Usuario>()) }
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
 
 
@@ -96,17 +95,13 @@ fun PresupuestoQueVeElAdmin(
 
     BaseScreen (
         title = "Presupuestos",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
         onVolver = onVolver,
         onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = 0,
-        bottomNavItems = listOf(
-            NavItem("Reparar", Icons.Filled.Build, onVerAverias),
-            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
-            NavItem("Clientes", Icons.Filled.Person, onVerClientes)
-        )
+        notificationBadgeCount = notificacionesNoLeidas
 
     ) {modifier ->
         // He cambiado la cabecera a azul para enseñaros como iría con el otro enfoque

@@ -44,6 +44,7 @@ import com.example.repairme.ui.theme.Naranja
 @Composable
 fun AdminScreen(
     // Son Callbacks para navegar a otras pantallas
+    onIrHome: () -> Unit = {},
     onVerAverias: () -> Unit = {},
     onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
@@ -51,11 +52,8 @@ fun AdminScreen(
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
     onNuevaAveria:()->Unit={},
-
     onVerListaRecoger: () -> Unit = {},
-
     onIrNotificaciones: () -> Unit = {},
-
     onLogOut: () -> Unit = {}
 ) {
     // Estado para las notificaciones no leídas
@@ -87,10 +85,10 @@ fun AdminScreen(
     // Este modelo ya incluye la barra superior con el logotipo y la barra inferior
     BaseScreen(
         title = "ClearRepair",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion,
         onNotificationsClick = onIrNotificaciones,
         notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->
