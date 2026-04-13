@@ -100,6 +100,10 @@ fun NuevaAveriaAdmin(
     var error by remember { mutableStateOf<String?>(null) }
     var ok by rememberSaveable { mutableStateOf(false) }
     var mostrarNuevoFormulario by remember { mutableStateOf(false) }
+    var listaEquiposCliente by remember { mutableStateOf(listOf<Equipo>()) }
+    var equipoSeleccionado by remember { mutableStateOf<Equipo?>(null) }
+    var mostrarFormularioNuevoEquipo by remember { mutableStateOf(false) }
+
 
     var nuevoNombre by remember { mutableStateOf("") }
     var nuevoApellidos by remember { mutableStateOf("") }
@@ -111,6 +115,25 @@ fun NuevaAveriaAdmin(
             fallo = { },
             exito = { clientes -> listaClientes = clientes }
         )
+
+    }
+    LaunchedEffect(clienteSeleccionado.id) {
+        if (clienteSeleccionado.id.isNotEmpty()){
+            marca = ""
+            modelo = ""
+            numeroSerie = ""
+            tituloAveria = ""
+            descripcionAveria = ""
+            añadirAveria = false
+            equipoSeleccionado = null
+            mostrarFormularioNuevoEquipo = false
+
+            repoDispositivos.obtenerEquiposPorUsuario(
+                userId = clienteSeleccionado.id,
+                error={},
+                exito = {listaEquiposCliente=it}
+            )
+        }
     }
 
     val clientesFiltrados = listaClientes.filter {
@@ -250,6 +273,40 @@ fun NuevaAveriaAdmin(
                 ) {
 
                     // Título
+                    //Necesito que me cree las tarjetas con los equipos
+                    if(listaEquiposCliente.isNotEmpty()&&equipoSeleccionado==null&& !mostrarNuevoFormulario){
+                        Text("Equipos del cliente")
+                        listaEquiposCliente.forEach { equipo ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                                onClick = { equipoSeleccionado = equipo }
+                            ) {
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Text(
+                                        "${equipo.deviceBrand} ${equipo.deviceModel}",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text("S/N: ${equipo.deviceSN}")
+
+                                }
+                            }
+                        }
+                        Button(
+                            onClick = { mostrarFormularioNuevoEquipo = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Añadir equipo nuevo")
+                        }
+                    }
+
+                    if (equipoSeleccionado != null) {
+                        Text("Equipo seleccionado:", fontWeight = FontWeight.Bold)
+                        Text("${equipoSeleccionado!!.deviceBrand} ${equipoSeleccionado!!.deviceModel}", color = Naranja)
+                        TextButton(onClick = { equipoSeleccionado = null }) {
+                            Text("Cambiar equipo", color = Naranja)
+                        }
+                    }
+
                     Text(
                         text = "Crear nueva avería",
                         style = MaterialTheme.typography.headlineMedium,
@@ -259,43 +316,46 @@ fun NuevaAveriaAdmin(
                     )
 
 
-                    // Marca
-                    OutlinedTextField(
-                        value = marca,
-                        onValueChange = {
-                            marca = it
-                            error = null
-                            ok = false
-                        },
-                        label = { Text("Marca") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                   if(equipoSeleccionado==null && mostrarFormularioNuevoEquipo||listaEquiposCliente.isEmpty()){
 
-                    // Modelo
-                    OutlinedTextField(
-                        value = modelo,
-                        onValueChange = {
-                            modelo = it
-                            error = null
-                            ok = false
-                        },
-                        label = { Text("Modelo") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                       // Marca
+                       OutlinedTextField(
+                           value = marca,
+                           onValueChange = {
+                               marca = it
+                               error = null
+                               ok = false
+                           },
+                           label = { Text("Marca") },
+                           modifier = Modifier.fillMaxWidth()
+                       )
+
+                       // Modelo
+                       OutlinedTextField(
+                           value = modelo,
+                           onValueChange = {
+                               modelo = it
+                               error = null
+                               ok = false
+                           },
+                           label = { Text("Modelo") },
+                           modifier = Modifier.fillMaxWidth()
+                       )
 
 
-                    // Número de serie (números y letras)
-                    OutlinedTextField(
-                        value = numeroSerie,
-                        onValueChange = {
-                            numeroSerie = it
-                            error = null
-                            ok = false
-                        },
-                        label = { Text("Número de serie") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                       // Número de serie (números y letras)
+                       OutlinedTextField(
+                           value = numeroSerie,
+                           onValueChange = {
+                               numeroSerie = it
+                               error = null
+                               ok = false
+                           },
+                           label = { Text("Número de serie") },
+                           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
+                           modifier = Modifier.fillMaxWidth()
+                       )
+                   }
                     OutlinedTextField(
                         value = tituloAveria,
                         onValueChange = {
@@ -444,21 +504,30 @@ fun NuevaAveriaAdmin(
 
 
                                 )
-                            }else {
-                                //El else trabaja la posibilidad contraria, que exista y lo tenga el la tarjeta
-
-
-                                if (validarCampos()) {
-
-
-                                    // Crear objeto Equipo con los datos introducidos
+                            } else {
+                                if (equipoSeleccionado != null) {
+                                    if (añadirAveria && tituloAveria.isNotEmpty()) {
+                                        repoReparaciones.crearAveriaAdmin(
+                                            averia = Averia(
+                                                tituloAveria = tituloAveria,
+                                                descripcion = descripcionAveria,
+                                                equipoId = equipoSeleccionado!!.devicesId,
+                                                equipoNombre = "${equipoSeleccionado!!.deviceBrand} ${equipoSeleccionado!!.deviceModel}",
+                                                prioridad = prioridadSeleccionada.name
+                                            ),
+                                            userId = clienteSeleccionado.id,
+                                            exito = { onVerAverias() },
+                                            fallo = { msg -> error = msg }
+                                        )
+                                    } else {
+                                        onVerAverias()
+                                    }
+                                } else if (validarCampos()) {
                                     val equipo = Equipo(
                                         deviceBrand = marca.trim(),
                                         deviceModel = modelo.trim(),
                                         deviceSN = numeroSerie.trim(),
-                                        //averias = listaAverias
                                     )
-
                                     repoDispositivos.crearEquipoAdmin(
                                         equipo = equipo,
                                         userId = clienteSeleccionado.id,
@@ -471,23 +540,19 @@ fun NuevaAveriaAdmin(
                                                         equipoId = equipoId,
                                                         equipoNombre = "${marca} ${modelo}",
                                                         prioridad = prioridadSeleccionada.name
-
-                                                        ), userId = clienteSeleccionado.id,
-                                                    exito = { onVerAverias()},
+                                                    ),
+                                                    userId = clienteSeleccionado.id,
+                                                    exito = { onVerAverias() },
                                                     fallo = { msg -> error = msg }
                                                 )
                                             } else {
-                                               onVerAverias()
+                                                onVerAverias()
                                             }
                                         },
                                         error = { msg -> error = msg }
-
                                     )
-
-
                                 }
                             }
-
                         },
                         colors= ButtonDefaults.buttonColors(
                             containerColor = Naranja,

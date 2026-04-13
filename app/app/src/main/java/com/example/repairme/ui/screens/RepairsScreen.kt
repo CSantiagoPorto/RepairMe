@@ -48,6 +48,7 @@ import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.EstadoTecnico
 import com.example.repairme.data.model.PrioridadAveria
 import com.example.repairme.data.model.Usuario
+import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.TecnicoRepository
 import com.example.repairme.ui.components.BaseScreen

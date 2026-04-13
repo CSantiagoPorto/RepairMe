@@ -174,5 +174,24 @@ class DeviceRepository : OperationsTemplateRepository() {
         )
     }
 
+    fun obtenerEquiposPorUsuario(
+        userId: String,
+        error: (String) -> Unit,
+        exito: (List<Equipo>) -> Unit
+    ) {
+        ref(NODE).orderByChild("userId").equalTo(userId).get()
+            .addOnSuccessListener { snapshot ->
+                val lista = snapshot.children.mapNotNull { child ->
+                    child.getValue(Equipo::class.java)?.copy(devicesId = child.key ?: "")
+                }
+                exito(lista)
+            }
+            .addOnFailureListener {
+                error("No se pudieron recuperar los equipos del cliente")
+            }
+    }
+
+
+
 
 }

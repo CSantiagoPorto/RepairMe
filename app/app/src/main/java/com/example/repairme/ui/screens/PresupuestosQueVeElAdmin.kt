@@ -38,6 +38,7 @@ fun PresupuestoQueVeElAdmin(
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
     onVerClientes: () -> Unit = {},
+    onVerPresupuesto:(String)-> Unit={},
     onLogOut: () -> Unit = {}
 
 ) {
@@ -159,7 +160,10 @@ fun PresupuestoQueVeElAdmin(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = BorderStroke(2.dp, Color(0xFFFED7AA))
+                        border = BorderStroke(2.dp, Color(0xFFFED7AA)),
+                        onClick = {
+                            onVerPresupuesto(averia.id)
+                        }
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -185,7 +189,10 @@ fun PresupuestoQueVeElAdmin(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(0.5.dp, Color(0xFFE5E7EB))
+                    border = BorderStroke(0.5.dp, Color(0xFFE5E7EB)),
+                    onClick = {
+                        onVerPresupuesto(averia.id)
+                    }
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
@@ -230,7 +237,10 @@ fun PresupuestoQueVeElAdmin(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(2.dp, Color(0xFFFED7AA))
+                    border = BorderStroke(2.dp, Color(0xFFFED7AA)),
+                    onClick = {
+                        onVerPresupuesto(averia.id)
+                    }
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(

@@ -245,7 +245,7 @@ fun PresupuestoDetalleScreen(
 
 
                         item {
-                            if (averia?.estado == EstadoAveria.Presupuestada.name) {
+                            if (averia?.estado == EstadoAveria.Presupuestada.name && usuarioActual?.role =="user") {
 
                             Row(modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -255,6 +255,7 @@ fun PresupuestoDetalleScreen(
                                     repairRepo.editarAveria(
                                         averiaEditada = averia!!.copy(
                                             presupuestoAceptado = true,
+
                                             estado = EstadoAveria.EnReparacion.name
                                         ),
                                         exito = {
@@ -311,7 +312,7 @@ fun PresupuestoDetalleScreen(
                             }
                         }
                         }
-                       if(averia?.presupuestoAceptado==true){
+                       if(averia?.lineasPresupuesto?.isNotEmpty() ==true ){
                            item {
                                Row(modifier = Modifier.fillMaxWidth(),
                                    horizontalArrangement = Arrangement.Center) {
