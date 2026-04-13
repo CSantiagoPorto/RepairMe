@@ -79,8 +79,10 @@ fun PresupuestoQueVeElAdmin(
     val resultadosBusqueda = if (busqueda.isBlank()) emptyList() else
         todasAverias.filter { averia ->
             val cliente = mapaUsuarios[averia.userId]
+            val nombreCompleto= "${cliente?.name ?:""} ${cliente?.apellidos ?:""}"
             cliente?.name?.contains(busqueda, ignoreCase = true) == true ||
-                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true
+                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true||
+                    nombreCompleto.contains(busqueda, ignoreCase = true)
         }
 
 
@@ -216,52 +218,54 @@ fun PresupuestoQueVeElAdmin(
                     }
                 }
             }
-            item {
+            if (busqueda.isBlank()){
+                item {
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "PRESUPUESTADAS ESTE MES",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF9CA3AF),
-                    letterSpacing = 0.06.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "PRESUPUESTADAS ESTE MES",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF9CA3AF),
+                        letterSpacing = 0.06.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
 
-            items(presupuestadasEsteMes) { averia ->
-                val cliente = mapaUsuarios[averia.userId]
-                val subtotal = averia.lineasPresupuesto.sumOf { it.cantidad * it.precioUnitario }
-                val total = subtotal * 1.21
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(2.dp, Color(0xFFFED7AA)),
-                    onClick = {
-                        onVerPresupuesto(averia.id)
-                    }
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = averia.tituloAveria,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF111827)
-                        )
-                        Text(
-                            text = "${cliente?.name ?: ""} ${cliente?.apellidos ?: ""}",
-                            fontSize = 12.sp,
-                            color = Color(0xFF9CA3AF),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                        Text(
-                            text = "Total: ${"%.2f".format(total)} €",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = botonNaranja,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
+                items(presupuestadasEsteMes) { averia ->
+                    val cliente = mapaUsuarios[averia.userId]
+                    val subtotal = averia.lineasPresupuesto.sumOf { it.cantidad * it.precioUnitario }
+                    val total = subtotal * 1.21
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        border = BorderStroke(2.dp, Color(0xFFFED7AA)),
+                        onClick = {
+                            onVerPresupuesto(averia.id)
+                        }
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = averia.tituloAveria,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF111827)
+                            )
+                            Text(
+                                text = "${cliente?.name ?: ""} ${cliente?.apellidos ?: ""}",
+                                fontSize = 12.sp,
+                                color = Color(0xFF9CA3AF),
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                            Text(
+                                text = "Total: ${"%.2f".format(total)} €",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = botonNaranja,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
                 }
             }
