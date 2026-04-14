@@ -79,7 +79,7 @@ class AppNavigation {
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
                     onIrNotificaciones = { navController.navigate("notifications") },
-                    onVerPresupuestos = {averia->navController.navigate("detallePresuCliente/${averia.id}")},
+                    onVerPresupuestos = { averia -> navController.navigate("detallePresuCliente/${averia.id}") },
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) {
@@ -100,7 +100,7 @@ class AppNavigation {
                         navController.navigate("detalleAveriaComun/$averiaId/true/tecnico/Técnico")
                     },
                     onIrNotificaciones = { navController.navigate("notifications") },
-                    onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
+                    onReparacionesFinalizadasClick = { averiaID -> navController.navigate("detalleReparacionFinalizada/$averiaID") },
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) {
@@ -125,12 +125,18 @@ class AppNavigation {
                     onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
-                    onVerClientes = {navController.navigate(Rutas.CLIENTES_ADMIN.ruta)},
+                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
                     onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) },
                     onVerListaRecoger = { navController.navigate(Rutas.LISTA_PARA_RECOGER_ADMIN.ruta) },
+<<<<<<< Updated upstream
                     onNuevaAveria ={navController.navigate(Rutas.CREAR_AVERIA_ADMIN.ruta)}
 
 
+=======
+                    onNuevaAveria = { navController.navigate(Rutas.CREAR_AVERIA_ADMIN.ruta) },
+                    // Pasar el contador de notificaciones compartido global
+                    notificacionesNoLeidas = notificacionesNoLeidas.value
+>>>>>>> Stashed changes
                 )
             }
 
@@ -149,7 +155,7 @@ class AppNavigation {
                 )
             }
 
-            composable (Rutas.REPAIRSSCREEN.ruta){
+            composable(Rutas.REPAIRSSCREEN.ruta){
 
                 RepairsScreen(
                     onVolver = { navController.popBackStack() },
@@ -173,8 +179,8 @@ class AppNavigation {
 
             composable(Rutas.REGISTRO_TECNICO.ruta){
                 RegisterTecnicoScreen(
-                    onNavigateBack ={navController.popBackStack()},
-                    onRegisterSucess={navController.popBackStack()}
+                    onNavigateBack = { navController.popBackStack() },
+                    onRegisterSucess = { navController.popBackStack() }
                 )
             }
             composable(Rutas.LISTA_TECNICOS.ruta){
@@ -194,15 +200,18 @@ class AppNavigation {
                     }
                 )
             }
-            composable (Rutas.DETALLE_AVERIA_TECNICO.ruta,
-                listOf(navArgument("averiaId"){type= NavType.StringType})){
-                    backStackEntry->
-                val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
+
+            composable(
+                Rutas.DETALLE_AVERIA_TECNICO.ruta,
+                listOf(navArgument("averiaId"){ type = NavType.StringType })
+            ) { backStackEntry ->
+                val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
                 DetalleAveriaTecnicoScreen(
                     averiaId = averiaId,
                     onVolver = { navController.popBackStack() }
                 )
             }
+
             composable(
                 Rutas.DETALLE_AVERIA_COMUN.ruta,
                 listOf(
@@ -225,13 +234,15 @@ class AppNavigation {
                     onVolver = { navController.popBackStack() }
                 )
             }
-            composable(Rutas.DETALLE_AVERIA_FINALIZADA.ruta,
-                listOf(navArgument("averiaId"){type= NavType.StringType})){
-                backStackEntry->
-                val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
+
+            composable(
+                Rutas.DETALLE_AVERIA_FINALIZADA.ruta,
+                listOf(navArgument("averiaId"){ type = NavType.StringType })
+            ) { backStackEntry ->
+                val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
                 DetalleReparacionesFinalizadas(
-                    averiaId=averiaId,
-                    onVolver = {navController.popBackStack()}
+                    averiaId = averiaId,
+                    onVolver = { navController.popBackStack() }
                 )
 
             }
@@ -279,25 +290,28 @@ class AppNavigation {
 
                 )
             }
-            composable(Rutas.DETALLE_PRESUPUESTO.ruta,
-                listOf(navArgument("averiaId"){type= NavType.StringType})){
-                    backStackEntry->
-                val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
+
+            composable(
+                Rutas.DETALLE_PRESUPUESTO.ruta,
+                listOf(navArgument("averiaId"){ type = NavType.StringType })
+            ) { backStackEntry ->
+                val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
                 PresupuestoDetalleScreen(
-                    averiaId=averiaId,
-                    onVolver = {navController.popBackStack()}
+                    averiaId = averiaId,
+                    onVolver = { navController.popBackStack() }
                 )
 
             }
+
             composable(Rutas.PRESUPUESTOS_ADMIN.ruta) {
                 PresupuestoQueVeElAdmin(
                     onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onVolver = { navController.popBackStack() },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onIrNotificaciones = { navController.navigate("notifications") },
                     onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
                     onVerPresupuesto = { averiaId -> navController.navigate("detallePresuCliente/$averiaId") },
-
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
@@ -334,8 +348,8 @@ class AppNavigation {
                 )
             }
 
-            composable (Rutas.CREAR_AVERIA_ADMIN.ruta){
-                NuevaAveriaAdmin (
+            composable(Rutas.CREAR_AVERIA_ADMIN.ruta){
+                NuevaAveriaAdmin(
                     onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onVolver = { navController.popBackStack() },
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
