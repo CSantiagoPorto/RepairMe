@@ -58,7 +58,8 @@ fun ClientesPantallaAdminScreen(
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 
 ) {
     val repo = remember { UserRepository() }
@@ -67,7 +68,6 @@ fun ClientesPantallaAdminScreen(
     var tipoBusqueda by remember { mutableStateOf("Nombre") }
     var expandido by remember { mutableStateOf(false) }
     var expandedClienteId by remember { mutableStateOf<String?>(null) }
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
         repo.obtenerUsuariosTodos(

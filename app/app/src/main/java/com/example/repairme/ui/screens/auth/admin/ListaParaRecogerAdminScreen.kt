@@ -48,14 +48,14 @@ fun VerListasRecoger(
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ){
     val repo = remember { RepairRepository() }
     var todasAverias by remember { mutableStateOf(listOf<Averia>()) }
     var busqueda by remember { mutableStateOf("") }
     val userRepo = remember { UserRepository() }
     var mapaUsuarios by remember { mutableStateOf(mapOf<String, Usuario>()) }
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
     val listasParaRecoger= todasAverias.filter {
         it.estado== EstadoAveria.ListaParaRecoger.name}.sortedBy { it.fechaListo }
     //Neceito filtrar y ordenar la lista para que nos enseñe las que están listas

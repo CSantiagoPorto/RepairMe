@@ -57,7 +57,8 @@ fun ListaTecnicosScreen(
     onIrNotificaciones: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
     var listaTecnicos by remember { mutableStateOf(listOf<Usuario>()) } // lista de técnicos de firebase
     var cargando by remember { mutableStateOf(true) } // para saber si cargaron los datos
@@ -111,7 +112,7 @@ fun ListaTecnicosScreen(
         onLogOut = onLogOut,
         onVolver = onVolver,
         onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = 0,
+        notificationBadgeCount = notificacionesNoLeidas,
     ) { modifier ->
         Column(
             modifier = modifier

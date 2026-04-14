@@ -36,7 +36,8 @@ fun PresupuestoQueVeElAdmin(
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 
 ) {
     val repo = remember { RepairRepository() }
@@ -44,8 +45,6 @@ fun PresupuestoQueVeElAdmin(
     var busqueda by remember { mutableStateOf("") }
     val userRepo = remember { UserRepository() }
     var mapaUsuarios by remember { mutableStateOf(mapOf<String, Usuario>()) }
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
-
 
 
     LaunchedEffect(Unit) {
