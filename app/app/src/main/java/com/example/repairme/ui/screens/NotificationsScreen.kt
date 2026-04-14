@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Notificacion
 import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.ui.components.BaseScreen
-import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import java.text.SimpleDateFormat
@@ -27,8 +26,10 @@ import java.util.*
 
 @Composable
 fun NotificationsScreen(
+    onIrHome: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onIrServicios: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {},
     onVolver: () -> Unit = {}
 ) {
@@ -52,17 +53,15 @@ fun NotificationsScreen(
         }
     }
 
-    val itemsNavegacion = listOf(
-        NavItem("Volver", Icons.Filled.Notifications, { onVolver() })
-    )
 
     BaseScreen(
         title = "Notificaciones",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onIrServicios,
         onLogOut = onLogOut,
+        onNotificationsClick = onIrNotificaciones,
         onVolver = onVolver,
-        onNotificationsClick = {},
         notificationBadgeCount = notificaciones.count { !it.leida }
     ) { modifier ->
         Column(

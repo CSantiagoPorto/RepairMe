@@ -32,13 +32,13 @@ data class NavItem(
 @Composable
 fun BaseScreen(
     title: String = "ClearRepair", // Titulo por defecto
-    onIrHome: () -> Unit = {}, // Accion boton home
-    onIrPerfil: () -> Unit, // Accion boton perfil
-    onGestionServicios: () -> Unit, // Accion boton gestion de servicios
-    onLogOut: () -> Unit, // Accion boton salir
-    onVolver: (() -> Unit)? = null,
-    onNotificationsClick: () -> Unit = {}, // Accion boton notificaciones cuando ilo implementemos
-    notificationBadgeCount: Int = 0, // Número de notificaciones no leídas
+    onIrHome: () -> Unit = {}, // Accion boton home: Navega a la pantalla principal del rol
+    onIrPerfil: () -> Unit, // Accion boton perfil: Navega a la pantalla de perfil del usuario
+    onGestionServicios: () -> Unit, // Accion boton gestion de servicios: Muestra info/opciones
+    onLogOut: () -> Unit, // Accion boton salir: Cierra sesión y vuelve a login
+    onVolver: (() -> Unit)? = null, // Botón volver opcional (en pantallas secundarias)
+    onNotificationsClick: () -> Unit = {}, // Accion boton notificaciones: Navega a la pantalla de notificaciones
+    notificationBadgeCount: Int = 0, // Número de notificaciones no leídas (contador global sincronizado)
     content: @Composable (Modifier) -> Unit // IMPORTANTE!! Aqui va el diseño de cada pantalla es el content que se va a mostrar
 ) {
     Scaffold(
@@ -88,7 +88,9 @@ fun BaseScreen(
                 )
             )
         },
-        // Definimos la parte inferior de la pantalla, la navegacion
+       // BARRA NAVEGACION INFERIOR
+        // Contiene los botones: Home, Notificaciones y Perfil
+        // Esta barra es igual para todos los roles (User, Tecnico, Admin)
         bottomBar = {
             NavigationBar(
                 containerColor = Color.White,
@@ -111,12 +113,15 @@ fun BaseScreen(
                     )
                 }
 
-                // Ítem fijo de notificaciones, aparecerá siempre.
-                // Cuando haya notificaciones aoarecera el numero de notificaciones
+                // Navega a la pantalla de notificaciones que es común para todos los roles
+                // Muestra un badge con el número de notificaciones no leídas (contador global)
+                // Si hay notificaciones, muestra: "1", "5", "99+" si hay más de 99
                 NavigationBarItem(
                     icon = {
+                        // BadgedBox: Contenedor que permite mostrar un badge con número
                         BadgedBox(
                             badge = {
+                                // Si hay notificaciones no leídas, muestra el badge con el contador
                                 if (notificationBadgeCount > 0) {
                                     Badge {
                                         Text(
@@ -127,6 +132,7 @@ fun BaseScreen(
                                 }
                             }
                         ) {
+                            // Icono de notificaciones
                             Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones")
                         }
                     },
