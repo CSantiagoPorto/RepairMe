@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
@@ -52,15 +53,11 @@ import com.example.repairme.ui.theme.naranjaLetras
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientesPantallaAdminScreen(
-    onAddAveria: () -> Unit = {},
+    onIrHome: () -> Unit = {},
     onVolver: () -> Unit = {},
-    onVerAveria: () -> Unit = {},
-    onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onVerClientes: () -> Unit = {},
-    onVerPresupuestos: () -> Unit = {},
     onLogOut: () -> Unit = {}
 
 ) {
@@ -69,8 +66,8 @@ fun ClientesPantallaAdminScreen(
     var busqueda by remember { mutableStateOf("") }
     var tipoBusqueda by remember { mutableStateOf("Nombre") }
     var expandido by remember { mutableStateOf(false) }
-
     var expandedClienteId by remember { mutableStateOf<String?>(null) }
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
         repo.obtenerUsuariosTodos(
@@ -102,17 +99,13 @@ fun ClientesPantallaAdminScreen(
 
     BaseScreen(
         title = "Clientes",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
-        onLogOut = onLogOut,
         onVolver = onVolver,
+        onLogOut = onLogOut,
         onNotificationsClick = onIrNotificaciones,
-        bottomNavItems = listOf(
-            NavItem("Reparar", Icons.Filled.Build, onVolver),
-            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
-            NavItem("Clientes", Icons.Filled.Person, onVerClientes),
-            NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
-        )
+        notificationBadgeCount = notificacionesNoLeidas
 
     ) { modifier ->
         Column(modifier = modifier.padding(16.dp)) {
@@ -249,4 +242,9 @@ fun ClientesPantallaAdminScreen(
             }
         }
     }
+}
+@Preview(showSystemUi = true)
+@Composable
+fun ClientesPantallaAdminScreenPreview() {
+    ClientesPantallaAdminScreen()
 }

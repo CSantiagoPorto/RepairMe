@@ -61,7 +61,6 @@ fun NotificationsScreen(
         onIrPerfil = onIrPerfil,
         onGestionServicios = onIrServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion,
         onVolver = onVolver,
         onNotificationsClick = {},
         notificationBadgeCount = notificaciones.count { !it.leida }

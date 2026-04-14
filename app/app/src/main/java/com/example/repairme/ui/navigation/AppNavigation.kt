@@ -32,6 +32,7 @@ import com.example.repairme.ui.screens.auth.admin.VerListasRecoger
 import com.example.repairme.ui.screens.ListaTecnicosScreen
 import com.example.repairme.ui.screens.NotificationsScreen
 import com.example.repairme.ui.screens.auth.admin.NuevaAveriaAdmin
+import com.example.repairme.ui.screens.DetalleAveriaComunScreen
 
 
 class AppNavigation {
@@ -71,6 +72,10 @@ class AppNavigation {
                 UserScreen(
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onGoToTestCrud = { navController.navigate(Rutas.TESTCRUD.ruta) },
+                    onVerAverias = { averia ->
+                        navController.navigate("detalleAveriaComun/${averia.id}/false/user/Cliente")
+                    },
+                    onIrHome = { navController.navigate(Rutas.USERSCREEN.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onIrServicios = { navController.navigate(Rutas.SERVICES.ruta) },
                     onIrNotificaciones = { navController.navigate("notifications") },
@@ -88,8 +93,12 @@ class AppNavigation {
                 TecnicoScreen(
                     onAddEquipo = { navController.navigate(Rutas.ADD_EQUIPO.ruta) },
                     onAveriaClick = { averiaId -> navController.navigate("detalleAveriaTecnico/$averiaId") },
+                    onIrHome = { navController.navigate(Rutas.TECNICOSCREEN.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onVerDetalleAveria = { averiaId ->
+                        navController.navigate("detalleAveriaComun/$averiaId/true/tecnico/Técnico")
+                    },
                     onIrNotificaciones = { navController.navigate("notifications") },
                     onReparacionesFinalizadasClick = {averiaID-> navController.navigate("detalleReparacionFinalizada/$averiaID")},
                     onLogOut = {
@@ -112,6 +121,7 @@ class AppNavigation {
                         }
                     },
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
@@ -143,8 +153,11 @@ class AppNavigation {
 
                 RepairsScreen(
                     onVolver = { navController.popBackStack() },
-                    onVerAveria = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
+                    onVerAveria = { averia ->
+                        navController.navigate("detalleAveriaComun/${averia.id}/true/admin/Admin")
+                    },
                     onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
                     onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
@@ -170,6 +183,7 @@ class AppNavigation {
                     onRegistrarTecnico = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
                     onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
                     onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
@@ -186,6 +200,28 @@ class AppNavigation {
                 val averiaId=backStackEntry.arguments?.getString("averiaId")?:""
                 DetalleAveriaTecnicoScreen(
                     averiaId = averiaId,
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+            composable(
+                Rutas.DETALLE_AVERIA_COMUN.ruta,
+                listOf(
+                    navArgument("averiaId") { type = NavType.StringType },
+                    navArgument("puedeEscribir") { type = NavType.BoolType },
+                    navArgument("autorRol") { type = NavType.StringType },
+                    navArgument("autorNombre") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
+                val puedeEscribir = backStackEntry.arguments?.getBoolean("puedeEscribir") ?: false
+                val autorRol = backStackEntry.arguments?.getString("autorRol") ?: ""
+                val autorNombre = backStackEntry.arguments?.getString("autorNombre") ?: ""
+
+                DetalleAveriaComunScreen(
+                    averiaId = averiaId,
+                    puedeEscribirUpdate = puedeEscribir,
+                    autorRol = autorRol,
+                    autorNombre = autorNombre,
                     onVolver = { navController.popBackStack() }
                 )
             }
@@ -232,12 +268,10 @@ class AppNavigation {
 
             composable(Rutas.CLIENTES_ADMIN.ruta) {
                 ClientesPantallaAdminScreen(
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onVolver = { navController.popBackStack() },
-                    onVerAveria = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
-                    onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
-                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
@@ -257,9 +291,8 @@ class AppNavigation {
             }
             composable(Rutas.PRESUPUESTOS_ADMIN.ruta) {
                 PresupuestoQueVeElAdmin(
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onVolver = { navController.popBackStack() },
-                    onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
-                    onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
                     onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
@@ -274,12 +307,10 @@ class AppNavigation {
             }
             composable(Rutas.LISTA_PARA_RECOGER_ADMIN.ruta) {
                 VerListasRecoger(
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onVolver = { navController.popBackStack() },
-                    onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
-                    onVerTecnicos = { navController.navigate(Rutas.REGISTRO_TECNICO.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
-                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
@@ -305,13 +336,11 @@ class AppNavigation {
 
             composable (Rutas.CREAR_AVERIA_ADMIN.ruta){
                 NuevaAveriaAdmin (
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onVolver = { navController.popBackStack() },
                     onVerAverias = { navController.navigate(Rutas.REPAIRSSCREEN.ruta) },
-                    onVerTecnicos = { navController.navigate(Rutas.LISTA_TECNICOS.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
-                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
-                    onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) },
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }

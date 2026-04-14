@@ -39,6 +39,7 @@ fun PresupuestoQueVeElAdmin(
     onIrNotificaciones: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuesto:(String)-> Unit={},
+    onIrHome: () -> Unit = {} ,
     onLogOut: () -> Unit = {}
 
 ) {
@@ -105,11 +106,7 @@ fun PresupuestoQueVeElAdmin(
         onVolver = onVolver,
         onNotificationsClick = onIrNotificaciones,
         notificationBadgeCount = 0,
-        bottomNavItems = listOf(
-            NavItem("Reparar", Icons.Filled.Build, onVerAverias),
-            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
-            NavItem("Clientes", Icons.Filled.Person, onVerClientes)
-        )
+        onIrHome = onVolver
 
     ) {modifier ->
         // He cambiado la cabecera a azul para enseñaros como iría con el otro enfoque
