@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens.auth.admin
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -28,9 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.Usuario
@@ -40,6 +44,7 @@ import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.botonNaranja
+import com.example.repairme.utils.generarFactura
 
 @Composable
 fun VerListasRecoger(
@@ -61,6 +66,7 @@ fun VerListasRecoger(
     //Neceito filtrar y ordenar la lista para que nos enseñe las que están listas
 
     val hace10dias = System.currentTimeMillis() - (10L * 24 * 60 * 60 * 1000)
+    val context = LocalContext.current
 
 
 
@@ -158,6 +164,30 @@ fun VerListasRecoger(
                             color = botonNaranja,
                             modifier = Modifier.padding(top = 4.dp)
                         )
+
+                        Button(
+                            onClick = {
+                                val archivo= generarFactura(
+                                    context = context,
+                                    averia=averia,
+                                    cliente= cliente!!
+                                )
+                                val uri= FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.provider",
+                                    archivo
+                                )
+
+                                val intent= Intent(Intent.ACTION_VIEW).apply {
+                                    setDataAndType(uri, "application/pdf")
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(intent)
+                            }
+
+                        ) {
+                            Text("Generar factura")
+                        }
                     }
                 }
             }

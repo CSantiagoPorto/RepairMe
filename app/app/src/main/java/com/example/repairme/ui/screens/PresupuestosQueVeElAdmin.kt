@@ -31,11 +31,15 @@ import com.example.repairme.ui.theme.botonNaranja
 
 @Composable
 fun PresupuestoQueVeElAdmin(
-    onIrHome: () -> Unit = {},
     onVolver: () -> Unit = {},
+    onVerAverias: () -> Unit = {},
+    onVerTecnicos: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
+    onVerClientes: () -> Unit = {},
+    onVerPresupuesto:(String)-> Unit={},
+    onIrHome: () -> Unit = {} ,
     onLogOut: () -> Unit = {}
 
 ) {
@@ -44,7 +48,6 @@ fun PresupuestoQueVeElAdmin(
     var busqueda by remember { mutableStateOf("") }
     val userRepo = remember { UserRepository() }
     var mapaUsuarios by remember { mutableStateOf(mapOf<String, Usuario>()) }
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
 
 
@@ -77,8 +80,10 @@ fun PresupuestoQueVeElAdmin(
     val resultadosBusqueda = if (busqueda.isBlank()) emptyList() else
         todasAverias.filter { averia ->
             val cliente = mapaUsuarios[averia.userId]
+            val nombreCompleto= "${cliente?.name ?:""} ${cliente?.apellidos ?:""}"
             cliente?.name?.contains(busqueda, ignoreCase = true) == true ||
-                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true
+                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true||
+                    nombreCompleto.contains(busqueda, ignoreCase = true)
         }
 
 
@@ -95,13 +100,13 @@ fun PresupuestoQueVeElAdmin(
 
     BaseScreen (
         title = "Presupuestos",
-        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
         onVolver = onVolver,
         onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = notificacionesNoLeidas
+        notificationBadgeCount = 0,
+        onIrHome = onVolver
 
     ) {modifier ->
         // He cambiado la cabecera a azul para enseñaros como iría con el otro enfoque
@@ -154,7 +159,10 @@ fun PresupuestoQueVeElAdmin(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = BorderStroke(2.dp, Color(0xFFFED7AA))
+                        border = BorderStroke(2.dp, Color(0xFFFED7AA)),
+                        onClick = {
+                            onVerPresupuesto(averia.id)
+                        }
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -180,7 +188,10 @@ fun PresupuestoQueVeElAdmin(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(0.5.dp, Color(0xFFE5E7EB))
+                    border = BorderStroke(0.5.dp, Color(0xFFE5E7EB)),
+                    onClick = {
+                        onVerPresupuesto(averia.id)
+                    }
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
@@ -204,49 +215,54 @@ fun PresupuestoQueVeElAdmin(
                     }
                 }
             }
-            item {
+            if (busqueda.isBlank()){
+                item {
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "PRESUPUESTADAS ESTE MES",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF9CA3AF),
-                    letterSpacing = 0.06.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "PRESUPUESTADAS ESTE MES",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF9CA3AF),
+                        letterSpacing = 0.06.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
 
-            items(presupuestadasEsteMes) { averia ->
-                val cliente = mapaUsuarios[averia.userId]
-                val subtotal = averia.lineasPresupuesto.sumOf { it.cantidad * it.precioUnitario }
-                val total = subtotal * 1.21
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(2.dp, Color(0xFFFED7AA))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = averia.tituloAveria,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF111827)
-                        )
-                        Text(
-                            text = "${cliente?.name ?: ""} ${cliente?.apellidos ?: ""}",
-                            fontSize = 12.sp,
-                            color = Color(0xFF9CA3AF),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                        Text(
-                            text = "Total: ${"%.2f".format(total)} €",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = botonNaranja,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
+                items(presupuestadasEsteMes) { averia ->
+                    val cliente = mapaUsuarios[averia.userId]
+                    val subtotal = averia.lineasPresupuesto.sumOf { it.cantidad * it.precioUnitario }
+                    val total = subtotal * 1.21
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        border = BorderStroke(2.dp, Color(0xFFFED7AA)),
+                        onClick = {
+                            onVerPresupuesto(averia.id)
+                        }
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = averia.tituloAveria,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF111827)
+                            )
+                            Text(
+                                text = "${cliente?.name ?: ""} ${cliente?.apellidos ?: ""}",
+                                fontSize = 12.sp,
+                                color = Color(0xFF9CA3AF),
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                            Text(
+                                text = "Total: ${"%.2f".format(total)} €",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = botonNaranja,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
                 }
             }

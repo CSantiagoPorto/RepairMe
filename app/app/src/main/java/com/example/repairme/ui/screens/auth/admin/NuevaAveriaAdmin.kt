@@ -99,6 +99,10 @@ fun NuevaAveriaAdmin(
     var error by remember { mutableStateOf<String?>(null) }
     var ok by rememberSaveable { mutableStateOf(false) }
     var mostrarNuevoFormulario by remember { mutableStateOf(false) }
+    var listaEquiposCliente by remember { mutableStateOf(listOf<Equipo>()) }
+    var equipoSeleccionado by remember { mutableStateOf<Equipo?>(null) }
+    var mostrarFormularioNuevoEquipo by remember { mutableStateOf(false) }
+
 
     var nuevoNombre by remember { mutableStateOf("") }
     var nuevoApellidos by remember { mutableStateOf("") }
@@ -112,6 +116,25 @@ fun NuevaAveriaAdmin(
             fallo = { },
             exito = { clientes -> listaClientes = clientes }
         )
+
+    }
+    LaunchedEffect(clienteSeleccionado.id) {
+        if (clienteSeleccionado.id.isNotEmpty()){
+            marca = ""
+            modelo = ""
+            numeroSerie = ""
+            tituloAveria = ""
+            descripcionAveria = ""
+            añadirAveria = false
+            equipoSeleccionado = null
+            mostrarFormularioNuevoEquipo = false
+
+            repoDispositivos.obtenerEquiposPorUsuario(
+                userId = clienteSeleccionado.id,
+                error={},
+                exito = {listaEquiposCliente=it}
+            )
+        }
     }
 
     val clientesFiltrados = listaClientes.filter {
@@ -184,6 +207,7 @@ fun NuevaAveriaAdmin(
 
             }
                 //Si mostrar el formulario se pone a true necesito que me muestre los campos
+                //Esto pasa al pulsar el botón
                 if (mostrarNuevoFormulario) {
                     OutlinedTextField(
                         value = nuevoNombre,
@@ -223,9 +247,6 @@ fun NuevaAveriaAdmin(
                         Text("Confirmar cliente")
                     }
                 }
-
-
-
                 //Cuando el cliente no existe nos enseña el botón de crear cliente
                if(clientesFiltrados.isEmpty() && busqueda.isNotEmpty()&&!mostrarNuevoFormulario){
                    Button(onClick = {
@@ -236,7 +257,7 @@ fun NuevaAveriaAdmin(
                        }
 
                }
-        }else{
+        }else{//Por aquí entra si selecciono cliente
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -247,6 +268,41 @@ fun NuevaAveriaAdmin(
                 ) {
 
                     // Título
+                    //Necesito que me cree las tarjetas con los equipos
+                    if(listaEquiposCliente.isNotEmpty()&&equipoSeleccionado==null&& !mostrarNuevoFormulario){
+                        //Aquí el cliente tiene equipos pero no he seleccionado ninguno y no le he dado a crear ninguno
+                        Text("Equipos del cliente")
+                        listaEquiposCliente.forEach { equipo ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                                onClick = { equipoSeleccionado = equipo }//Aquí me va a guardar en la variable el equipo sobre el que he hecho click. Ahora sólo lo tengo que enseñar
+                            ) {
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Text(
+                                        "${equipo.deviceBrand} ${equipo.deviceModel}",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text("S/N: ${equipo.deviceSN}")
+
+                                }
+                            }
+                        }
+                        Button(
+                            onClick = { mostrarFormularioNuevoEquipo = true },//Aquí le cambio el estado al formulario
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Añadir equipo nuevo")
+                        }
+                    }
+
+                    if (equipoSeleccionado != null) {//Si ya tengo el equipo seleccionado mostramos datos y el botón para quitar la selección
+                        Text("Equipo seleccionado:", fontWeight = FontWeight.Bold)
+                        Text("${equipoSeleccionado!!.deviceBrand} ${equipoSeleccionado!!.deviceModel}", color = Naranja)
+                        TextButton(onClick = { equipoSeleccionado = null }) {
+                            Text("Cambiar equipo", color = Naranja)
+                        }
+                    }
+
                     Text(
                         text = "Crear nueva avería",
                         style = MaterialTheme.typography.headlineMedium,
@@ -256,43 +312,47 @@ fun NuevaAveriaAdmin(
                     )
 
 
-                    // Marca
-                    OutlinedTextField(
-                        value = marca,
-                        onValueChange = {
-                            marca = it
-                            error = null
-                            ok = false
-                        },
-                        label = { Text("Marca") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                   if(equipoSeleccionado==null && mostrarFormularioNuevoEquipo||listaEquiposCliente.isEmpty()){
+                       //Su no hay equipo y se pulsó añadir equipo va a entrar por aquí y mostrar el formulario
 
-                    // Modelo
-                    OutlinedTextField(
-                        value = modelo,
-                        onValueChange = {
-                            modelo = it
-                            error = null
-                            ok = false
-                        },
-                        label = { Text("Modelo") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                       // Marca
+                       OutlinedTextField(
+                           value = marca,
+                           onValueChange = {
+                               marca = it
+                               error = null
+                               ok = false
+                           },
+                           label = { Text("Marca") },
+                           modifier = Modifier.fillMaxWidth()
+                       )
+
+                       // Modelo
+                       OutlinedTextField(
+                           value = modelo,
+                           onValueChange = {
+                               modelo = it
+                               error = null
+                               ok = false
+                           },
+                           label = { Text("Modelo") },
+                           modifier = Modifier.fillMaxWidth()
+                       )
 
 
-                    // Número de serie (números y letras)
-                    OutlinedTextField(
-                        value = numeroSerie,
-                        onValueChange = {
-                            numeroSerie = it
-                            error = null
-                            ok = false
-                        },
-                        label = { Text("Número de serie") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                       // Número de serie (números y letras)
+                       OutlinedTextField(
+                           value = numeroSerie,
+                           onValueChange = {
+                               numeroSerie = it
+                               error = null
+                               ok = false
+                           },
+                           label = { Text("Número de serie") },
+                           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
+                           modifier = Modifier.fillMaxWidth()
+                       )
+                   }//Aquí acaba el if que comprueba que no haya equipo
                     OutlinedTextField(
                         value = tituloAveria,
                         onValueChange = {
@@ -377,9 +437,14 @@ fun NuevaAveriaAdmin(
                     }
 
                     // Botón Guardar
+                    //Tengo tres posibilidades:
+                    //El cliente NO existe
+                    //El cliente existe y es reparaciónde equipo previo
+                    //El cliente existe y el equipo es NUEVO
                     Button(
+
                         onClick = {
-                            if(clienteSeleccionado.id.isEmpty()){
+                            if(clienteSeleccionado.id.isEmpty()){//Si no existe USUARIO haces esto
                                 repoAdmin.crearUsuarioAdmin(
                                     email = nuevoEmail,
                                     nombre = nuevoNombre,
@@ -390,72 +455,82 @@ fun NuevaAveriaAdmin(
                                     localidad = "",
                                     dni = "",
                                     exito = {
-                                        //Necesito guardarlo para que si lo creo pasarlo al de crear equipos
-                                        userId-> clienteSeleccionado= Usuario(
+                                        //Necesito guardarlo para que si lo creo pasarlo al de crear equipos y el equipo contenga el userId
+                                            userId-> clienteSeleccionado= Usuario(
                                         id = userId,
-                                            name=nuevoNombre,
-                                            apellidos = nuevoApellidos,
-                                            email = nuevoEmail
+                                        name=nuevoNombre,
+                                        apellidos = nuevoApellidos,
+                                        email = nuevoEmail
 
                                     )
 
-                                        if(validarCampos()){
+                                        if(validarCampos()){//Si el usuario no existe necesariamente tampoco tiene equipos. Los creo
 
 
-                                        // Crear objeto Equipo con los datos introducidos
-                                        val equipo = Equipo(
-                                            deviceBrand = marca.trim(),
-                                            deviceModel = modelo.trim(),
-                                            deviceSN = numeroSerie.trim(),
-                                            //averias = listaAverias
-                                        )
+                                            // Crear objeto Equipo con los datos introducidos
+                                            val equipo = Equipo(
+                                                deviceBrand = marca.trim(),
+                                                deviceModel = modelo.trim(),
+                                                deviceSN = numeroSerie.trim(),
+                                                //averias = listaAverias
+                                            )
 
-                                        repoDispositivos.crearEquipoAdmin(
-                                            equipo=equipo,
-                                            userId = userId,//Este no existía así que me viene del callback de crearUsuarioAdmin
-                                            exito = {
-                                                    equipoId->
-                                                if(añadirAveria){
-                                                    repoReparaciones.crearAveriaAdmin(
-                                                        averia = Averia(
-                                                            tituloAveria=tituloAveria,
-                                                            descripcion = descripcionAveria,
-                                                            equipoId = equipoId,
-                                                            equipoNombre = "${marca} ${modelo}",
-                                                            prioridad = prioridadSeleccionada.name
+                                            repoDispositivos.crearEquipoAdmin(
+                                                equipo=equipo,
+                                                userId = userId,//Este no existía así que me viene del callback de crearUsuarioAdmin
+                                                exito = {
+                                                        equipoId->
+                                                    if(añadirAveria){
+                                                        repoReparaciones.crearAveriaAdmin(
+                                                            averia = Averia(
+                                                                tituloAveria=tituloAveria,
+                                                                descripcion = descripcionAveria,
+                                                                equipoId = equipoId,
+                                                                equipoNombre = "${marca} ${modelo}",
+                                                                prioridad = prioridadSeleccionada.name
 
                                                             ), userId = userId,
-                                                        exito={onVerAverias()},//Lo cambio para que navegue a la avería por si quiere asignar ya
-                                                        fallo = {msg->error=msg}
-                                                    )
-                                                }else{
-                                                    ok=true
-                                                }
-                                            },
-                                            error = {msg->error=msg}
+                                                            exito={onVerAverias()},//Lo cambio para que navegue a la avería por si quiere asignar ya
+                                                            fallo = {msg->error=msg}
+                                                        )
+                                                    }else{
+                                                        ok=true//No necesito crear la avería. Sólo quiero el mensaje de avería guardada
+                                                    }
+                                                },
+                                                error = {msg->error=msg}
 
-                                        )
+                                            )
 
-                                    }},
+                                        }},
                                     error = {msg-> error=msg}
 
 
                                 )
-                            }else {
-                                //El else trabaja la posibilidad contraria, que exista y lo tenga el la tarjeta
-
-
-                                if (validarCampos()) {
-
-
-                                    // Crear objeto Equipo con los datos introducidos
+                            } else {//Ek cliente ya existe entonces y el equipo ha sido seleccionado de la lista
+                                if (equipoSeleccionado != null) {
+                                    if (añadirAveria && tituloAveria.isNotEmpty()) {
+                                        //Necesito que el switch esté activado y que el título de la avería puesto porque si no, me sale sin título
+                                        repoReparaciones.crearAveriaAdmin(
+                                            averia = Averia(
+                                                tituloAveria = tituloAveria,
+                                                descripcion = descripcionAveria,
+                                                equipoId = equipoSeleccionado!!.devicesId,
+                                                equipoNombre = "${equipoSeleccionado!!.deviceBrand} ${equipoSeleccionado!!.deviceModel}",
+                                                prioridad = prioridadSeleccionada.name
+                                            ),
+                                            userId = clienteSeleccionado.id,
+                                            exito = { onVerAverias() },
+                                            fallo = { msg -> error = msg }
+                                        )
+                                    } else {
+                                        onVerAverias()//Quiero que lo redirija para que me asigne un técnico a la reparación
+                                    }
+                                } else if (validarCampos()) {//Esto salta en el tercer caso. QUe no hay equipo seleccionado
                                     val equipo = Equipo(
                                         deviceBrand = marca.trim(),
                                         deviceModel = modelo.trim(),
                                         deviceSN = numeroSerie.trim(),
-                                        //averias = listaAverias
                                     )
-
                                     repoDispositivos.crearEquipoAdmin(
                                         equipo = equipo,
                                         userId = clienteSeleccionado.id,
@@ -468,23 +543,19 @@ fun NuevaAveriaAdmin(
                                                         equipoId = equipoId,
                                                         equipoNombre = "${marca} ${modelo}",
                                                         prioridad = prioridadSeleccionada.name
-
-                                                        ), userId = clienteSeleccionado.id,
-                                                    exito = { onVerAverias()},
+                                                    ),
+                                                    userId = clienteSeleccionado.id,
+                                                    exito = { onVerAverias() },
                                                     fallo = { msg -> error = msg }
                                                 )
                                             } else {
-                                               onVerAverias()
+                                                onVerAverias()
                                             }
                                         },
                                         error = { msg -> error = msg }
-
                                     )
-
-
                                 }
                             }
-
                         },
                         colors= ButtonDefaults.buttonColors(
                             containerColor = Naranja,
