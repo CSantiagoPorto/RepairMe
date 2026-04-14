@@ -32,10 +32,10 @@ data class NavItem(
 @Composable
 fun BaseScreen(
     title: String = "ClearRepair", // Titulo por defecto
+    onIrHome: () -> Unit = {}, // Accion boton home
     onIrPerfil: () -> Unit, // Accion boton perfil
     onGestionServicios: () -> Unit, // Accion boton gestion de servicios
     onLogOut: () -> Unit, // Accion boton salir
-    bottomNavItems: List<NavItem>, // Lista de botones para la barra de abajo
     onVolver: (() -> Unit)? = null,
     onNotificationsClick: () -> Unit = {}, // Accion boton notificaciones cuando ilo implementemos
     notificationBadgeCount: Int = 0, // Número de notificaciones no leídas
@@ -79,9 +79,6 @@ fun BaseScreen(
                     IconButton(onClick = onGestionServicios) {
                         Icon(Icons.Filled.Info, contentDescription = "Gestionar servicios", tint = Naranja)
                     }
-                    IconButton(onClick = onIrPerfil) {
-                        Icon(Icons.Filled.Person, contentDescription = "Mi perfil", tint = Naranja)
-                    }
                     IconButton(onClick = onLogOut) {
                         Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Salir", tint = Naranja)
                     }
@@ -97,8 +94,11 @@ fun BaseScreen(
                 containerColor = Color.White,
                 tonalElevation = 8.dp
             ) {
-                // Ítems dinámicos según la pantalla, recorremos la lista de botones con el foreach
-                bottomNavItems.forEach { item ->
+                NavItem(
+                    label = "Home",
+                    icon = Icons.Filled.Home,
+                    onClick = onIrHome
+                ).let { item ->
                     NavigationBarItem(
                         icon = { Icon(item.icon, contentDescription = item.label) },
                         label = { Text(item.label, fontSize = 10.sp) },
@@ -138,6 +138,23 @@ fun BaseScreen(
                         unselectedTextColor = Naranja
                     )
                 )
+
+                NavItem(
+                    label = "Perfil",
+                    icon = Icons.Filled.PermIdentity,
+                    onClick = onIrPerfil
+                ).let { item ->
+                    NavigationBarItem(
+                        icon = { Icon(item.icon, contentDescription = item.label) },
+                        label = { Text(item.label, fontSize = 10.sp) },
+                        selected = false,
+                        onClick = item.onClick,
+                        colors = NavigationBarItemDefaults.colors(
+                            unselectedIconColor = Naranja,
+                            unselectedTextColor = Naranja
+                        )
+                    )
+                }
             }
         }
     ) { innerPadding ->

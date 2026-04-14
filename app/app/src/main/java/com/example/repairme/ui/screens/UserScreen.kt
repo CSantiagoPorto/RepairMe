@@ -36,6 +36,7 @@ import com.example.repairme.ui.theme.*
 fun UserScreen(
     onAddEquipo: () -> Unit = {},
     onVolver: () -> Unit = {},
+    onIrHome: () -> Unit = {},
     onVerEquipos: (Equipo) -> Unit = {},
     onVerAverias: (Averia) -> Unit = {},
     onVerPresupuestos: (Averia) -> Unit = {},
@@ -150,10 +151,10 @@ fun UserScreen(
     // 3. Aplicamos el modelo BaseScreen (Logo arriba + Acciones perfil/servicios + BottomNav)
     BaseScreen(
         title = "ClearRepair",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onIrServicios,
         onLogOut = onLogOut,
-        bottomNavItems = itemsNavegacion,
         onNotificationsClick = onIrNotificaciones,
         notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->

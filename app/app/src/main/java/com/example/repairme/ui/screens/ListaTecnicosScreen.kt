@@ -51,6 +51,7 @@ fun ListaTecnicosScreen(
     onRegistrarTecnico: () -> Unit = {},
     onVerAverias: () -> Unit = {},
     onVerTecnicos: () -> Unit = {},
+    onIrHome: () -> Unit = {},
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
@@ -104,18 +105,13 @@ fun ListaTecnicosScreen(
 
     BaseScreen(
         title = "Listado de técnicos",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
         onVolver = onVolver,
         onNotificationsClick = onIrNotificaciones,
         notificationBadgeCount = 0,
-        bottomNavItems = listOf(
-            NavItem("Reparar", Icons.Filled.Build, onVerAverias),
-            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
-            NavItem("Clientes", Icons.Filled.Person, onVerClientes),
-            NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
-        )
     ) { modifier ->
         Column(
             modifier = modifier

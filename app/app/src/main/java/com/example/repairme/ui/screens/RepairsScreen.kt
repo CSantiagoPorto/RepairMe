@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Averia
@@ -66,6 +67,7 @@ import com.example.repairme.ui.theme.naranjaLetras
 @Composable
 fun RepairsScreen(
     onAddAveria: () -> Unit = {},
+    onIrHome: () -> Unit = {},
     onVolver: () -> Unit = {},
     onVerAveria: (Averia) -> Unit = {},
     onVerTecnicos: () -> Unit = {},
@@ -90,6 +92,7 @@ fun RepairsScreen(
     val repo = remember { RepairRepository() }
     val repo2 = remember { TecnicoRepository() }
     var averiaParaCambiarTecnico by remember { mutableStateOf<Averia?>(null) }
+    var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
     fun cargarAverias() {
         repo.obtenerAveriasTodas(
@@ -149,18 +152,13 @@ fun RepairsScreen(
 
     BaseScreen(
         title = "Reparaciones",
+        onIrHome = onIrHome,
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
         onVolver = onVolver,
         onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = 0,
-        bottomNavItems = listOf(
-            NavItem("Reparar", Icons.Filled.Build, onVolver),
-            NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
-            NavItem("Clientes", Icons.Filled.Person, onVerClientes),
-            NavItem("Presup.", Icons.Filled.RequestQuote, onVerPresupuestos)
-        )
+        notificationBadgeCount = notificacionesNoLeidas
 
     ) { modifier ->
         Column(
@@ -470,4 +468,10 @@ fun DialogoCambiarTecnico(averia: Averia?, tecnicos: List<Usuario>, onRechazar: 
         title = { Text(text = "Esta reparación ya tiene técnico asignado \n Desea cambiarlo? \n El técnico asignado actualmente es: ${tecnicos.find { it.id == averia?.tecnicoId }?.name}") },
 
         )
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun RepairsScreenPreview() {
+    RepairsScreen()
 }
