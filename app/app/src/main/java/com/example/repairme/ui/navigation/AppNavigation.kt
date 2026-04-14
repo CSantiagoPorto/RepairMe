@@ -331,7 +331,9 @@ class AppNavigation {
                     onVolver = { navController.popBackStack() },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
                     onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
-                    onIrNotificaciones = { navController.navigate("notifications") },
+                    onVerClientes = { navController.navigate(Rutas.CLIENTES_ADMIN.ruta) },
+                    onVerPresupuesto = { averiaId -> navController.navigate("detallePresuCliente/$averiaId") },
+
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }

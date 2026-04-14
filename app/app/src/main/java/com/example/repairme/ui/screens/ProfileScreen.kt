@@ -40,6 +40,7 @@ import com.example.repairme.ui.theme.naranjaLetras
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import androidx.compose.material3.OutlinedTextField
+import com.example.repairme.data.repository.AdminRepository
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +53,7 @@ fun ProfileScreen(
 
     var usuario by remember { mutableStateOf<Usuario?>(null) }
     var cargando by remember { mutableStateOf(true) }
+    val repoAdmin = remember { AdminRepository(context) }
 
     LaunchedEffect(Unit) {
         val auth = FirebaseAuth.getInstance()
@@ -309,7 +311,7 @@ fun PerfilUser(
                     Log.d("PROFILE", "Perfil actualizado")
                     Toast.makeText(context, "Perfil actualizado", Toast.LENGTH_SHORT).show()
                     FirebaseAuth.getInstance().signOut()
-                    onLogOut()
+                    onLogOut()//No mover. Si lo sacamos de addOnSuccessListener se nos desloguea antes de cambiar el estado
                 }
                 .addOnFailureListener { e ->
                     Log.d("PROFILE", "Error actualizando perfil: ${e.message}")
