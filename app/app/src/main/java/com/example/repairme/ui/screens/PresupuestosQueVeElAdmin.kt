@@ -38,10 +38,10 @@ fun PresupuestoQueVeElAdmin(
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
     onVerClientes: () -> Unit = {},
-    onVerPresupuesto:(String)-> Unit={},
-    onIrHome: () -> Unit = {} ,
-    onLogOut: () -> Unit = {}
-
+    onVerPresupuesto: (String) -> Unit = {},
+    onIrHome: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
     val repo = remember { RepairRepository() }
     var todasAverias by remember { mutableStateOf(listOf<Averia>()) }
@@ -58,7 +58,7 @@ fun PresupuestoQueVeElAdmin(
             exito = { todasAverias = it },
 
 
-        )
+            )
         userRepo.obtenerUsuariosTodos(
             fallo = {},
             exito = { lista -> mapaUsuarios = lista.associateBy { it.id } }
@@ -80,9 +80,9 @@ fun PresupuestoQueVeElAdmin(
     val resultadosBusqueda = if (busqueda.isBlank()) emptyList() else
         todasAverias.filter { averia ->
             val cliente = mapaUsuarios[averia.userId]
-            val nombreCompleto= "${cliente?.name ?:""} ${cliente?.apellidos ?:""}"
+            val nombreCompleto = "${cliente?.name ?: ""} ${cliente?.apellidos ?: ""}"
             cliente?.name?.contains(busqueda, ignoreCase = true) == true ||
-                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true||
+                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true ||
                     nombreCompleto.contains(busqueda, ignoreCase = true)
         }
 
@@ -98,17 +98,17 @@ fun PresupuestoQueVeElAdmin(
 
 
 
-    BaseScreen (
+    BaseScreen(
         title = "Presupuestos",
         onIrPerfil = onIrPerfil,
         onGestionServicios = onGestionServicios,
         onLogOut = onLogOut,
         onVolver = onVolver,
         onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = 0,
-        onIrHome = onVolver
+        notificationBadgeCount = notificacionesNoLeidas,
+        onIrHome = onIrHome
 
-    ) {modifier ->
+    ) { modifier ->
         // He cambiado la cabecera a azul para enseñaros como iría con el otro enfoque
 
 
@@ -140,7 +140,7 @@ fun PresupuestoQueVeElAdmin(
 
 
             }
-            if(busqueda.isBlank()){
+            if (busqueda.isBlank()) {
                 item {
                     Text(
                         text = "PENDIENTES DE ACEPTAR",
@@ -153,7 +153,7 @@ fun PresupuestoQueVeElAdmin(
             }
 
 
-            if (busqueda.isBlank()){
+            if (busqueda.isBlank()) {
                 items(pendientes) { averia ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -215,7 +215,7 @@ fun PresupuestoQueVeElAdmin(
                     }
                 }
             }
-            if (busqueda.isBlank()){
+            if (busqueda.isBlank()) {
                 item {
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -274,11 +274,9 @@ fun PresupuestoQueVeElAdmin(
     }
 
 }
+
 @Preview(showSystemUi = true)
 @Composable
 fun PresupuestoQueVeElAdminPreview() {
-    PresupuestoQueVeElAdmin(onVolver={})
+    PresupuestoQueVeElAdmin(onVolver = {})
 }
-
-
-
