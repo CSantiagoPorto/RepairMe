@@ -43,22 +43,14 @@ fun TecnicoScreen(
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
     onReparacionesFinalizadasClick: (String) -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
     val orangePrimary = Naranja
     val grayBackground = Color(0xFFF5F5F5)
 
     // Estado para controlar qué pantalla se muestra dentro del técnico (Home, Reparar o Reparados)
     var currentScreen by remember { mutableStateOf<String?>(null) }
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
-    val notificationRepo = remember { NotificationRepository() }
-
-    // Escuchar notificaciones no leídas en tiempo real
-    LaunchedEffect(Unit) {
-        notificationRepo.escucharNotificacionesNoLeidas { count ->
-            notificacionesNoLeidas = count
-        }
-    }
 
     // 1. Configuramos los botones de la barra inferior para que cambien el 'currentScreen' internamente
     val itemsNavegacion = listOf(

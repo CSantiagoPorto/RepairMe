@@ -54,18 +54,9 @@ fun AdminScreen(
     onNuevaAveria:()->Unit={},
     onVerListaRecoger: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
-    // Estado para las notificaciones no leídas
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
-    val notificationRepo = remember { NotificationRepository() }
-
-    // Escuchar notificaciones no leídas en tiempo real
-    LaunchedEffect(Unit) {
-        notificationRepo.escucharNotificacionesNoLeidas { count ->
-            notificacionesNoLeidas = count
-        }
-    }
 
     // 1. Creamos la lista de botones para la barra inferior, pasando los 3 datos que se indican en el modelo 'NavItem'
     val itemsNavegacion = listOf(

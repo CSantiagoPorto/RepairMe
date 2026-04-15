@@ -76,7 +76,8 @@ fun RepairsScreen(
     onIrNotificaciones: () -> Unit = {},
     onVerClientes: () -> Unit = {},
     onVerPresupuestos: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
     var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
     var cargando by remember { mutableStateOf(true) }
@@ -92,7 +93,6 @@ fun RepairsScreen(
     val repo = remember { RepairRepository() }
     val repo2 = remember { TecnicoRepository() }
     var averiaParaCambiarTecnico by remember { mutableStateOf<Averia?>(null) }
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
     fun cargarAverias() {
         repo.obtenerAveriasTodas(
