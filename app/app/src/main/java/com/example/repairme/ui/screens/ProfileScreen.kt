@@ -371,10 +371,10 @@ fun PerfilAdmin(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text("Perfil de administrador")
-            DatoPerfil("Nombre", usuario.name)
-            DatoPerfil("Apellidos", usuario.apellidos)
+            //DatoPerfil("Nombre", usuario.name)
+            //DatoPerfil("Apellidos", usuario.apellidos)
             DatoPerfil("Email", usuario.email)
-            DatoPerfil("Teléfono", usuario.phone)
+            //DatoPerfil("Teléfono", usuario.phone)
             DatoPerfil("Rol", usuario.role)
         }
     }

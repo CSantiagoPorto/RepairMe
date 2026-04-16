@@ -44,7 +44,8 @@ fun UserScreen(
     onIrPerfil: () -> Unit = {},
     onIrServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
     // Controlan si las secciones (cards) estan abierta o cerrada
     var equiposExpandido by remember { mutableStateOf(false) }
@@ -57,17 +58,7 @@ fun UserScreen(
     var indiceEquipoExpandido by remember { mutableStateOf<Int?>(null) }
     var listaPresupuestadas by remember { mutableStateOf(listOf<Averia>()) }
     var dialogoAveria by remember { mutableStateOf<Averia?>(null) }
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
     val repo = remember { RepairRepository() }//Necesito el repo para aceptar el presu
-    val notificationRepo = remember { NotificationRepository() }
-
-    LaunchedEffect(Unit) {
-        // Escuchar notificaciones no leídas en tiempo real
-        notificationRepo.escucharNotificacionesNoLeidas { count ->
-            notificacionesNoLeidas = count
-            Log.d("UserScreen", "Notificaciones no leídas: $count")
-        }
-    }
 
     LaunchedEffect(equiposExpandido) {
         val repoEquipos = DeviceRepository()
