@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.auth.admin
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,10 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Engineering
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -40,7 +36,6 @@ import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.components.BaseScreen
-import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.ColorEstadoAsignada
 import com.example.repairme.ui.theme.ColorEstadoDeclinada
 import com.example.repairme.ui.theme.ColorEstadoEnReparacion
