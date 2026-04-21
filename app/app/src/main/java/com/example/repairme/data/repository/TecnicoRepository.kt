@@ -1,6 +1,6 @@
 package com.example.repairme.data.repository
 
-import com.example.repairme.data.model.Tecnico
+
 import com.example.repairme.data.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot

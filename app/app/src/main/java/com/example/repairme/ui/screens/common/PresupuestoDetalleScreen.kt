@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.common
 
 import android.content.Intent
 import android.util.Log

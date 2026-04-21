@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -16,13 +16,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.repairme.data.repository.AuthRepository
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 
 // Colores
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.GrisFondoPantalla
 
 // Para previsualizar la pantalla en design
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(showBackground = true)
 
 @Composable
 fun RegisterScreen(
@@ -126,7 +128,7 @@ fun RegisterScreen(
             style = MaterialTheme.typography.headlineMedium,
             color = Naranja,
             modifier = Modifier.fillMaxWidth(),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Center
         )
 
         OutlinedTextField(

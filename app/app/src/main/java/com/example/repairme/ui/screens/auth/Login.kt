@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.auth
 
 import android.content.Context
 import android.widget.Toast
@@ -88,6 +88,15 @@ fun LoginScreen(
             }
         )
 
+    }
+    fun olvideContraseña(){
+        if (email.isEmpty()){
+            com.google.firebase.auth.FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnSuccessListener {
+                mensaje(context, "Revise su bandeja de entrada")
+            }.addOnFailureListener {
+                mensaje(context, "Su dirección de correo no se encuentra en nuestra base de datos")
+            }
+        }
     }
 
     //Añadir el Scaffold con el Botton Bar y el ToolBar
@@ -190,6 +199,13 @@ fun LoginScreen(
                             fontWeight = FontWeight.Bold
                         )
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "¿Olvidaste tu contraseña",
+                        color = naranjaLetras,
+                        fontSize = 14.sp,
+                        modifier = Modifier.clickable{olvideContraseña()}
+                    )
                 }
             }
 

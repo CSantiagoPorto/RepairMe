@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.common
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,11 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Engineering
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -53,7 +50,6 @@ import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.TecnicoRepository
 import com.example.repairme.ui.components.BaseScreen
-import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.ColorEstadoAsignada
 import com.example.repairme.ui.theme.ColorEstadoDeclinada
 import com.example.repairme.ui.theme.ColorEstadoEnReparacion
@@ -277,7 +273,7 @@ fun RepairsScreen(
                                             .padding(16.dp)
                                             .padding(end = 24.dp)
                                     ) {
-                                        androidx.compose.foundation.layout.Row(
+                                        Row(
                                             modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {

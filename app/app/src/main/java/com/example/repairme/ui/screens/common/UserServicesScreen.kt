@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
