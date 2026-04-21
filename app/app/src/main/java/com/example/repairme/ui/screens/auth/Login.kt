@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.auth
 
 import android.content.Context
 import android.widget.Toast
@@ -50,6 +50,7 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
     val context = LocalContext.current
+    var mensajeContraseña by remember { mutableStateOf("") }
 
     fun mensaje(context: Context, mensaje: String){
         Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
@@ -88,6 +89,15 @@ fun LoginScreen(
             }
         )
 
+    }
+    fun olvideContraseña(){
+        if (email.isNotEmpty()){
+            com.google.firebase.auth.FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnSuccessListener {
+                mensaje(context, "Revise su bandeja de entrada")
+            }.addOnFailureListener {
+                mensaje(context, "Su dirección de correo no se encuentra en nuestra base de datos")
+            }
+        }else{mensajeContraseña="Introduzca su dirección de correo en el campo"}
     }
 
     //Añadir el Scaffold con el Botton Bar y el ToolBar
@@ -188,6 +198,21 @@ fun LoginScreen(
                             text = "Entrar",
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "¿Olvidaste tu contraseña?",
+                        color = naranjaLetras,
+                        fontSize = 14.sp,
+                        modifier = Modifier.clickable{olvideContraseña()}
+                    )
+                    if(mensajeContraseña.isNotEmpty()){
+                        Text(
+                            text = mensajeContraseña,
+                            color= naranjaLetras,
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp
                         )
                     }
                 }
