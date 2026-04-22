@@ -1,10 +1,18 @@
 package com.example.repairme.data.repository
 
+import android.R
 import android.widget.Toast
 import com.example.repairme.data.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.example.repairme.data.model.EstadoTecnico
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+
+
 
 class AuthRepository {
     // Esta clase se ocupa únicamente de Firebase.
@@ -86,5 +94,50 @@ class AuthRepository {
         }.addOnFailureListener { e ->
             creadoError("Error al crear usuario: ${e.message}")
         }
+    }
+
+    fun loginGoogle(
+        tokenGoogle: String,
+        ok: (Usuario)-> Unit,
+        fallo: (String)-> Unit
+    ){
+        val credencialGoogle= GoogleAuthProvider.getCredential(tokenGoogle, null)
+        autenticacion.signInWithCredential(credencialGoogle)
+            .addOnSuccessListener {
+                resultado->
+                var id= resultado.user?.uid ?: return@addOnSuccessListener
+                // le coge el uid de Firebase Si es null se sale
+                bbdd.getReference("users").child(id).get().addOnSuccessListener {
+                    snapshot ->
+                    var usuario=snapshot.getValue(Usuario::class.java)
+                    if(usuario!= null){
+                        //Si tiene la cuenta desactivada no le deja entrar tampoco con Google
+                        if(usuario.estado=="Inactivo"){
+                            autenticacion.signOut()
+                               fallo("Su cuenta ha sido desactivada")
+                        }else{
+                            ok(usuario.copy(id=id))
+                        }
+                    }else{
+                        //Si no existe su usuario con ese token lo va a crear
+                        val nuevoUsuarioGoogle= Usuario(
+                            id = id,
+                            name = resultado.user?.displayName?:"",
+
+                            email = resultado.user?.email?:"",
+
+                            role = "user",
+                            createdAt = System.currentTimeMillis(),
+
+
+                        )
+                        bbdd.getReference("users").child(id).setValue(nuevoUsuarioGoogle)
+                            .addOnSuccessListener { ok(nuevoUsuarioGoogle) }
+                            .addOnFailureListener { e-> fallo("No se pudo crear el usuario") }
+                    }
+                }
+            }.addOnFailureListener {
+                e-> fallo("Error de bbdd")
+            }
     }
 }
