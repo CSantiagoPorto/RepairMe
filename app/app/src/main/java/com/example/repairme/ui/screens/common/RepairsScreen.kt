@@ -163,6 +163,13 @@ fun RepairsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            TextButton(
+                onClick = onAddAveria,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Crear Avería")
+            }
+
             OutlinedTextField(
                 value = busqueda,
                 onValueChange = { busqueda = it },

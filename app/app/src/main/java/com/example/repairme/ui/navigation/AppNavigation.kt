@@ -181,6 +181,7 @@ class AppNavigation {
 
                 RepairsScreen(
                     onVolver = { navController.popBackStack() },
+                    onAddAveria = { navController.navigate(Rutas.CREAR_AVERIA_ADMIN.ruta) },
                     onVerAveria = { averia ->
                         navController.navigate("detalleAveriaComun/${averia.id}/true/admin/Admin")
                     },
