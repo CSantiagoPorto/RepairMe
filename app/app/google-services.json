@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "494111396660",
+    "firebase_url": "https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "repairme-956fd",
     "storage_bucket": "repairme-956fd.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.repairme"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "494111396660-ir2njveo9pdpgq31bmfpr32ugl82lupf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.repairme",
+            "certificate_hash": "923e1122c1c89ffd2fa7d5d164197f787fa57919"
+          }
+        },
+        {
+          "client_id": "494111396660-fo6qhajke9qdvrmg4ts2e8benr20h88s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA3EJzJZELSevtog0YP8vMkFjIT2win6IA"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494111396660-fo6qhajke9qdvrmg4ts2e8benr20h88s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
