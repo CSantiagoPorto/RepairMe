@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.user
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -11,12 +11,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Computer
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,11 +26,18 @@ import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Equipo
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.repository.DeviceRepository
-import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.*
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
+import com.example.repairme.data.model.Usuario
+import com.example.repairme.data.repository.UserRepository
+import com.example.repairme.utils.generarFactura
+import com.google.firebase.auth.FirebaseAuth
+
 
 @Composable
 fun UserScreen(
@@ -51,6 +58,7 @@ fun UserScreen(
     var equiposExpandido by remember { mutableStateOf(false) }
     var reparacionesExpandido by remember { mutableStateOf(false) }
     var presupuestosExpandido by remember { mutableStateOf(false) }
+    var facturasExpandido by remember { mutableStateOf(false) }
 
     // Guardan los datos que vienen de firebase
     var listaEquipos by remember { mutableStateOf(listOf<Equipo>()) }
@@ -59,6 +67,38 @@ fun UserScreen(
     var listaPresupuestadas by remember { mutableStateOf(listOf<Averia>()) }
     var dialogoAveria by remember { mutableStateOf<Averia?>(null) }
     val repo = remember { RepairRepository() }//Necesito el repo para aceptar el presu
+    val repoUser= remember { UserRepository() }
+
+    var listaFacturas by remember { mutableStateOf(listOf<Averia>()) }
+    var usuarioActual by remember { mutableStateOf<Usuario?>(null) }
+    val context = LocalContext.current
+
+
+    LaunchedEffect(facturasExpandido) {
+        val repo= RepairRepository()
+        if(facturasExpandido){
+            repo.obtenerAveriaUser(
+                fallo = {},
+                exito = {
+                    averias->
+                    listaFacturas=averias.filter {
+                        it.estado== EstadoAveria.ListaParaRecoger.name||
+                                it.estado== EstadoAveria.Reparado.name
+                    }
+                }
+            )
+            if(usuarioActual==null){
+                val uid= FirebaseAuth.getInstance().currentUser?.uid?:return@LaunchedEffect
+                repoUser.obtenerCualquierUsuarioPorId(
+                    fallo = {},
+                    exito={usuarioActual=it},
+                    id=uid
+                )
+            }
+        }
+
+    }
+
 
     LaunchedEffect(equiposExpandido) {
         val repoEquipos = DeviceRepository()
@@ -409,6 +449,78 @@ fun UserScreen(
                                             onVerPresupuestos(averia)}) {
                                             Text("Ver presupuesto")
                                         }
+                                        //Si esto sale bien me va a mostrar el botón sólo si el estado es presupuestado
+                                    }
+
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+            // Card de Facturas
+            UserCard(
+                titulo = "Mis facturas",
+                icono = Icons.Filled.Receipt,
+                onClick = { facturasExpandido = !facturasExpandido }
+            )
+
+            if (facturasExpandido) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        listaFacturas.forEach { averia ->
+                            Log.d("LISTA_Factura", "id: ${averia.id}, estado: ${averia.estado}")
+
+
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                //.clickable { dialogoAveria = averia },
+                                color = ColorEstadoListaParaRecoger,
+                                shape = RoundedCornerShape(9.dp)
+                            ) {
+                                Column(modifier= Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = "${averia.equipoNombre} ${averia.tituloAveria}"
+
+                                    )
+                                    Row {
+                                        Text(
+                                            text = "Estado: ",
+                                            color = naranjaLetras
+                                        )
+                                        Text(
+                                            text = averia.estado,
+                                            color = naranjaLetras
+                                        )
+                                    }
+                                    if(averia.estado== EstadoAveria.Reparado.name||averia.estado== EstadoAveria.ListaParaRecoger.name){
+                                        TextButton(
+                                            onClick = {
+                                                if (usuarioActual != null) {
+                                                    val archivo = generarFactura(
+                                                        context,
+                                                        averia,
+                                                        usuarioActual!!
+                                                    )
+                                                    var uri= FileProvider.getUriForFile(
+                                                        context,
+                                                        "${context.packageName}.provider",
+                                                        archivo
+                                                    )
+                                                    var intent= Intent(Intent.ACTION_VIEW).apply {
+                                                        setDataAndType(uri, "application/pdf")
+                                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                                    }
+                                                    context.startActivity(intent)
+                                                }
+                                            }
+                                        ){Text("Generar factura")}
                                         //Si esto sale bien me va a mostrar el botón sólo si el estado es presupuestado
                                     }
 

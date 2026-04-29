@@ -1,15 +1,12 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.admin
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Engineering
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.UserRepository
 import com.example.repairme.ui.components.BaseScreen
-import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.botonNaranja
 
@@ -91,7 +87,7 @@ fun PresupuestoQueVeElAdmin(
 
 
     val presupuestadasEsteMes = todasAverias.filter { averia ->
-        android.util.Log.d("FILTRO_MES", "id=${averia.id} createdAt=${averia.createdAt} lineas=${averia.lineasPresupuesto.size}")
+        Log.d("FILTRO_MES", "id=${averia.id} createdAt=${averia.createdAt} lineas=${averia.lineasPresupuesto.size}")
 
         averia.lineasPresupuesto.isNotEmpty() && averia.createdAt >= hacerUnMes
     }

@@ -1,17 +1,13 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.tecnico
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,12 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.repository.RepairRepository
-import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.AzulAdmin
 import com.example.repairme.ui.theme.Naranja
-import com.example.repairme.ui.theme.botonNaranja
 
 @Composable
 fun TecnicoScreen(

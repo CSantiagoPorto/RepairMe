@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.common
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Notificacion
@@ -246,7 +247,7 @@ fun formatearFecha(timestamp: Long): String {
 /**
  * Vista previa
  */
-@androidx.compose.ui.tooling.preview.Preview(showSystemUi = true)
+@Preview(showSystemUi = true)
 @Composable
 fun NotificationsScreenPreview() {
     NotificationsScreen()

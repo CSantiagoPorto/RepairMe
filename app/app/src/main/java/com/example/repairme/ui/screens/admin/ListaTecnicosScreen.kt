@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.admin
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -12,11 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Engineering
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.RequestQuote
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,7 +36,6 @@ import com.example.repairme.data.model.EstadoTecnico
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.TecnicoRepository
 import com.example.repairme.ui.components.BaseScreen
-import com.example.repairme.ui.components.NavItem
 import com.example.repairme.ui.theme.Naranja
 
 @OptIn(ExperimentalMaterial3Api::class)

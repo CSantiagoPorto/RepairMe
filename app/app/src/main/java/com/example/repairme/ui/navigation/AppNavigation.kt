@@ -13,31 +13,31 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.repairme.data.repository.DeviceRepository
 import com.example.repairme.data.repository.NotificationRepository
-import com.example.repairme.ui.screens.AddEquipoScreen
-import com.example.repairme.ui.screens.RegisterScreen
-import com.example.repairme.ui.screens.RegisterTecnicoScreen
-import com.example.repairme.ui.screens.TestCrudScreen
-import com.example.repairme.ui.screens.UserScreen
-import com.example.repairme.ui.screens.TecnicoScreen
-import com.example.repairme.ui.screens.AdminScreen
-import com.example.repairme.ui.screens.DetalleAveriaTecnicoScreen
-import com.example.repairme.ui.screens.DetalleReparacionesFinalizadas
-import com.example.repairme.ui.screens.RepairsScreen
-import com.example.repairme.ui.screens.ProfileScreen
-import com.example.repairme.ui.screens.ServicesScreen
-import com.example.repairme.ui.screens.AdminServicesScreen
-import com.example.repairme.ui.screens.ClientesPantallaAdminScreen
-import com.example.repairme.ui.screens.LoginScreen
-import com.example.repairme.ui.screens.PresupuestoDetalleScreen
+import com.example.repairme.ui.screens.test.AddEquipoScreen
+import com.example.repairme.ui.screens.auth.RegisterScreen
+import com.example.repairme.ui.screens.admin.RegisterTecnicoScreen
+import com.example.repairme.ui.screens.test.TestCrudScreen
+import com.example.repairme.ui.screens.user.UserScreen
+import com.example.repairme.ui.screens.tecnico.TecnicoScreen
+import com.example.repairme.ui.screens.admin.AdminScreen
+import com.example.repairme.ui.screens.tecnico.DetalleAveriaTecnicoScreen
+import com.example.repairme.ui.screens.tecnico.DetalleReparacionesFinalizadas
+import com.example.repairme.ui.screens.common.RepairsScreen
+import com.example.repairme.ui.screens.common.ProfileScreen
+import com.example.repairme.ui.screens.common.ServicesScreen
+import com.example.repairme.ui.screens.admin.AdminServicesScreen
+import com.example.repairme.ui.screens.admin.ClientesPantallaAdminScreen
+import com.example.repairme.ui.screens.auth.LoginScreen
+import com.example.repairme.ui.screens.common.PresupuestoDetalleScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.example.repairme.ui.screens.PresupuestoQueVeElAdmin
+import com.example.repairme.ui.screens.admin.PresupuestoQueVeElAdmin
 
-import com.example.repairme.ui.screens.auth.admin.VerListasRecoger
-import com.example.repairme.ui.screens.ListaTecnicosScreen
-import com.example.repairme.ui.screens.NotificationsScreen
-import com.example.repairme.ui.screens.auth.admin.NuevaAveriaAdmin
-import com.example.repairme.ui.screens.DetalleAveriaComunScreen
+import com.example.repairme.ui.screens.admin.VerListasRecoger
+import com.example.repairme.ui.screens.admin.ListaTecnicosScreen
+import com.example.repairme.ui.screens.common.NotificationsScreen
+import com.example.repairme.ui.screens.admin.NuevaAveriaAdmin
+import com.example.repairme.ui.screens.common.DetalleAveriaComunScreen
 
 
 class AppNavigation {

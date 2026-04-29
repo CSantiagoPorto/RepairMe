@@ -1,4 +1,4 @@
-package com.example.repairme.ui.screens
+package com.example.repairme.ui.screens.test
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,16 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Equipo
+import com.example.repairme.ui.screens.auth.RegisterScreen
 
 // Colores
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 
 // Para previsualizar la pantalla en design
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(showBackground = true)
 
 @Composable
 fun AddEquipoScreen(
