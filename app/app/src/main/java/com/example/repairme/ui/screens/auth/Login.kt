@@ -36,6 +36,12 @@ import com.example.repairme.data.repository.AuthRepository
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.ui.theme.naranjaLetras
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.android.gms.common.api.ApiException
+
 
 @Preview(showBackground = true)
 @Composable
@@ -99,6 +105,44 @@ fun LoginScreen(
             }
         }else{mensajeContraseña="Introduzca su dirección de correo en el campo"}
     }
+
+    val googleSignInClient = remember {
+        //Esto es el objeto que abre ñla cuenta el pantalla y vuelve a la app
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("494111396660-fo6qhajke9qdvrmg4ts2e8benr20h88s.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
+        GoogleSignIn.getClient(context, gso)
+    }
+    //el launcher recibe los resultados del googleSignInClient  y dentro de este vamos a ver qué hacemos con él
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)//Así se extrae la cuenta
+        try {
+            val account = task.getResult(ApiException::class.java)//La cuenta de la que voy a sacr el token
+            val idToken = account.idToken ?: return@rememberLauncherForActivityResult
+            repo.loginGoogle(//le mandamos el usuario a Firebase
+                tokenGoogle = idToken,
+                ok = { usuario ->//navegamos según rol
+                    when (usuario.role.uppercase()) {
+                        "USER" -> onNavigateToUserScreen()
+                        "ADMIN" -> onNavigateToAdminScreen()
+                        "TECNICO" -> onNavigateToTecnicoScreen()
+                    }
+                },
+                fallo = { msg ->
+                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                }
+            )
+        } catch (e: ApiException) {
+            Toast.makeText(context, "Error con Google: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+
+
 
     //Añadir el Scaffold con el Botton Bar y el ToolBar
     Scaffold(
@@ -215,6 +259,21 @@ fun LoginScreen(
                             fontSize = 14.sp
                         )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = { googleSignInClient.signOut().addOnCompleteListener {
+                            launcher.launch(googleSignInClient.signInIntent)
+                        } },
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("Continuar con Google", fontWeight = FontWeight.Bold)
+                    }
+
                 }
             }
 

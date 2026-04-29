@@ -77,7 +77,7 @@ dependencies {
         implementation("androidx.navigation:navigation-compose:2.8.0")
 
     //login con Google
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
 
 
