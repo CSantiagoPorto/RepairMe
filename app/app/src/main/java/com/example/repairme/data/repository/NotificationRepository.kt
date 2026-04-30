@@ -11,7 +11,11 @@ import com.google.firebase.database.ValueEventListener
 class NotificationRepository : OperationsTemplateRepository() {
     private val NODE = "notifications"
     private val USERS_NODE = "users"
-    private val auth by lazy { FirebaseAuth.getInstance() }
+    private val auth by lazy { FirebaseAuth.getInstance()
+    }
+    private var activeListener: ValueEventListener? = null
+    private var activeQuery: com.google.firebase.database.Query? = null
+
 
     // Funcion para guardar una notificacion. Recibe el objeto y 2 callbacks: exito y fallo
     fun enviarNotificacion(
@@ -39,18 +43,23 @@ class NotificationRepository : OperationsTemplateRepository() {
     ) {
         val userId = auth.currentUser?.uid ?: return
 
-        ref(NODE).orderByChild("userId").equalTo(userId)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val count = snapshot.children.count {
-                        val notif = it.getValue(Notificacion::class.java)
-                        notif != null && !notif.leida
-                    }
-                    onUpdate(count)
-                }
+        activeListener?.let { activeQuery?.removeEventListener(it) }
 
-                override fun onCancelled(error: DatabaseError) {}
-            })
+        val query = ref(NODE).orderByChild("userId").equalTo(userId)
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val count = snapshot.children.count {
+                    val notif = it.getValue(Notificacion::class.java)
+                    notif != null && !notif.leida
+                }
+                onUpdate(count)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        activeQuery = query
+        activeListener = listener
+        query.addValueEventListener(listener)
+
     }
 
     /**
@@ -194,5 +203,11 @@ class NotificationRepository : OperationsTemplateRepository() {
             Log.e("NotificationRepo", "Error al buscar admins: ${e.message}")
         }
     }
+    fun dejarDeEscuchar() {
+        activeListener?.let { activeQuery?.removeEventListener(it) }
+        activeListener = null
+        activeQuery = null
+    }
+
 }
 

@@ -117,7 +117,7 @@ fun LoginScreen(
     //el launcher recibe los resultados del googleSignInClient  y dentro de este vamos a ver qué hacemos con él
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
+        contract = ActivityResultContracts.StartActivityForResult()//Esto especifica las reglas de comunicación
     ) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)//Así se extrae la cuenta
         try {
