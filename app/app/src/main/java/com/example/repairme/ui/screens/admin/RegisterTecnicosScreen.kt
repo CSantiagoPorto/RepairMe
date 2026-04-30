@@ -53,9 +53,10 @@ import com.example.repairme.utils.generarFactura
 @Composable
 fun RegisterTecnicoScreen(
     onNavigateBack: () -> Unit = {},//Con esta función volvemos al login
-    onRegisterSucess: () -> Unit = {}
+    onRegisterSucess: () -> Unit = {},
     //Dejo esta función aquí porque la voy a usar para volver al login cuando
     //el registro haya sido exitoso
+
 ) {
 
     //Creo instancia del repo y del context
@@ -250,7 +251,8 @@ fun NuevaAveriaAdmin(
     onIrPerfil: () -> Unit = {},
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int=0
 ) {
     val repoReparaciones = remember { RepairRepository() }
     val repoDispositivos = remember { DeviceRepository() }
@@ -295,7 +297,7 @@ fun NuevaAveriaAdmin(
     var rgpdAceptado by remember { mutableStateOf(false) }
 
 
-    var notificacionesNoLeidas by remember { mutableStateOf(0) }
+    //var notificacionesNoLeidas by remember { mutableStateOf(0) }
 
 
     LaunchedEffect(Unit) {

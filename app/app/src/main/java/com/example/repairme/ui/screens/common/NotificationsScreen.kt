@@ -32,7 +32,8 @@ fun NotificationsScreen(
     onIrServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {},
-    onVolver: () -> Unit = {}
+    onVolver: () -> Unit = {},
+    notificacionesNoLeidas: Int=0
 ) {
     var notificaciones by remember { mutableStateOf<List<Notificacion>>(emptyList()) }
     val repo = remember { NotificationRepository() }
@@ -63,7 +64,7 @@ fun NotificationsScreen(
         onLogOut = onLogOut,
         onNotificationsClick = onIrNotificaciones,
         onVolver = onVolver,
-        notificationBadgeCount = notificaciones.count { !it.leida }
+        notificationBadgeCount = notificacionesNoLeidas//notificaciones.count { !it.leida }
     ) { modifier ->
         Column(
             modifier = modifier

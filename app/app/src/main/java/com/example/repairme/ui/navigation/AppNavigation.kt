@@ -32,7 +32,7 @@ import com.example.repairme.ui.screens.common.PresupuestoDetalleScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.example.repairme.ui.screens.admin.PresupuestoQueVeElAdmin
-
+import androidx.compose.runtime.DisposableEffect
 import com.example.repairme.ui.screens.admin.VerListasRecoger
 import com.example.repairme.ui.screens.admin.ListaTecnicosScreen
 import com.example.repairme.ui.screens.common.NotificationsScreen
@@ -57,12 +57,30 @@ class AppNavigation {
 
         // Escucha los cambios de notificaciones en tiempo real desde Firebase
         // Cuando llega una notificación nueva, actualiza el estado global
-        LaunchedEffect(Unit) {
-            notificationRepo.escucharNotificacionesNoLeidas { count ->
-                // Actualiza el contador de notificaciones para TODAS las pantallas
-                notificacionesNoLeidas.value = count
+        //DisposableEffect escucha los cambios de seseión de firebase
+        val currentUserId = remember { mutableStateOf(FirebaseAuth.getInstance().currentUser?.uid) }
+
+        DisposableEffect(Unit) {
+            val authListener = FirebaseAuth.AuthStateListener { auth ->
+                currentUserId.value = auth.currentUser?.uid
+            }
+            FirebaseAuth.getInstance().addAuthStateListener(authListener)
+            onDispose {
+                FirebaseAuth.getInstance().removeAuthStateListener(authListener)
             }
         }
+
+        LaunchedEffect(currentUserId.value) {
+            if (currentUserId.value != null) {
+                notificationRepo.escucharNotificacionesNoLeidas { count ->
+                    notificacionesNoLeidas.value = count
+                }
+            } else {
+                notificacionesNoLeidas.value = 0
+                notificationRepo.dejarDeEscuchar()
+            }
+        }
+
 
         NavHost(
             navController = navController,
@@ -444,7 +462,8 @@ class AppNavigation {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
                     },
-                    onVolver = { navController.popBackStack() }
+                    onVolver = { navController.popBackStack() },
+                    notificacionesNoLeidas= notificacionesNoLeidas.value
                 )
             }
 
@@ -458,7 +477,10 @@ class AppNavigation {
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
-                    }
+                    },
+                    onIrNotificaciones={navController.navigate("notifications")},
+                    notificacionesNoLeidas = notificacionesNoLeidas.value
+
 
                 )
 
