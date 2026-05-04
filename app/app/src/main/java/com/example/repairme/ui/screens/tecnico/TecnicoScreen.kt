@@ -46,13 +46,13 @@ fun TecnicoScreen(
     // Estado para controlar qué pantalla se muestra dentro del técnico (Home, Reparar o Reparados)
     var currentScreen by remember { mutableStateOf<String?>(null) }
 
-    // 1. Configuramos los botones de la barra inferior para que cambien el 'currentScreen' internamente
+    // Configuramos los botones de la barra inferior para que cambien el 'currentScreen' internamente
     val itemsNavegacion = listOf(
         NavItem("Reparar", Icons.Filled.Build, { currentScreen = "repair" }),
         NavItem("Reparados", Icons.Filled.Computer, { currentScreen = "repaired" })
     )
 
-    // 2. Usamos el modelo BaseScreen que unifica la TopBar (con Logo) y la BottomBar (con Notificaciones fijas)
+    // Usamos el modelo BaseScreen va a unificar la TopBar (con Logo) y la BottomBar (con Notificaciones fijas)
     BaseScreen(
         title = "ClearRepair",
         onIrHome = onIrHome,
@@ -68,7 +68,7 @@ fun TecnicoScreen(
                 .fillMaxSize()
                 .background(grayBackground)
         ) {
-            // 3. Navegación interna basada en el estado 'currentScreen'
+
             when (currentScreen) {
                 "repair" -> RepairListScreen(
                     orangePrimary = orangePrimary,

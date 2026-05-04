@@ -38,7 +38,7 @@ fun RegisterScreen(
     val repo = AuthRepository()
     val context = LocalContext.current
 
-    // Variables/inputs del formulario
+
     var email by rememberSaveable { mutableStateOf("") }
     var pass by rememberSaveable { mutableStateOf("") }
     var nombre by rememberSaveable { mutableStateOf("") }
@@ -55,7 +55,7 @@ fun RegisterScreen(
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     var ok by rememberSaveable { mutableStateOf(false) }
 
-    // Función de validación
+
     fun validarCampos(): Boolean {
         // Si algún campo está vacío -> error
         if (email.trim().isEmpty() || !email.contains("@")) {
@@ -112,7 +112,7 @@ fun RegisterScreen(
         return true
     }
 
-    // UI
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -122,7 +122,7 @@ fun RegisterScreen(
 
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Titulo de la pantalla
+
         Text(
             text = "Registro",
             style = MaterialTheme.typography.headlineMedium,
@@ -157,7 +157,7 @@ fun RegisterScreen(
         )
 
         // Campos del formulario
-        // Nombre
+
         OutlinedTextField(
             value = nombre,
             onValueChange = {
@@ -168,7 +168,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Apellidos
+
         OutlinedTextField(
             value = apellidos,
             onValueChange = {
@@ -179,7 +179,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo DNI/NIF (lo ponemos en mayúsculas mientras escribe)
+
         OutlinedTextField(
             value = dni,
             onValueChange = {
@@ -190,7 +190,7 @@ fun RegisterScreen(
             label = { Text("DNI/NIF") },
             modifier = Modifier.fillMaxWidth()
         )
-        // Campo Teléfono (solo números y máximo 9)
+
         OutlinedTextField(
             value = telefono,
             onValueChange = {
@@ -203,7 +203,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Direccion
+
         OutlinedTextField(
             value = direccion,
             onValueChange = {
@@ -214,7 +214,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo Código Postal (solo números y máximo 5)
+
         OutlinedTextField(
             value = codigoPostal,
             onValueChange = {
@@ -227,7 +227,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo Localidad
+
         OutlinedTextField(
             value = localidad,
             onValueChange = {
@@ -240,7 +240,7 @@ fun RegisterScreen(
 
 
 
-        // Mensajes de error/ok
+
         if (error != null) {
             Text(
                 text = error!!,
@@ -249,10 +249,10 @@ fun RegisterScreen(
         }
 
         if (ok) {
-            Text("Registro enviado ✅")
+            Text("Registro enviado")
         }
 
-        // Botón de registro
+
         Button(
             onClick = {
                 if (validarCampos()) {

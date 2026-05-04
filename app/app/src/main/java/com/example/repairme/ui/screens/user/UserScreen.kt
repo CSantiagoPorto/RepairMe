@@ -424,8 +424,8 @@ fun UserScreen(
                             Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp),
-                                //.clickable { dialogoAveria = averia },
+                                    .padding(8.dp)
+                                .clickable { onVerPresupuestos(averia)  },
                                 color = colorEstado,
                                 shape = RoundedCornerShape(9.dp)
                             ) {
@@ -444,13 +444,13 @@ fun UserScreen(
                                             color = naranjaLetras
                                         )
                                     }
-                                    if(averia.estado== EstadoAveria.Presupuestada.name||averia.presupuestoAceptado==true){
+                                   /* if(averia.estado== EstadoAveria.Presupuestada.name||averia.presupuestoAceptado==true){
                                         TextButton(onClick = { Log.d("AVERIA_ID", "id: ${averia.id}")
                                             onVerPresupuestos(averia)}) {
                                             Text("Ver presupuesto")
                                         }
                                         //Si esto sale bien me va a mostrar el botón sólo si el estado es presupuestado
-                                    }
+                                    }*/
 
                                 }
                             }

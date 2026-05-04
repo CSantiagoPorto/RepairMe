@@ -18,8 +18,7 @@ class AuthRepository {
     // Esta clase se ocupa únicamente de Firebase.
     // Aquí no va nada de la UI.
 
-    // Usamos 'by lazy' para evitar que Firebase se inicialice durante las Compose Previews,
-    // lo que causaría un IllegalStateException ya que FirebaseApp no está inicializado en el proceso de preview.
+    // Usamos 'by lazy' para que no se rompa con la vista previa
     private val autenticacion by lazy { FirebaseAuth.getInstance() }
     private val bbdd by lazy {
         FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")

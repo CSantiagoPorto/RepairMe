@@ -61,7 +61,7 @@ fun ServicesScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // 🔹 Logo arriba
+            // Logo arriba
             Image(
                 painter = painterResource(id = R.drawable.clear_repair_principal),
                 contentDescription = "Logo ClearRepair",
@@ -79,7 +79,7 @@ fun ServicesScreen(
                 text = "Nuestro objetivo es ofrecer una reparación clara y transparente para el cliente."
             )
 
-            // 🔹 LISTA DINÁMICA DESDE FIREBASE
+            // Creamos la lista de servicios desde Firebase
             listaServicios.forEach { servicio ->
 
                 Card(
@@ -101,7 +101,7 @@ fun ServicesScreen(
                 }
             }
 
-            // 🔹 Si no hay servicios
+            // Si no hay servicios entra por aquí
             if (listaServicios.isEmpty()) {
                 Text("No hay servicios disponibles")
             }

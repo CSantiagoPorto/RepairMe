@@ -31,15 +31,15 @@ data class NavItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseScreen(
-    title: String = "ClearRepair", // Titulo por defecto
-    onIrHome: () -> Unit = {}, // Accion boton home: Navega a la pantalla principal del rol
-    onIrPerfil: () -> Unit, // Accion boton perfil: Navega a la pantalla de perfil del usuario
-    onGestionServicios: () -> Unit, // Accion boton gestion de servicios: Muestra info/opciones
-    onLogOut: () -> Unit, // Accion boton salir: Cierra sesión y vuelve a login
-    onVolver: (() -> Unit)? = null, // Botón volver opcional (en pantallas secundarias)
-    onNotificationsClick: () -> Unit = {}, // Accion boton notificaciones: Navega a la pantalla de notificaciones
-    notificationBadgeCount: Int = 0, // Número de notificaciones no leídas (contador global sincronizado)
-    content: @Composable (Modifier) -> Unit // IMPORTANTE!! Aqui va el diseño de cada pantalla es el content que se va a mostrar
+    title: String = "ClearRepair",
+    onIrHome: () -> Unit = {},
+    onIrPerfil: () -> Unit,
+    onGestionServicios: () -> Unit,
+    onLogOut: () -> Unit,
+    onVolver: (() -> Unit)? = null,
+    onNotificationsClick: () -> Unit = {},
+    notificationBadgeCount: Int = 0,
+    content: @Composable (Modifier) -> Unit // Aqui va el diseño de cada pantalla es el content que se va a mostrar
 ) {
     Scaffold(
         // Definimos la parte superior de la pantalla

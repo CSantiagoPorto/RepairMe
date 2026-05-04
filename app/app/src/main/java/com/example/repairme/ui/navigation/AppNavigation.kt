@@ -126,8 +126,7 @@ class AppNavigation {
                             popUpTo(0)
                         }
                     },
-                    // Pasar el contador de notificaciones compartido global
-                    // Esto se actualiza automáticamente cuando llegan nuevas notificaciones
+
                     notificacionesNoLeidas = notificacionesNoLeidas.value
                 )
             }
@@ -150,7 +149,7 @@ class AppNavigation {
                             popUpTo(0)
                         }
                     },
-                    // Pasar el contador de notificaciones compartido global
+
                     notificacionesNoLeidas = notificacionesNoLeidas.value
 
                 )
@@ -174,7 +173,7 @@ class AppNavigation {
                     onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) },
                     onVerListaRecoger = { navController.navigate(Rutas.LISTA_PARA_RECOGER_ADMIN.ruta) },
                     onNuevaAveria = { navController.navigate(Rutas.CREAR_AVERIA_ADMIN.ruta) },
-                    // Pasar el contador de notificaciones compartido global
+                    
                     notificacionesNoLeidas = notificacionesNoLeidas.value
 
                 )

@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens.admin
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -75,7 +76,10 @@ fun ClientesPantallaAdminScreen(
         if (busqueda.isBlank()) {
             true
         } else {
+            Log.d("FILTRO_DEBUG", "tipo='$tipoBusqueda' | busqueda='$busqueda' | email='${cliente.email}'")
+
             when (tipoBusqueda) {
+
                 "Nombre" -> cliente.name.contains(busqueda, ignoreCase = true) ||
                         cliente.apellidos.contains(busqueda, ignoreCase = true)
 
