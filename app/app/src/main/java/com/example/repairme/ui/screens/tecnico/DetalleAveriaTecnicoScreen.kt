@@ -1,5 +1,6 @@
 package com.example.repairme.ui.screens.tecnico
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,6 +38,7 @@ import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.LineaPresupuesto
 import com.example.repairme.data.repository.RepairRepository
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.example.repairme.ui.theme.naranjaLetras
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +56,7 @@ fun DetalleAveriaTecnicoScreen(
     var cantidad by remember { mutableStateOf("") }
     var precioUnidad by remember { mutableStateOf("") }
     var lineas by remember { mutableStateOf(listOf<LineaPresupuesto>()) }
+    val context = LocalContext.current
 
     fun cargarAveria() {
         repo.obtenerAveriaId(
@@ -199,7 +202,11 @@ fun DetalleAveriaTecnicoScreen(
                                     )
                                     repo.editarAveria(
                                         averiaEditada = averiaPresupuestada,
-                                        exito = {},
+                                        exito = {
+                                            Toast.makeText(context, "El presupuesto ha sido enviado con éxito",
+                                                Toast.LENGTH_LONG).show()
+                                            onVolver()
+                                        },
                                         fallo = {}
 
                                     )

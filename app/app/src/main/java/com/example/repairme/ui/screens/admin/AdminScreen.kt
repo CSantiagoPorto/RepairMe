@@ -43,7 +43,7 @@ fun AdminScreen(
     notificacionesNoLeidas: Int = 0
 ) {
 
-    // 1. Creamos la lista de botones para la barra inferior, pasando los 3 datos que se indican en el modelo 'NavItem'
+    // Creamos la lista de botones para la barra inferior, le pasamos los datos del modelo
     val itemsNavegacion = listOf(
         NavItem("Reparar", Icons.Filled.Build, onVerAverias),
         NavItem("Técnicos", Icons.Filled.Engineering, onVerTecnicos),
@@ -57,8 +57,8 @@ fun AdminScreen(
 
     )
 
-    // 2. Llamamos al modelo "BaseScreen" y le pasamos los datos de la barra inferior
-    // Este modelo ya incluye la barra superior con el logotipo y la barra inferior
+    // Llamamos al modelo "BaseScreen" y le pasamos los datos de la barra inferior
+
     BaseScreen(
         title = "ClearRepair",
         onIrHome = onIrHome,
@@ -69,7 +69,7 @@ fun AdminScreen(
         notificationBadgeCount = notificacionesNoLeidas
     ) { modifier ->
 
-        // 3. Contenido de la pantalla (Cards)
+        // Ponemos las cards en la pantalla
         // 'modifier' es para que el contenido no se tape con la barra inferior
         Column(
             modifier = modifier

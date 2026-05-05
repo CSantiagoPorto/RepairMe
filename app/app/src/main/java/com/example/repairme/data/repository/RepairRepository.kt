@@ -71,7 +71,7 @@ class RepairRepository : OperationsTemplateRepository() {
         })
     }
 
-    // CAMBIO: Ahora usa addValueEventListener para que el usuario vea cambios en tiempo real
+    // Ahora usa addValueEventListener para que el usuario vea cambios en tiempo real
     fun obtenerAveriaUser(
         fallo: (String) -> Unit,
         exito: (List<Averia>) -> Unit

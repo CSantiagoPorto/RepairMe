@@ -165,8 +165,7 @@ fun generarPdf(
 
     documento.add(tablaTotal)
     val nota = Paragraph(
-        "Este presupuesto tiene una validez de 30 días desde la fecha de emisión. " +
-                "Los precios indicados incluyen mano de obra y materiales. IVA incluido en el total.",
+        "Este presupuesto tiene una validez de 30 días desde la fecha de emisión. " ,
         fuentesPdf.notaFont
     )
     nota.alignment = Element.ALIGN_CENTER
@@ -325,7 +324,7 @@ fun generarFactura(
 
     documento.add(tablaTotal)
     val nota = Paragraph(
-        "Será necesario el abono del total de la factura para la retirada de los dispositivos",
+        "Será necesario el abono de la factura para la retirada de los dispositivos",
         fuentesPdf.notaFont
     )
     nota.alignment = Element.ALIGN_CENTER
