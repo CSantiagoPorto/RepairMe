@@ -161,44 +161,44 @@ fun DetalleReparacionesFinalizadas(
 
 
 
-                          //  Hay que añadir la fecha de entrega y hay que convertirla antes porque es un Long
+                            //  Hay que añadir la fecha de entrega y hay que convertirla antes porque es un Long
 
                         }
 
 
-                       /* item {
-                            Row(modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center) {
-                                Button(onClick = {
-                                    val archivo= generarPdf(
-                                        context=context,
-                                        averia=averia!!,
-                                        cliente=cliente!!,
-                                        tecnico=tecnico!!
-                                    )
-                                    val uri = FileProvider.getUriForFile(
-                                        context,
-                                        "${context.packageName}.provider",
-                                        archivo
-                                    )
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        setDataAndType(uri, "application/pdf")
-                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    }
-                                    context.startActivity(intent)
+                        /* item {
+                             Row(modifier = Modifier.fillMaxWidth(),
+                                 horizontalArrangement = Arrangement.Center) {
+                                 Button(onClick = {
+                                     val archivo= generarPdf(
+                                         context=context,
+                                         averia=averia!!,
+                                         cliente=cliente!!,
+                                         tecnico=tecnico!!
+                                     )
+                                     val uri = FileProvider.getUriForFile(
+                                         context,
+                                         "${context.packageName}.provider",
+                                         archivo
+                                     )
+                                     val intent = Intent(Intent.ACTION_VIEW).apply {
+                                         setDataAndType(uri, "application/pdf")
+                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                     }
+                                     context.startActivity(intent)
 
 
-                                },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Naranja,
-                                        contentColor = Color.White
-                                    )
+                                 },
+                                     colors = ButtonDefaults.buttonColors(
+                                         containerColor = Naranja,
+                                         contentColor = Color.White
+                                     )
 
-                                    ) {
-                                    Text("Generar presupuesto en pdf")
-                                }
-                            }
-                        }*/
+                                     ) {
+                                     Text("Generar presupuesto en pdf")
+                                 }
+                             }
+                         }*/
 
                         /*item {
                             Row(modifier = Modifier.fillMaxWidth(),

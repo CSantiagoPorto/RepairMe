@@ -72,7 +72,7 @@ fun DetalleAveriaTecnicoScreen(
     LaunchedEffect(Unit) {
         cargarAveria()
     }
-    
+
     BaseScreen(
         title = "Presupuestar reparación",
         onIrHome = onIrHome,
@@ -135,21 +135,21 @@ fun DetalleAveriaTecnicoScreen(
                                         contentColor = Color.White
                                     ),
                                     onClick={
-                                    var precioNumero= precioUnidad.toDoubleOrNull()?:0.0
-                                    var cantidadNumero= cantidad.toDoubleOrNull()?:1.0
-                                    val totalFila=precioNumero*cantidadNumero
-                                    val lineaEscribir= LineaPresupuesto(
-                                        concepto=concepto,
-                                        cantidad=cantidadNumero.toInt(),
-                                        precioUnitario = precioNumero
-                                    )
-                                    lineas= lineas+lineaEscribir
-                                    //Lineas está vacía de inicio, vamos sumando y limpiamos
-                                    concepto = ""
-                                    cantidad = ""
-                                    precioUnidad = ""
+                                        var precioNumero= precioUnidad.toDoubleOrNull()?:0.0
+                                        var cantidadNumero= cantidad.toDoubleOrNull()?:1.0
+                                        val totalFila=precioNumero*cantidadNumero
+                                        val lineaEscribir= LineaPresupuesto(
+                                            concepto=concepto,
+                                            cantidad=cantidadNumero.toInt(),
+                                            precioUnitario = precioNumero
+                                        )
+                                        lineas= lineas+lineaEscribir
+                                        //Lineas está vacía de inicio, vamos sumando y limpiamos
+                                        concepto = ""
+                                        cantidad = ""
+                                        precioUnidad = ""
 
-                                }){Text("Añadir")}
+                                    }){Text("Añadir")}
                             }
                         }
 
@@ -181,35 +181,35 @@ fun DetalleAveriaTecnicoScreen(
 
                         item {
                             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Button(
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = naranjaLetras,
-                                    contentColor = Color.White
-                                ),
-                                onClick = {
-                                 averia?.let {
-                                    resultado->
-                                     var averiaPresupuestada=averia!!.copy(
-                                        lineasPresupuesto=lineas,
-                                        estado= EstadoAveria.Presupuestada.name
-                                    )
-                                    repo.editarAveria(
-                                        averiaEditada = averiaPresupuestada,
-                                        exito = {
-                                            Toast.makeText(context, "El presupuesto ha sido enviado con éxito",
-                                                Toast.LENGTH_LONG).show()
-                                            onVolver()
-                                        },
-                                        fallo = {}
+                                Button(
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = naranjaLetras,
+                                        contentColor = Color.White
+                                    ),
+                                    onClick = {
+                                        averia?.let {
+                                                resultado->
+                                            var averiaPresupuestada=averia!!.copy(
+                                                lineasPresupuesto=lineas,
+                                                estado= EstadoAveria.Presupuestada.name
+                                            )
+                                            repo.editarAveria(
+                                                averiaEditada = averiaPresupuestada,
+                                                exito = {
+                                                    Toast.makeText(context, "El presupuesto ha sido enviado con éxito",
+                                                        Toast.LENGTH_LONG).show()
+                                                    onVolver()
+                                                },
+                                                fallo = {}
 
-                                    )
+                                            )
 
 
 
+                                        }
+                                    }) {
+                                    Text("Enviar presupuesto")
                                 }
-                            }) {
-                                Text("Enviar presupuesto")
-                            }
                             }
                         }
 
