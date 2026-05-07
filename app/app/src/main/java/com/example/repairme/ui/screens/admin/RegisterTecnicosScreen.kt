@@ -327,7 +327,7 @@ fun NuevaAveriaAdmin(
 
 
     ) { modifier ->
-        Column(modifier = modifier.padding(16.dp)) {
+        Column(modifier = modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
             if (clienteSeleccionado.id.isEmpty()) {
                 //Si no hay un cliente filtrado, muestro el buscador
                 //Va a empezar como objeto vacío
@@ -467,7 +467,7 @@ fun NuevaAveriaAdmin(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(GrisFondoPantalla)
-                        .verticalScroll(rememberScrollState())
+                        //.verticalScroll(rememberScrollState())
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -582,7 +582,7 @@ fun NuevaAveriaAdmin(
                         verticalAlignment = Alignment.Companion.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Añadir avería (opcional)")
+                        Text("Añadir avería")
                         Switch(
                             checked = añadirAveria,
                             onCheckedChange = {

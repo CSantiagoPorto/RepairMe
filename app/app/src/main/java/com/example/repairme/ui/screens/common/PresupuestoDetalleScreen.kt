@@ -265,7 +265,8 @@ fun PresupuestoDetalleScreen(
                                             notificationRepo.notificarPresupuestoAprobado(
                                                 equipoNombre = averia!!.equipoNombre,
                                                 nombreUsuario = nombreUsuario,
-                                                averiaId = averia!!.id
+                                                averiaId = averia!!.id,
+                                                tecnicoId= averia!!.tecnicoId
                                             )
                                             onVolver()
 
