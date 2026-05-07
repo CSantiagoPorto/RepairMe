@@ -7,17 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,17 +26,22 @@ import com.example.repairme.data.model.Averia
 import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.UserRepository
-import com.example.repairme.ui.theme.GrisFondoPantalla
+import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.theme.naranjaLetras
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleReparacionesFinalizadas(
     averiaId: String,
-    onVolver: () -> Unit
+    onVolver: () -> Unit,
+    onIrHome: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -57,7 +55,6 @@ fun DetalleReparacionesFinalizadas(
     var tecnico by remember { mutableStateOf<Usuario?>(null) }
     //Le meto un indicador de carga por las pruebas
     val context = LocalContext.current
-
 
     var cargando by remember { mutableStateOf(true) }
 
@@ -84,34 +81,33 @@ fun DetalleReparacionesFinalizadas(
             }
         )
     }
-    fun pasarFechaEntregaAString(timestamp: Long):String{
-        if(timestamp!=0L){
-           return SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-               .format(Date(timestamp))
-        }else{return "No se encontró fecha de entrega"}
+
+    fun pasarFechaEntregaAString(timestamp: Long): String {
+        if (timestamp != 0L) {
+            return SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                .format(Date(timestamp))
+        } else {
+            return "No se encontró fecha de entrega"
+        }
     }
 
     LaunchedEffect(Unit) {
         cargarAveriaUserTecnico()
     }
-    Scaffold(containerColor = GrisFondoPantalla,topBar ={
-        TopAppBar(title = {
-            Text("Detalle de la reparaciones finalizadas",
-                color = naranjaLetras,
-                fontWeight = FontWeight.Bold)
-        },
-            navigationIcon = {
-                IconButton(onClick = onVolver) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                }
-            }
-        )
-    }) { //Soy el contenido del SCAFFOLD}
-            innerPadding ->
+
+    BaseScreen(
+        title = "Detalle de reparaciones",
+        onIrHome = onIrHome,
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        onVolver = onVolver,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = notificacionesNoLeidas
+    ) { modifier ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally

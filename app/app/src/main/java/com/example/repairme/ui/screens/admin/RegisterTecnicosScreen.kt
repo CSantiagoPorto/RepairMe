@@ -11,8 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.repairme.data.repository.AuthRepository
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,19 +44,19 @@ import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.utils.generarFactura
 
-// Para previsualizar la pantalla en design
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterTecnicoScreen(
-    onNavigateBack: () -> Unit = {},//Con esta función volvemos al login
+    onNavigateBack: () -> Unit = {},
     onRegisterSucess: () -> Unit = {},
-    //Dejo esta función aquí porque la voy a usar para volver al login cuando
-    //el registro haya sido exitoso
-
+    onIrHome: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
 
-    //Creo instancia del repo y del context
     val repo = AuthRepository()
     val context = LocalContext.current
 
@@ -84,9 +81,7 @@ fun RegisterTecnicoScreen(
             error = "Contraseña debe tener al menos 8 caracteres"
             return false
         }
-        if (
-            nombre.trim().isEmpty()
-        ) {
+        if (nombre.trim().isEmpty()) {
             error = "Rellena todos los campos"
             return false
         }
@@ -96,55 +91,23 @@ fun RegisterTecnicoScreen(
         return true
     }
 
-    Scaffold(
-        containerColor = GrisFondoPantalla,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Registrar Técnico",
-                        color = Naranja
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = Naranja
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = GrisFondoPantalla
-                )
-            )
-        }
-    ) { innerPadding ->
-        // UI
+    BaseScreen(
+        title = "Registrar Técnico",
+        onIrHome = onIrHome,
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        onVolver = onNavigateBack,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = notificacionesNoLeidas
+    ) { modifier ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .background(GrisFondoPantalla)
                 .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
                 .padding(16.dp),
-
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Titulo de la pantalla
-            // Lo dejo comentado porque ahora el título ya está en la TopAppBar
-            /*
-            Text(
-                text = "Registrar Técnico",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Naranja,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
-            */
-
-            // Nombre
             OutlinedTextField(
                 value = nombre,
                 onValueChange = {
