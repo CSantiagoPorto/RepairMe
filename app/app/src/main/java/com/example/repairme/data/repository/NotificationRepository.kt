@@ -172,9 +172,21 @@ class NotificationRepository : OperationsTemplateRepository() {
     fun notificarPresupuestoAprobado(
         equipoNombre: String,
         nombreUsuario: String,
-        averiaId: String
+        averiaId: String,
+        tecnicoId: String
+
     ) {
         Log.d("NotificationRepo", "notificarPresupuestoAprobado llamado: usuario=$nombreUsuario, equipo=$equipoNombre, averiaId=$averiaId")
+        if (tecnicoId.isNotEmpty()) {
+            val notifTecnico = Notificacion(
+                userId = tecnicoId,
+                titulo = "Presupuesto aceptado",
+                mensaje = "El cliente ha aceptado el presupuesto  $equipoNombre.",
+                averiaId = averiaId
+            )
+            enviarNotificacion(notifTecnico)
+        }
+
 
         // Buscar todos los administradores y notificarles
         ref(USERS_NODE).get().addOnSuccessListener { snapshot ->

@@ -194,7 +194,7 @@ fun RepairListScreen(
                             fechaListo = fechaListo),
                             {}, {})
                     },
-                    onAveriaClick = { onAveriaClick(averia.id) },
+                    onAveriaClick = { onAveriaClick(averia.id) },//Este va a ir a detalleAveríaTécnicoScreen que es donde va a hacerle el presupuesto
                     onVerDetalleClick = { onVerDetalleAveria(averia.id) }
                 )
             }
