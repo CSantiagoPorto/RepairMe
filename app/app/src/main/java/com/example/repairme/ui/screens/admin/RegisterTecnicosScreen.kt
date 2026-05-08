@@ -364,20 +364,21 @@ fun NuevaAveriaAdmin(
 
 
     ) { modifier ->
-        Column(modifier = modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
+        LazyColumn(modifier=modifier.padding(16.dp)) {
             if (clienteSeleccionado.id.isEmpty()) {
                 //Si no hay un cliente filtrado, muestro el buscador
                 //Va a empezar como objeto vacío
                 //Si no pulso tarjeta el id está vacío así queme va a enseñar el buscador
                 //Si pulso se sale por el else
-
-                TextField(
+                item{TextField(
                     value = busqueda,
                     onValueChange = { busqueda = it },
                     label = { Text("Buscar por nombre, apellidos, dni o email") },
                     modifier = Modifier.fillMaxWidth()
-                )
-                LazyColumn(modifier = Modifier.height(300.dp)) {
+                )}
+
+
+
 
 
                     items(clientesFiltrados) { cliente ->
@@ -396,99 +397,100 @@ fun NuevaAveriaAdmin(
                         }
 
                     }
+                item {
 
-                }
-                //Si mostrar el formulario se pone a true necesito que me muestre los campos
-                //Esto pasa al pulsar el botón
-                if (mostrarNuevoFormulario) {
-                    OutlinedTextField(
-                        value = nuevoNombre,
-                        onValueChange = { nuevoNombre = it },
-                        label = { Text("Nombre") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoApellidos,
-                        onValueChange = { nuevoApellidos = it },
-                        label = { Text("Apellidos") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoEmail,
-                        onValueChange = { nuevoEmail = it },
-                        label = { Text("Email") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoTelefono,
-                        onValueChange = { nuevoTelefono = it },
-                        label = { Text("Teléfono") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoDni,
-                        onValueChange = { nuevoDni = it },
-                        label = { Text("DNI") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevaDireccion,
-                        onValueChange = { nuevaDireccion = it },
-                        label = { Text("Dirección") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoCodigoPostal,
-                        onValueChange = { nuevoCodigoPostal = it },
-                        label = { Text("Código Postal") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevaLocalidad,
-                        onValueChange = { nuevaLocalidad = it },
-                        label = { Text("Localidad") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Checkbox(
-                            checked = rgpdAceptado,
-                            onCheckedChange = {rgpdAceptado=it}
+                    //Si mostrar el formulario se pone a true necesito que me muestre los campos
+                    //Esto pasa al pulsar el botón
+                    if (mostrarNuevoFormulario) {
+                        OutlinedTextField(
+                            value = nuevoNombre,
+                            onValueChange = { nuevoNombre = it },
+                            label = { Text("Nombre") },
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        Text("Acepto la política de protección de datos")
-                    }
-                    Button(onClick = {
-                        if(!rgpdAceptado){
-                            error="Es obligatorio aceptar la política de protección de datos"
-                            return@Button
+                        OutlinedTextField(
+                            value = nuevoApellidos,
+                            onValueChange = { nuevoApellidos = it },
+                            label = { Text("Apellidos") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoEmail,
+                            onValueChange = { nuevoEmail = it },
+                            label = { Text("Email") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoTelefono,
+                            onValueChange = { nuevoTelefono = it },
+                            label = { Text("Teléfono") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoDni,
+                            onValueChange = { nuevoDni = it },
+                            label = { Text("DNI") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevaDireccion,
+                            onValueChange = { nuevaDireccion = it },
+                            label = { Text("Dirección") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoCodigoPostal,
+                            onValueChange = { nuevoCodigoPostal = it },
+                            label = { Text("Código Postal") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevaLocalidad,
+                            onValueChange = { nuevaLocalidad = it },
+                            label = { Text("Localidad") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Checkbox(
+                                checked = rgpdAceptado,
+                                onCheckedChange = {rgpdAceptado=it}
+                            )
+                            Text("Acepto la política de protección de datos")
                         }
-                        repoAdmin.crearUsuarioAdmin(
-                            email = nuevoEmail,
-                            nombre = nuevoNombre,
-                            apellidos = nuevoApellidos,
-                            telefono = nuevoTelefono,
-                            direccion = nuevaDireccion,
-                            codigoPostal = nuevoCodigoPostal,
-                            localidad = nuevaLocalidad,
-                            dni = nuevoDni,
-                            exito = { userId ->
-                                clienteSeleccionado = Usuario(
-                                    id = userId,
-                                    name = nuevoNombre,
-                                    apellidos = nuevoApellidos,
-                                    email = nuevoEmail
+                        Button(onClick = {
+                            if(!rgpdAceptado){
+                                error="Es obligatorio aceptar la política de protección de datos"
+                                return@Button
+                            }
+                            repoAdmin.crearUsuarioAdmin(
+                                email = nuevoEmail,
+                                nombre = nuevoNombre,
+                                apellidos = nuevoApellidos,
+                                telefono = nuevoTelefono,
+                                direccion = nuevaDireccion,
+                                codigoPostal = nuevoCodigoPostal,
+                                localidad = nuevaLocalidad,
+                                dni = nuevoDni,
+                                exito = { userId ->
+                                    clienteSeleccionado = Usuario(
+                                        id = userId,
+                                        name = nuevoNombre,
+                                        apellidos = nuevoApellidos,
+                                        email = nuevoEmail
 
-                                )
+                                    )
 
-                            },
-                            error = { msg -> error = msg })
-                    }) {
-                        Text("Confirmar cliente")
-                    }
-                }
+                                },
+                                error = { msg -> error = msg })
+                        }) {
+                            Text("Confirmar cliente")
+                        }
+                    } }
+                item{
                 //Cuando el cliente no existe nos enseña el botón de crear cliente
                 if (clientesFiltrados.isEmpty() && busqueda.isNotEmpty() && !mostrarNuevoFormulario) {
                     Button(onClick = {
@@ -497,12 +499,14 @@ fun NuevaAveriaAdmin(
                     }) {
                         Text("Crear nuevo cliente")
                     }
+                }
 
                 }
             } else {//Por aquí entra si selecciono cliente
+                item{
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .background(GrisFondoPantalla)
                         //.verticalScroll(rememberScrollState())
                         .padding(16.dp),
@@ -619,7 +623,7 @@ fun NuevaAveriaAdmin(
                         verticalAlignment = Alignment.Companion.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Añadir avería")
+                        Text("Descripción avería")
                         Switch(
                             checked = añadirAveria,
                             onCheckedChange = {
@@ -723,6 +727,7 @@ fun NuevaAveriaAdmin(
                                             name = nuevoNombre,
                                             apellidos = nuevoApellidos,
                                             email = nuevoEmail
+
 
                                         )
 
@@ -830,6 +835,7 @@ fun NuevaAveriaAdmin(
                     }
 
                     // Volver
+                }
                     TextButton(onClick = onVolver) {
                         Text("Volver", color = Naranja)
                     }
