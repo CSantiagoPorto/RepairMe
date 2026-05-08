@@ -19,15 +19,10 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,16 +36,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.repairme.data.model.Servicio
+import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
-import com.example.repairme.ui.theme.grisfondo
-import com.example.repairme.ui.theme.naranjaLetras
 import com.google.firebase.database.FirebaseDatabase
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminServicesScreen(
-    onVolver: () -> Unit = {}
+    onVolver: () -> Unit = {},
+    onIrHome: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
 
     val context = LocalContext.current
@@ -92,27 +91,20 @@ fun AdminServicesScreen(
         cargarServicios()
     }
 
-    Scaffold(
-        containerColor = GrisFondoPantalla,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Gestionar servicios", color = naranjaLetras) },
-                navigationIcon = {
-                    TextButton(onClick = { onVolver() }) {
-                        Text("Volver", color = naranjaLetras)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = grisfondo
-                )
-            )
-        }
-    ) { innerPadding ->
+    BaseScreen(
+        title = "Gestionar servicios",
+        onIrHome = onIrHome,
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        onVolver = onVolver,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = notificacionesNoLeidas
+    ) { modifier ->
 
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)

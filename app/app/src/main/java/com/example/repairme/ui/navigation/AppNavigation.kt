@@ -223,7 +223,17 @@ class AppNavigation {
             composable(Rutas.REGISTRO_TECNICO.ruta){
                 RegisterTecnicoScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    onRegisterSucess = { navController.popBackStack() }
+                    onRegisterSucess = { navController.popBackStack() },
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onIrNotificaciones = { navController.navigate("notifications") },
+                    // Pasar el contador de notificaciones compartido global
+                    notificacionesNoLeidas = notificacionesNoLeidas.value
                 )
             }
 
@@ -255,7 +265,17 @@ class AppNavigation {
                 val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
                 DetalleAveriaTecnicoScreen(
                     averiaId = averiaId,
-                    onVolver = { navController.popBackStack() }
+                    onVolver = { navController.popBackStack() },
+                    onIrHome = { navController.navigate(Rutas.TECNICOSCREEN.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onIrNotificaciones = { navController.navigate("notifications") },
+                    // Pasar el contador de notificaciones compartido global
+                    notificacionesNoLeidas = notificacionesNoLeidas.value
                 )
             }
 
@@ -289,7 +309,17 @@ class AppNavigation {
                 val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
                 DetalleReparacionesFinalizadas(
                     averiaId = averiaId,
-                    onVolver = { navController.popBackStack() }
+                    onVolver = { navController.popBackStack() },
+                    onIrHome = { navController.navigate(Rutas.TECNICOSCREEN.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onIrNotificaciones = { navController.navigate("notifications") },
+                    // Pasar el contador de notificaciones compartido global
+                    notificacionesNoLeidas = notificacionesNoLeidas.value
                 )
 
             }
@@ -313,7 +343,17 @@ class AppNavigation {
 
             composable(Rutas.SERVICES_ADMIN.ruta){
                 AdminServicesScreen(
-                    onVolver = { navController.popBackStack() }
+                    onVolver = { navController.popBackStack() },
+                    onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = { navController.navigate(Rutas.SERVICES_ADMIN.ruta) },
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onIrNotificaciones = { navController.navigate("notifications") },
+                    // Pasar el contador de notificaciones compartido global
+                    notificacionesNoLeidas = notificacionesNoLeidas.value
                 )
             }
 
