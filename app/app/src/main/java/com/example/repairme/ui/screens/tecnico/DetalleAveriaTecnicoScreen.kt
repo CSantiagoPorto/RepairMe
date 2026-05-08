@@ -210,9 +210,6 @@ fun DetalleAveriaTecnicoScreen(
                                         fallo = {}
 
                                     )
-
-
-
                                 }
                             }) {
                                 Text("Enviar presupuesto")
