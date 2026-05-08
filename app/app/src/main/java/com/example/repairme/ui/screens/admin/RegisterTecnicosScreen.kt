@@ -11,6 +11,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -22,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.repairme.data.repository.AuthRepository
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,19 +47,19 @@ import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.botonNaranja
 import com.example.repairme.utils.generarFactura
 
+// Para previsualizar la pantalla en design
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterTecnicoScreen(
-    onNavigateBack: () -> Unit = {},
+    onNavigateBack: () -> Unit = {},//Con esta función volvemos al login
     onRegisterSucess: () -> Unit = {},
-    onIrHome: () -> Unit = {},
-    onIrPerfil: () -> Unit = {},
-    onGestionServicios: () -> Unit = {},
-    onLogOut: () -> Unit = {},
-    onIrNotificaciones: () -> Unit = {},
-    notificacionesNoLeidas: Int = 0
+    //Dejo esta función aquí porque la voy a usar para volver al login cuando
+    //el registro haya sido exitoso
+
 ) {
 
+    //Creo instancia del repo y del context
     val repo = AuthRepository()
     val context = LocalContext.current
 
@@ -81,7 +84,9 @@ fun RegisterTecnicoScreen(
             error = "Contraseña debe tener al menos 8 caracteres"
             return false
         }
-        if (nombre.trim().isEmpty()) {
+        if (
+            nombre.trim().isEmpty()
+        ) {
             error = "Rellena todos los campos"
             return false
         }
@@ -91,23 +96,55 @@ fun RegisterTecnicoScreen(
         return true
     }
 
-    BaseScreen(
-        title = "Registrar Técnico",
-        onIrHome = onIrHome,
-        onIrPerfil = onIrPerfil,
-        onGestionServicios = onGestionServicios,
-        onLogOut = onLogOut,
-        onVolver = onNavigateBack,
-        onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = notificacionesNoLeidas
-    ) { modifier ->
+    Scaffold(
+        containerColor = GrisFondoPantalla,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Registrar Técnico",
+                        color = Naranja
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Naranja
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = GrisFondoPantalla
+                )
+            )
+        }
+    ) { innerPadding ->
+        // UI
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
+                .background(GrisFondoPantalla)
                 .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
                 .padding(16.dp),
+
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Titulo de la pantalla
+            // Lo dejo comentado porque ahora el título ya está en la TopAppBar
+            /*
+            Text(
+                text = "Registrar Técnico",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Naranja,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            */
+
+            // Nombre
             OutlinedTextField(
                 value = nombre,
                 onValueChange = {
@@ -327,20 +364,21 @@ fun NuevaAveriaAdmin(
 
 
     ) { modifier ->
-        Column(modifier = modifier.padding(16.dp)) {
+        LazyColumn(modifier=modifier.padding(16.dp)) {
             if (clienteSeleccionado.id.isEmpty()) {
                 //Si no hay un cliente filtrado, muestro el buscador
                 //Va a empezar como objeto vacío
                 //Si no pulso tarjeta el id está vacío así queme va a enseñar el buscador
                 //Si pulso se sale por el else
-
-                TextField(
+                item{TextField(
                     value = busqueda,
                     onValueChange = { busqueda = it },
                     label = { Text("Buscar por nombre, apellidos, dni o email") },
                     modifier = Modifier.fillMaxWidth()
-                )
-                LazyColumn(modifier = Modifier.height(300.dp)) {
+                )}
+
+
+
 
 
                     items(clientesFiltrados) { cliente ->
@@ -359,99 +397,100 @@ fun NuevaAveriaAdmin(
                         }
 
                     }
+                item {
 
-                }
-                //Si mostrar el formulario se pone a true necesito que me muestre los campos
-                //Esto pasa al pulsar el botón
-                if (mostrarNuevoFormulario) {
-                    OutlinedTextField(
-                        value = nuevoNombre,
-                        onValueChange = { nuevoNombre = it },
-                        label = { Text("Nombre") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoApellidos,
-                        onValueChange = { nuevoApellidos = it },
-                        label = { Text("Apellidos") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoEmail,
-                        onValueChange = { nuevoEmail = it },
-                        label = { Text("Email") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoTelefono,
-                        onValueChange = { nuevoTelefono = it },
-                        label = { Text("Teléfono") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoDni,
-                        onValueChange = { nuevoDni = it },
-                        label = { Text("DNI") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevaDireccion,
-                        onValueChange = { nuevaDireccion = it },
-                        label = { Text("Dirección") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevoCodigoPostal,
-                        onValueChange = { nuevoCodigoPostal = it },
-                        label = { Text("Código Postal") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    OutlinedTextField(
-                        value = nuevaLocalidad,
-                        onValueChange = { nuevaLocalidad = it },
-                        label = { Text("Localidad") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Checkbox(
-                            checked = rgpdAceptado,
-                            onCheckedChange = {rgpdAceptado=it}
+                    //Si mostrar el formulario se pone a true necesito que me muestre los campos
+                    //Esto pasa al pulsar el botón
+                    if (mostrarNuevoFormulario) {
+                        OutlinedTextField(
+                            value = nuevoNombre,
+                            onValueChange = { nuevoNombre = it },
+                            label = { Text("Nombre") },
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        Text("Acepto la política de protección de datos")
-                    }
-                    Button(onClick = {
-                        if(!rgpdAceptado){
-                            error="Es obligatorio aceptar la política de protección de datos"
-                            return@Button
+                        OutlinedTextField(
+                            value = nuevoApellidos,
+                            onValueChange = { nuevoApellidos = it },
+                            label = { Text("Apellidos") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoEmail,
+                            onValueChange = { nuevoEmail = it },
+                            label = { Text("Email") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoTelefono,
+                            onValueChange = { nuevoTelefono = it },
+                            label = { Text("Teléfono") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoDni,
+                            onValueChange = { nuevoDni = it },
+                            label = { Text("DNI") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevaDireccion,
+                            onValueChange = { nuevaDireccion = it },
+                            label = { Text("Dirección") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevoCodigoPostal,
+                            onValueChange = { nuevoCodigoPostal = it },
+                            label = { Text("Código Postal") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = nuevaLocalidad,
+                            onValueChange = { nuevaLocalidad = it },
+                            label = { Text("Localidad") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Checkbox(
+                                checked = rgpdAceptado,
+                                onCheckedChange = {rgpdAceptado=it}
+                            )
+                            Text("Acepto la política de protección de datos")
                         }
-                        repoAdmin.crearUsuarioAdmin(
-                            email = nuevoEmail,
-                            nombre = nuevoNombre,
-                            apellidos = nuevoApellidos,
-                            telefono = nuevoTelefono,
-                            direccion = nuevaDireccion,
-                            codigoPostal = nuevoCodigoPostal,
-                            localidad = nuevaLocalidad,
-                            dni = nuevoDni,
-                            exito = { userId ->
-                                clienteSeleccionado = Usuario(
-                                    id = userId,
-                                    name = nuevoNombre,
-                                    apellidos = nuevoApellidos,
-                                    email = nuevoEmail
+                        Button(onClick = {
+                            if(!rgpdAceptado){
+                                error="Es obligatorio aceptar la política de protección de datos"
+                                return@Button
+                            }
+                            repoAdmin.crearUsuarioAdmin(
+                                email = nuevoEmail,
+                                nombre = nuevoNombre,
+                                apellidos = nuevoApellidos,
+                                telefono = nuevoTelefono,
+                                direccion = nuevaDireccion,
+                                codigoPostal = nuevoCodigoPostal,
+                                localidad = nuevaLocalidad,
+                                dni = nuevoDni,
+                                exito = { userId ->
+                                    clienteSeleccionado = Usuario(
+                                        id = userId,
+                                        name = nuevoNombre,
+                                        apellidos = nuevoApellidos,
+                                        email = nuevoEmail
 
-                                )
+                                    )
 
-                            },
-                            error = { msg -> error = msg })
-                    }) {
-                        Text("Confirmar cliente")
-                    }
-                }
+                                },
+                                error = { msg -> error = msg })
+                        }) {
+                            Text("Confirmar cliente")
+                        }
+                    } }
+                item{
                 //Cuando el cliente no existe nos enseña el botón de crear cliente
                 if (clientesFiltrados.isEmpty() && busqueda.isNotEmpty() && !mostrarNuevoFormulario) {
                     Button(onClick = {
@@ -460,14 +499,16 @@ fun NuevaAveriaAdmin(
                     }) {
                         Text("Crear nuevo cliente")
                     }
+                }
 
                 }
             } else {//Por aquí entra si selecciono cliente
+                item{
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .background(GrisFondoPantalla)
-                        .verticalScroll(rememberScrollState())
+                        //.verticalScroll(rememberScrollState())
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -582,7 +623,7 @@ fun NuevaAveriaAdmin(
                         verticalAlignment = Alignment.Companion.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Añadir avería (opcional)")
+                        Text("Descripción avería")
                         Switch(
                             checked = añadirAveria,
                             onCheckedChange = {
@@ -686,6 +727,7 @@ fun NuevaAveriaAdmin(
                                             name = nuevoNombre,
                                             apellidos = nuevoApellidos,
                                             email = nuevoEmail
+
 
                                         )
 
@@ -793,6 +835,7 @@ fun NuevaAveriaAdmin(
                     }
 
                     // Volver
+                }
                     TextButton(onClick = onVolver) {
                         Text("Volver", color = Naranja)
                     }

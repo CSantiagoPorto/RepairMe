@@ -107,21 +107,21 @@ fun LoginScreen(
     }
 
     val googleSignInClient = remember {
-        //Esto es el objeto que abre ñla cuenta el pantalla y vuelve a la app
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        //Esto es el objeto que abre la cuenta en la pantalla y vuelve a la app
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)//Esto ers lo que le voy a pedir a google
             .requestIdToken("494111396660-fo6qhajke9qdvrmg4ts2e8benr20h88s.apps.googleusercontent.com")
             .requestEmail()
             .build()
         GoogleSignIn.getClient(context, gso)
     }
-    //el launcher recibe los resultados del googleSignInClient  y dentro de este vamos a ver qué hacemos con él
+    //el launcher (es un escuchador) recibe los resultados del googleSignInClient  y va a abrir otra pantalla
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()//Esto especifica las reglas de comunicación
-    ) { result ->
+        contract = ActivityResultContracts.StartActivityForResult()//Esto especifica las reglas de comunicación, lanza el intent y va a recibir un ActivityResult
+    ) { result ->//Aquí retomamos el control de app con el resultado de lo que se hizo en la pantalla de Google
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)//Así se extrae la cuenta
         try {
-            val account = task.getResult(ApiException::class.java)//La cuenta de la que voy a sacr el token
+            val account = task.getResult(ApiException::class.java)//La cuenta de la que voy a sacr el token y si no funciona salta una ApiException
             val idToken = account.idToken ?: return@rememberLauncherForActivityResult
             repo.loginGoogle(//le mandamos el usuario a Firebase
                 tokenGoogle = idToken,
@@ -261,8 +261,8 @@ fun LoginScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
-                        onClick = { googleSignInClient.signOut().addOnCompleteListener {
-                            launcher.launch(googleSignInClient.signInIntent)
+                        onClick = { googleSignInClient.signOut().addOnCompleteListener {//Primero hace sign out porque necesitamos limpiar para que no inicie sesión con la última cuenta
+                            launcher.launch(googleSignInClient.signInIntent)//Aquí se me abre la pantalla propiamente dicha
                         } },
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                         colors = ButtonDefaults.buttonColors(
