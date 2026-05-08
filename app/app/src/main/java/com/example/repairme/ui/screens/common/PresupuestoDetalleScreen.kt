@@ -226,7 +226,7 @@ fun PresupuestoDetalleScreen(
                                         linea->
                                         Row() {
                                             Text(linea.concepto)
-                                            Text("${linea.cantidad * linea.precioUnitario} €")
+                                            Text(" ${linea.cantidad * linea.precioUnitario}€")
 
                                         }
 
