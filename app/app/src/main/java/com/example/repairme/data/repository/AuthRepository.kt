@@ -96,12 +96,12 @@ class AuthRepository {
     }
 
     fun loginGoogle(
-        tokenGoogle: String,
+        tokenGoogle: String,//A fb hay que pasarle el token porque no sabe lo que ha estado haciendo google
         ok: (Usuario)-> Unit,
         fallo: (String)-> Unit
-    ){
-        val credencialGoogle= GoogleAuthProvider.getCredential(tokenGoogle, null)
-        autenticacion.signInWithCredential(credencialGoogle)
+    ){//credencialGoogle va a guardar la credencial de google porque fb necesita tenerla entendible
+        val credencialGoogle= GoogleAuthProvider.getCredential(tokenGoogle, null)//No necesitamos el accessToken así que lo pongo a null porque me pide los dos parámetros
+        autenticacion.signInWithCredential(credencialGoogle)//le mandamos la credencial a fb
             .addOnSuccessListener {
                 resultado->
                 var id= resultado.user?.uid ?: return@addOnSuccessListener
