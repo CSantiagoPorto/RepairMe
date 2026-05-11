@@ -1,7 +1,9 @@
+
 package com.example.repairme.ui.screens.common
 
 import android.content.Intent
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,21 +12,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,17 +39,23 @@ import com.example.repairme.data.model.Usuario
 import com.example.repairme.data.repository.NotificationRepository
 import com.example.repairme.data.repository.RepairRepository
 import com.example.repairme.data.repository.UserRepository
+import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.theme.GrisFondoPantalla
 import com.example.repairme.ui.theme.Naranja
 import com.example.repairme.ui.theme.naranjaLetras
 import com.example.repairme.utils.generarPdf
 import com.google.firebase.auth.FirebaseAuth
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PresupuestoDetalleScreen(
     averiaId: String,
-    onVolver: () -> Unit
+    onIrHome: () -> Unit,
+    onIrPerfil: () -> Unit,
+    onGestionServicios: () -> Unit,
+    onLogOut: () -> Unit,
+    onVolver: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    notificationBadgeCount: Int
 ){
     //Para los pdfs necesito esta variable para abrir el directorio
     var context= LocalContext.current
@@ -109,22 +110,20 @@ fun PresupuestoDetalleScreen(
         Log.d("PRESU_DETALLE DEVUELTA",": $averiaId")
         cargarAveriaUserTecnico()
     }
-    Scaffold(containerColor = GrisFondoPantalla,topBar ={
-        TopAppBar(title = {
-            Text("Detalle del presupuesto",
-                color = naranjaLetras,
-                fontWeight = FontWeight.Bold)
-        },
-            navigationIcon = {
-                IconButton(onClick = onVolver) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                }
-            }
-        )
-    }) {  innerPadding ->
-        Column(modifier = Modifier
+
+    BaseScreen(
+        title = "Detalle del presupuesto",
+        onIrHome = onIrHome,
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        onVolver = onVolver,
+        onNotificationsClick = onNotificationsClick,
+        notificationBadgeCount = notificationBadgeCount
+    ) { modifier ->
+        Column(modifier = modifier
             .fillMaxSize()
-            .padding(innerPadding)
+            .background(GrisFondoPantalla)
             .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
@@ -223,7 +222,7 @@ fun PresupuestoDetalleScreen(
                                     verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(text = "Desglose", fontWeight = FontWeight.Bold, color = naranjaLetras )
                                     averia!!.lineasPresupuesto.forEach{
-                                        linea->
+                                            linea->
                                         Row() {
                                             Text(linea.concepto)
                                             Text(" ${linea.cantidad * linea.precioUnitario}€")
@@ -247,108 +246,108 @@ fun PresupuestoDetalleScreen(
                         item {
                             if (averia?.estado == EstadoAveria.Presupuestada.name && usuarioActual?.role =="user") {
 
-                            Row(modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Row(modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                                TextButton(onClick = {
-                                    Log.d("PresupuestoDetalle", "Aceptar presupuesto - usuarioActual: ${usuarioActual?.name}")
-                                    repairRepo.editarAveria(
-                                        averiaEditada = averia!!.copy(
-                                            presupuestoAceptado = true,
+                                    TextButton(onClick = {
+                                        Log.d("PresupuestoDetalle", "Aceptar presupuesto - usuarioActual: ${usuarioActual?.name}")
+                                        repairRepo.editarAveria(
+                                            averiaEditada = averia!!.copy(
+                                                presupuestoAceptado = true,
 
-                                            estado = EstadoAveria.EnReparacion.name
-                                        ),
-                                        exito = {
-                                            // Enviar notificación al admin cuando se acepta el presupuesto
-                                            val nombreUsuario = "${usuarioActual?.name} ${usuarioActual?.apellidos}".trim()
-                                            Log.d("PresupuestoDetalle", "Enviando notificación - nombreUsuario: $nombreUsuario, equipoNombre: ${averia!!.equipoNombre}")
-                                            notificationRepo.notificarPresupuestoAprobado(
-                                                equipoNombre = averia!!.equipoNombre,
-                                                nombreUsuario = nombreUsuario,
-                                                averiaId = averia!!.id,
-                                                tecnicoId= averia!!.tecnicoId
-                                            )
-                                            onVolver()
+                                                estado = EstadoAveria.EnReparacion.name
+                                            ),
+                                            exito = {
+                                                // Enviar notificación al admin cuando se acepta el presupuesto
+                                                val nombreUsuario = "${usuarioActual?.name} ${usuarioActual?.apellidos}".trim()
+                                                Log.d("PresupuestoDetalle", "Enviando notificación - nombreUsuario: $nombreUsuario, equipoNombre: ${averia!!.equipoNombre}")
+                                                notificationRepo.notificarPresupuestoAprobado(
+                                                    equipoNombre = averia!!.equipoNombre,
+                                                    nombreUsuario = nombreUsuario,
+                                                    averiaId = averia!!.id,
+                                                    tecnicoId= averia!!.tecnicoId
+                                                )
+                                                onVolver()
 
 
-                                        },
-                                        fallo = {
-                                            //ACUERDATE DE PONER MENSAJE
-                                        }
-                                    )
+                                            },
+                                            fallo = {
+                                                //ACUERDATE DE PONER MENSAJE
+                                            }
+                                        )
 
-                                },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Naranja,
-                                        contentColor = Color.White
-                                    )
+                                    },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Naranja,
+                                            contentColor = Color.White
+                                        )
                                     ) {
-                                    Text(text = "Aceptar")
-                                }
-                                TextButton(onClick = {
-                                    repairRepo.editarAveria(
-                                        averiaEditada = averia!!.copy(
-                                            presupuestoAceptado = true,
-                                            estado = EstadoAveria.Declinada.name
-                                        ),
-                                        exito = {
+                                        Text(text = "Aceptar")
+                                    }
+                                    TextButton(onClick = {
+                                        repairRepo.editarAveria(
+                                            averiaEditada = averia!!.copy(
+                                                presupuestoAceptado = true,
+                                                estado = EstadoAveria.Declinada.name
+                                            ),
+                                            exito = {
 
 
-                                        },
-                                        fallo = {}
-                                    )
+                                            },
+                                            fallo = {}
+                                        )
 
-                                },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Naranja,
-                                        contentColor = Color.White
-                                    )
+                                    },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Naranja,
+                                            contentColor = Color.White
+                                        )
                                     ) {
-                                    Text(text = "Rechazar")
+                                        Text(text = "Rechazar")
+                                    }
+
+
+
+
                                 }
-
-
-
-
                             }
                         }
+                        if(averia?.lineasPresupuesto?.isNotEmpty() ==true ){
+                            //No lo pongo con presupuesto aceptado porque entonces no nos enseña el presupuesto de las pendientes de aceptar
+                            item {
+                                Row(modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center) {
+                                    Button(onClick = {
+                                        val archivo= generarPdf(
+                                            context=context,
+                                            averia=averia!!,
+                                            cliente=cliente!!,
+                                            tecnico=tecnico!!
+                                        )
+                                        val uri = FileProvider.getUriForFile(
+                                            context,
+                                            "${context.packageName}.provider",
+                                            archivo
+                                        )
+                                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                                            setDataAndType(uri, "application/pdf")
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        context.startActivity(intent)
+
+
+                                    },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Naranja,
+                                            contentColor = Color.White
+                                        )
+
+                                    ) {
+                                        Text("Generar presupuesto en pdf")
+                                    }
+                                }
+                            }
                         }
-                       if(averia?.lineasPresupuesto?.isNotEmpty() ==true ){
-                           //No lo pongo con presupuesto aceptado porque entonces no nos enseña el presupuesto de las pendientes de aceptar
-                           item {
-                               Row(modifier = Modifier.fillMaxWidth(),
-                                   horizontalArrangement = Arrangement.Center) {
-                                   Button(onClick = {
-                                       val archivo= generarPdf(
-                                           context=context,
-                                           averia=averia!!,
-                                           cliente=cliente!!,
-                                           tecnico=tecnico!!
-                                       )
-                                       val uri = FileProvider.getUriForFile(
-                                           context,
-                                           "${context.packageName}.provider",
-                                           archivo
-                                       )
-                                       val intent = Intent(Intent.ACTION_VIEW).apply {
-                                           setDataAndType(uri, "application/pdf")
-                                           addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                       }
-                                       context.startActivity(intent)
-
-
-                                   },
-                                       colors = ButtonDefaults.buttonColors(
-                                           containerColor = Naranja,
-                                           contentColor = Color.White
-                                       )
-
-                                   ) {
-                                       Text("Generar presupuesto en pdf")
-                                   }
-                               }
-                           }
-                       }
 
 
 
@@ -359,9 +358,4 @@ fun PresupuestoDetalleScreen(
             }
         }
     }
-
-
-
-
-
 }

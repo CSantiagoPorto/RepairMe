@@ -1,3 +1,4 @@
+
 package com.example.repairme.ui.screens.tecnico
 
 import androidx.compose.foundation.background
@@ -52,36 +53,100 @@ fun TecnicoScreen(
         NavItem("Reparados", Icons.Filled.Computer, { currentScreen = "repaired" })
     )
 
-    // Usamos el modelo BaseScreen va a unificar la TopBar (con Logo) y la BottomBar (con Notificaciones fijas)
-    BaseScreen(
-        title = "ClearRepair",
-        onIrHome = onIrHome,
-        onIrPerfil = onIrPerfil,
-        onGestionServicios = onGestionServicios,
-        onLogOut = onLogOut,
-        onNotificationsClick = onIrNotificaciones,
-        notificationBadgeCount = notificacionesNoLeidas
-    ) { modifier ->
+    // Lógica de datos compartida
+    var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
+    var listaReparadas by remember { mutableStateOf(listOf<Averia>()) }
+    val repo = remember { RepairRepository() }
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(grayBackground)
-        ) {
+    LaunchedEffect(Unit) {
+        repo.obtenerAveriasTecnico(
+            fallo = {},
+            exito = { averias ->
+                listaAverias = averias.filter {
+                    it.estado != EstadoAveria.Reparado.name && it.estado != EstadoAveria.Declinada.name
+                }
+                listaReparadas = averias.filter { it.estado == "Reparado" }
+            }
+        )
+    }
 
-            when (currentScreen) {
-                "repair" -> RepairListScreen(
-                    orangePrimary = orangePrimary,
-                    onBack = { currentScreen = null },
-                    onAveriaClick = onAveriaClick,
-                    onVerDetalleAveria = onVerDetalleAveria
-                )
-                "repaired" -> RepairedListScreen(
-                    orangePrimary = orangePrimary,
-                    onBack = { currentScreen = null },
-                    onAveriaClick = onReparacionesFinalizadasClick
-                )
-                else -> HomeContent(orangePrimary) { screen -> currentScreen = screen }
+    when (currentScreen) {
+        "repair" -> BaseScreen(
+            title = "Equipos en reparación",
+            onIrHome = onIrHome,
+            onIrPerfil = onIrPerfil,
+            onGestionServicios = onGestionServicios,
+            onLogOut = onLogOut,
+            onVolver = { currentScreen = null },
+            onNotificationsClick = onIrNotificaciones,
+            notificationBadgeCount = notificacionesNoLeidas
+        ) { modifier ->
+            Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+                Text(text = "Equipos en reparación", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = orangePrimary, modifier = Modifier.padding(vertical = 12.dp))
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(listaAverias) { averia ->
+                        RepairItem(
+                            title = "${averia.equipoNombre}",
+                            currentState = averia.estado,
+                            orangePrimary = orangePrimary,
+                            onStateChange = { newState ->
+                                val fechaListo = if(newState == EstadoAveria.ListaParaRecoger.name){
+                                    System.currentTimeMillis()
+                                }else{
+                                    averia.fechaListo
+                                }
+                                repo.editarAveria(averia.copy(
+                                    estado = newState,
+                                    fechaListo = fechaListo),
+                                    {}, {})
+                            },
+                            onAveriaClick = { onAveriaClick(averia.id) },
+                            onVerDetalleClick = { onVerDetalleAveria(averia.id) }
+                        )
+                    }
+                }
+            }
+        }
+        "repaired" -> BaseScreen(
+            title = "Equipos reparados",
+            onIrHome = onIrHome,
+            onIrPerfil = onIrPerfil,
+            onGestionServicios = onGestionServicios,
+            onLogOut = onLogOut,
+            onVolver = { currentScreen = null },
+            onNotificationsClick = onIrNotificaciones,
+            notificationBadgeCount = notificacionesNoLeidas
+        ) { modifier ->
+            Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+                Text(text = "Equipos reparados", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = orangePrimary, modifier = Modifier.padding(vertical = 12.dp))
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(listaReparadas) { averia ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onReparacionesFinalizadasClick(averia.id) },
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = CardDefaults.cardElevation(2.dp)
+                        ) {
+                            Text(text = "${averia.equipoNombre} --- ${averia.tituloAveria}", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
+                        }
+                    }
+                }
+            }
+        }
+        else -> BaseScreen(
+            title = "ClearRepair",
+            onIrHome = onIrHome,
+            onIrPerfil = onIrPerfil,
+            onGestionServicios = onGestionServicios,
+            onLogOut = onLogOut,
+            onNotificationsClick = onIrNotificaciones,
+            notificationBadgeCount = notificacionesNoLeidas
+        ) { modifier ->
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(grayBackground)
+            ) {
+                HomeContent(orangePrimary) { screen -> currentScreen = screen }
             }
         }
     }
@@ -147,87 +212,6 @@ fun CardItem(
                 tint = accentColor,
                 modifier = Modifier.size(40.dp)
             )
-        }
-    }
-}
-
-// --- LÓGICA DE DATOS (BACKEND) RESTAURADA ---
-
-@Composable
-fun RepairListScreen(
-    orangePrimary: Color,
-    onBack: () -> Unit,
-    onAveriaClick: (String) -> Unit,
-    onVerDetalleAveria: (String) -> Unit
-) {
-    var listaAverias by remember { mutableStateOf(listOf<Averia>()) }
-    val repo = remember { RepairRepository() }
-
-    LaunchedEffect(Unit) {
-        repo.obtenerAveriasTecnico(
-            fallo = {},
-            exito = { averias -> listaAverias = averias.filter {
-                it.estado != EstadoAveria.Reparado.name && it.estado != EstadoAveria.Declinada.name
-            } }
-        )
-    }
-
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Button(onClick = onBack, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = orangePrimary)) {
-            Text("← Volver")
-        }
-        Text(text = "Equipos en reparación", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = orangePrimary, modifier = Modifier.padding(vertical = 12.dp))
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(listaAverias) { averia ->
-                RepairItem(
-                    title = "${averia.equipoNombre}",
-                    currentState = averia.estado,
-                    orangePrimary = orangePrimary,
-                    onStateChange = { newState ->
-                        val fechaListo= if(newState== EstadoAveria.ListaParaRecoger.name){
-                            System.currentTimeMillis()
-                        }else{
-                            averia.fechaListo//Si no está lista para recoger se conseva la fecha a null
-                        }
-                        repo.editarAveria(averia.copy(
-                            estado = newState,
-                            fechaListo = fechaListo),
-                            {}, {})
-                    },
-                    onAveriaClick = { onAveriaClick(averia.id) },//Este va a ir a detalleAveríaTécnicoScreen que es donde va a hacerle el presupuesto
-                    onVerDetalleClick = { onVerDetalleAveria(averia.id) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun RepairedListScreen(orangePrimary: Color, onBack: () -> Unit, onAveriaClick: (String) -> Unit) {
-    var listaReparadas by remember { mutableStateOf(listOf<Averia>()) }
-    val repo = remember { RepairRepository() }
-
-    LaunchedEffect(Unit) {
-        repo.obtenerAveriasTecnico(
-            fallo = {},
-            exito = { averias -> listaReparadas = averias.filter { it.estado == "Reparado" } }
-        )
-    }
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Button(onClick = onBack, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = orangePrimary)) {
-            Text("← Volver")
-        }
-        Text(text = "Equipos reparados", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = orangePrimary, modifier = Modifier.padding(vertical = 12.dp))
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(listaReparadas) { averia ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onAveriaClick(averia.id) },
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Text(text = "${averia.equipoNombre} --- ${averia.tituloAveria}", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
-                }
-            }
         }
     }
 }
@@ -328,14 +312,9 @@ fun RepairItem(
                     modifier = Modifier.height(36.dp)
                 ) {
                     Text("Ver detalle", fontSize = 12.sp, color = Color.White)
+
                 }
             }
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun TecnicoScreenPreview() {
-    TecnicoScreen()
 }

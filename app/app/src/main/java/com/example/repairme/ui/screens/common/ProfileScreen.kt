@@ -1,8 +1,9 @@
+
 package com.example.repairme.ui.screens.common
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,13 +15,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,24 +27,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.repairme.R
+import androidx.compose.ui.unit.sp
 import com.example.repairme.data.model.Usuario
+import com.example.repairme.data.repository.AdminRepository
+import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.theme.GrisFondoPantalla
-import com.example.repairme.ui.theme.grisfondo
-import com.example.repairme.ui.theme.naranjaLetras
+import com.example.repairme.ui.theme.Naranja
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import androidx.compose.material3.OutlinedTextField
-import com.example.repairme.data.repository.AdminRepository
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    onIrHome: () -> Unit = {},
     onVolver: () -> Unit = {},
-    onLogOut: () -> Unit = {}
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    notificacionesNoLeidas: Int=0
 ) {
     val context = LocalContext.current
 
@@ -119,47 +123,46 @@ fun ProfileScreen(
         }
     }
 
-    Scaffold(
-        containerColor = GrisFondoPantalla,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Mi perfil", color = naranjaLetras) },
-                navigationIcon = {
-                    TextButton(onClick = { onVolver() }) {
-                        Text("Volver", color = naranjaLetras)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = grisfondo
-                )
-            )
-        }
-    ) { innerPadding ->
-
+    BaseScreen(
+        title = "Perfil",
+        onIrHome = onIrHome,
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        onVolver = onVolver,
+        onNotificationsClick = onIrNotificaciones,
+        notificationBadgeCount = notificacionesNoLeidas
+    ) { modifier ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+                .background(GrisFondoPantalla)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.Top
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.clear_repair_mini),
-                contentDescription = "Logo ClearRepair",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             when {
                 cargando -> {
-                    Text("Cargando perfil...")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                    ) {
+                        Text("Cargando perfil...", fontSize = 16.sp)
+                    }
                 }
 
                 usuario == null -> {
-                    Text("No se ha encontrado la información del usuario")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                    ) {
+                        Text("No se ha encontrado la información del usuario", fontSize = 16.sp)
+                    }
                 }
 
                 else -> {
@@ -168,25 +171,38 @@ fun ProfileScreen(
                         "tecnico" -> PerfilTecnico(usuario = usuario!!, onVolver = onVolver)
                         "admin" -> PerfilAdmin(usuario = usuario!!, onVolver = onVolver)
                         else -> {
-                            Card(modifier = Modifier.fillMaxWidth()) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    DatoPerfil("Nombre", usuario?.name ?: "")
-                                    DatoPerfil("Email", usuario?.email ?: "")
-                                    DatoPerfil("Rol", usuario?.role ?: "")
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                ) {
+                                    Column(modifier = Modifier.padding(16.dp)) {
+                                        DatoPerfil("Nombre", usuario?.name ?: "")
+                                        DatoPerfil("Email", usuario?.email ?: "")
+                                        DatoPerfil("Rol", usuario?.role ?: "")
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen()
 }
 
 @Composable
 fun PerfilUser(
     usuario: Usuario,
-    onVolver: () -> Unit,
+    onVolver: () -> Unit = {},
     onLogOut: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -198,190 +214,235 @@ fun PerfilUser(
     var codigoPostal by remember { mutableStateOf(usuario.codigoPostal) }
     var localidad by remember { mutableStateOf(usuario.localidad) }
 
-    Card(
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Text(
+            text = "Cliente: ${usuario.name}",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Naranja,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Text("Perfil de cliente")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("Nombre") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            OutlinedTextField(
-                value = nombre,
-                onValueChange = { nombre = it },
-                label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = apellidos,
+                    onValueChange = { apellidos = it },
+                    label = { Text("Apellidos") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            OutlinedTextField(
-                value = apellidos,
-                onValueChange = { apellidos = it },
-                label = { Text("Apellidos") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = telefono,
+                    onValueChange = { telefono = it },
+                    label = { Text("Teléfono") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            OutlinedTextField(
-                value = telefono,
-                onValueChange = { telefono = it },
-                label = { Text("Teléfono") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = direccion,
+                    onValueChange = { direccion = it },
+                    label = { Text("Dirección") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            OutlinedTextField(
-                value = direccion,
-                onValueChange = { direccion = it },
-                label = { Text("Dirección") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = codigoPostal,
+                    onValueChange = { codigoPostal = it },
+                    label = { Text("Código Postal") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            OutlinedTextField(
-                value = codigoPostal,
-                onValueChange = { codigoPostal = it },
-                label = { Text("Código postal") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = localidad,
-                onValueChange = { localidad = it },
-                label = { Text("Localidad") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            DatoPerfil("Email", usuario.email)
-            DatoPerfil("DNI", usuario.dni)
-            DatoPerfil("Rol", usuario.role)
+                OutlinedTextField(
+                    value = localidad,
+                    onValueChange = { localidad = it },
+                    label = { Text("Localidad") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
-    }
 
-    Spacer(modifier = Modifier.height(12.dp))
-
-    Button(
-        onClick = {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-
-            if (uid == null) {
-                Toast.makeText(context, "Usuario no válido", Toast.LENGTH_SHORT).show()
-                return@Button
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                DatoPerfil("Email", usuario.email)
+                DatoPerfil("DNI", usuario.dni)
+                DatoPerfil("Rol", usuario.role)
             }
+        }
 
-            val updates = hashMapOf<String, Any>(
-                "name" to nombre,
-                "apellidos" to apellidos,
-                "phone" to telefono,
-                "direccion" to direccion,
-                "codigoPostal" to codigoPostal,
-                "localidad" to localidad
-            )
+        Button(
+            onClick = {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-            FirebaseDatabase
-                .getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
-                .getReference("users")
-                .child(uid)
-                .updateChildren(updates as Map<String, Any>)
-                .addOnSuccessListener {
-                    Log.d("PROFILE", "Perfil actualizado")
-                    Toast.makeText(context, "Perfil actualizado", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Log.d("PROFILE", "Error actualizando perfil: ${e.message}")
-                    Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
-                }
-        },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Guardar cambios")
-    }
-    Button(
-        onClick = {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-
-            if (uid == null) {
-                Toast.makeText(context, "Usuario no válido", Toast.LENGTH_SHORT).show()
-                return@Button
-            }
-            FirebaseDatabase
-                .getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
-                .getReference("users")
-                .child(uid)
-                .updateChildren(mapOf("estado" to "Inactivo") as Map<String, Any>)
-                .addOnSuccessListener {
-                    Log.d("PROFILE", "Perfil actualizado")
-                    Toast.makeText(context, "Perfil actualizado", Toast.LENGTH_SHORT).show()
-                    FirebaseAuth.getInstance().signOut()
-                    onLogOut()//No mover. Si lo sacamos de addOnSuccessListener se nos desloguea antes de cambiar el estado
-                }
-                .addOnFailureListener { e ->
-                    Log.d("PROFILE", "Error actualizando perfil: ${e.message}")
-                    Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
+                if (uid == null) {
+                    Toast.makeText(context, "Usuario no válido", Toast.LENGTH_SHORT).show()
+                    return@Button
                 }
 
-        },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Dar de baja usuario")
-    }
+                val updates = hashMapOf<String, Any>(
+                    "name" to nombre,
+                    "apellidos" to apellidos,
+                    "phone" to telefono,
+                    "direccion" to direccion,
+                    "codigoPostal" to codigoPostal,
+                    "localidad" to localidad
+                )
 
-    Button(
-        onClick = { onVolver() },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Volver")
+                FirebaseDatabase
+                    .getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+                    .getReference("users")
+                    .child(uid)
+                    .updateChildren(updates as Map<String, Any>)
+                    .addOnSuccessListener {
+                        Log.d("PROFILE", "Perfil actualizado")
+                        Toast.makeText(context, "Perfil actualizado", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.d("PROFILE", "Error actualizando perfil: ${e.message}")
+                        Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
+                    }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Guardar cambios")
+        }
+
+        Button(
+            onClick = {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+                if (uid == null) {
+                    Toast.makeText(context, "Usuario no válido", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+                FirebaseDatabase
+                    .getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+                    .getReference("users")
+                    .child(uid)
+                    .updateChildren(mapOf("estado" to "Inactivo") as Map<String, Any>)
+                    .addOnSuccessListener {
+                        Log.d("PROFILE", "Perfil actualizado")
+                        Toast.makeText(context, "Perfil actualizado", Toast.LENGTH_SHORT).show()
+                        FirebaseAuth.getInstance().signOut()
+                        onLogOut()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.d("PROFILE", "Error actualizando perfil: ${e.message}")
+                        Toast.makeText(context, "Error al guardar", Toast.LENGTH_SHORT).show()
+                    }
+
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Dar de baja usuario")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 @Composable
 fun PerfilTecnico(
     usuario: Usuario,
-    onVolver: () -> Unit
+    onVolver: () -> Unit = {}
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Text(
+            text = "Técnico: ${usuario.name}",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Naranja,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Text("Perfil de técnico")
-            DatoPerfil("Nombre", usuario.name)
-            DatoPerfil("Email", usuario.email)
-            DatoPerfil("Rol", usuario.role)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                DatoPerfil("Nombre", usuario.name)
+                DatoPerfil("Email", usuario.email)
+                DatoPerfil("Rol", usuario.role)
+            }
         }
-    }
 
-    Spacer(modifier = Modifier.height(12.dp))
-
-    Button(onClick = { onVolver() }) {
-        Text("Volver")
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 @Composable
 fun PerfilAdmin(
     usuario: Usuario,
-    onVolver: () -> Unit
+    onVolver: () -> Unit = {}
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Text(
+            text = "Administrador",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Naranja,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Text("Perfil de administrador")
-            //DatoPerfil("Nombre", usuario.name)
-            //DatoPerfil("Apellidos", usuario.apellidos)
-            DatoPerfil("Email", usuario.email)
-            //DatoPerfil("Teléfono", usuario.phone)
-            DatoPerfil("Rol", usuario.role)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                DatoPerfil("Email", usuario.email)
+                DatoPerfil("Rol", usuario.role)
+            }
         }
-    }
 
-    Spacer(modifier = Modifier.height(12.dp))
-
-    Button(onClick = { onVolver() }) {
-        Text("Volver")
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -393,8 +454,20 @@ fun DatoPerfil(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = titulo)
-        Text(text = if (valor.isBlank()) "No disponible" else valor)
-        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+        Text(
+            text = titulo,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Naranja
+        )
+        Text(
+            text = if (valor.isBlank()) "No disponible" else valor,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 8.dp),
+            thickness = 0.5.dp
+        )
     }
 }
