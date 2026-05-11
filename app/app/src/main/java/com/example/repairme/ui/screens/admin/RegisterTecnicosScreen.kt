@@ -72,6 +72,10 @@ fun RegisterTecnicoScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var pass by rememberSaveable { mutableStateOf("") }
     var nombre by rememberSaveable { mutableStateOf("") }
+    var apellidos by rememberSaveable { mutableStateOf("") }
+    var telefono by rememberSaveable { mutableStateOf("") }
+    var dni by rememberSaveable { mutableStateOf("") }
+
 
     // Variables para decir si OK o error
     var error by rememberSaveable { mutableStateOf<String?>(null) }
@@ -159,6 +163,16 @@ fun RegisterTecnicoScreen(
                 label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth()
             )
+            OutlinedTextField(
+                value = apellidos,
+                onValueChange = {
+                    apellidos = it
+                    error = null
+                },
+                label = { Text("Apellidos") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
 
             OutlinedTextField(
                 value = email,
@@ -171,6 +185,27 @@ fun RegisterTecnicoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !ok
             )
+            OutlinedTextField(
+                value = telefono,
+                onValueChange = {
+                    telefono = it
+                    error = null
+                },
+                label = { Text("Teléfono") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = dni,
+                onValueChange = {
+                    dni = it
+                    error = null
+                },
+                label = { Text("DNI") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
 
             OutlinedTextField(
                 value = pass,
@@ -206,7 +241,7 @@ fun RegisterTecnicoScreen(
                             email = email.trim(),
                             password = pass.trim(),
                             nombre = nombre.trim(),
-                            apellidos = "", // Empty porque Tecnico no tiene apellidos en su model
+                            apellidos = apellidos.trim(),
                             telefono = "", // Empty for tecnico
                             direccion = "", // Empty for tecnico
                             codigoPostal = "", // Empty for tecnico
