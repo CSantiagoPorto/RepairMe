@@ -76,10 +76,10 @@ fun PresupuestoQueVeElAdmin(
     val resultadosBusqueda = if (busqueda.isBlank()) emptyList() else
         todasAverias.filter { averia ->
             val cliente = mapaUsuarios[averia.userId]
-            val nombreCompleto = "${cliente?.name ?: ""} ${cliente?.apellidos ?: ""}"
+            val nombreCompleto = "${cliente?.name?.trim() ?: ""} ${cliente?.apellidos?.trim() ?: ""}"
             cliente?.name?.contains(busqueda, ignoreCase = true) == true ||
-                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true ||
-                    nombreCompleto.contains(busqueda, ignoreCase = true)
+                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true
+                    nombreCompleto.contains(busqueda.trim(), ignoreCase = true)
         }
 
 
