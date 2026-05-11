@@ -56,7 +56,12 @@ fun RegisterTecnicoScreen(
     onRegisterSucess: () -> Unit = {},
     //Dejo esta función aquí porque la voy a usar para volver al login cuando
     //el registro haya sido exitoso
-
+    onIrHome: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
 
     //Creo instancia del repo y del context
@@ -189,7 +194,7 @@ fun RegisterTecnicoScreen(
             }
 
             if (ok) {
-                Text("Registro enviado ✅")
+                Text("Registro enviado")
             }
 
             // Botón de registro
@@ -330,7 +335,8 @@ fun NuevaAveriaAdmin(
         it.name.contains(busqueda, ignoreCase = true) ||
                 it.apellidos.contains(busqueda, ignoreCase = true) ||
                 it.dni.equals(busqueda, ignoreCase = true)||
-                it.email.equals(busqueda, ignoreCase = true)
+                it.email.contains(busqueda, ignoreCase = true)||//Lo cambio a contains porque si uso equals me lo hace escribir entero
+                "${it.name.trim()} ${it.apellidos.trim()}".contains(busqueda, ignoreCase = true)
     }
     fun validarCampos(): Boolean {
         if (
