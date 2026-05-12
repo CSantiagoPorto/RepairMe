@@ -1,27 +1,32 @@
+
 package com.example.repairme.ui.screens.common
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
-import com.example.repairme.R
 import com.example.repairme.data.model.Servicio
 import com.example.repairme.data.repository.ServiceRepository
+import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.theme.GrisFondoPantalla
-import com.example.repairme.ui.theme.grisfondo
 import com.example.repairme.ui.theme.naranjaLetras
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServicesScreen(
-    onVolver: () -> Unit = {}
+    onIrHome: () -> Unit,
+    onIrPerfil: () -> Unit,
+    onGestionServicios: () -> Unit,
+    onLogOut: () -> Unit,
+    onVolver: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    notificationBadgeCount: Int
 ) {
 
     val repo = remember { ServiceRepository() }
@@ -35,44 +40,29 @@ fun ServicesScreen(
         )
     }
 
-    Scaffold(
-        containerColor = GrisFondoPantalla,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Nuestros servicios", color = naranjaLetras) },
-                navigationIcon = {
-                    TextButton(onClick = { onVolver() }) {
-                        Text("Volver", color = naranjaLetras)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = grisfondo
-                )
-            )
-        }
-    ) { innerPadding ->
-
+    BaseScreen(
+        title = "Nuestros servicios",
+        onIrHome = onIrHome,
+        onIrPerfil = onIrPerfil,
+        onGestionServicios = onGestionServicios,
+        onLogOut = onLogOut,
+        onVolver = onVolver,
+        onNotificationsClick = onNotificationsClick,
+        notificationBadgeCount = notificationBadgeCount
+    ) { modifier ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .background(GrisFondoPantalla)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // Logo arriba
-            Image(
-                painter = painterResource(id = R.drawable.clear_repair_principal),
-                contentDescription = "Logo ClearRepair",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-            )
-
             Text(
                 text = "Cómo trabajamos en ClearRepair",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = naranjaLetras
             )
 
             Text(
@@ -91,7 +81,8 @@ fun ServicesScreen(
 
                         Text(
                             text = servicio.titulo,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = naranjaLetras
                         )
 
                         Spacer(modifier = Modifier.height(6.dp))
@@ -114,5 +105,13 @@ fun ServicesScreen(
 @Preview(showBackground = true)
 @Composable
 fun ServicesScreenPreview() {
-    ServicesScreen()
+    ServicesScreen(
+        onIrHome = {},
+        onIrPerfil = {},
+        onGestionServicios = {},
+        onLogOut = {},
+        onVolver = {},
+        onNotificationsClick = {},
+        notificationBadgeCount = 0
+    )
 }

@@ -222,7 +222,6 @@ class AppNavigation {
 
             composable(Rutas.REGISTRO_TECNICO.ruta){
                 RegisterTecnicoScreen(
-                    onNavigateBack = { navController.popBackStack() },
                     onRegisterSucess = { navController.popBackStack() },
                     onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
@@ -293,12 +292,66 @@ class AppNavigation {
                 val autorRol = backStackEntry.arguments?.getString("autorRol") ?: ""
                 val autorNombre = backStackEntry.arguments?.getString("autorNombre") ?: ""
 
+                // Obtenemos el UID del usuario actual
+                val auth = FirebaseAuth.getInstance()
+                val uid = auth.currentUser?.uid
+
+                // Accedemos a la BBDD para obtener el rol del usuario
+                val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+
+                // Se inicializa como user por defecto en caso de error
+                val rolUsuario = remember { mutableStateOf("user") }
+
+                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
+                LaunchedEffect(uid) {
+                    if (uid != null) {
+                        db.getReference("users").child(uid).get()
+                            .addOnSuccessListener { snapshot ->
+                                val rol = snapshot.child("role").value as? String ?: "user"
+                                rolUsuario.value = rol
+                            }
+                    }
+                }
+
+                val onIrHome = {
+                    when (rolUsuario.value.lowercase()) {
+                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
+                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
+                        }
+                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
+                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
+                        }
+                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+                    }
+                }
+
+                val onIrServicios = {
+                    when (rolUsuario.value.lowercase()) {
+                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
+                        else -> navController.navigate(Rutas.SERVICES.ruta)
+                    }
+                }
+
                 DetalleAveriaComunScreen(
                     averiaId = averiaId,
                     puedeEscribirUpdate = puedeEscribir,
                     autorRol = autorRol,
                     autorNombre = autorNombre,
-                    onVolver = { navController.popBackStack() }
+                    onIrHome = onIrHome,
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = onIrServicios,
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onVolver = { navController.popBackStack() },
+                    onNotificationsClick = { navController.navigate("notifications") },
+                    notificationBadgeCount = notificacionesNoLeidas.value
                 )
             }
 
@@ -325,21 +378,127 @@ class AppNavigation {
             }
 
             composable(Rutas.PROFILE.ruta) {
+                // Obtenemos el UID del usuario actual para mostrar su perfil
+                val auth = FirebaseAuth.getInstance()
+                val uid = auth.currentUser?.uid
+
+                // Accedemos a la BBDD para obtener el rol del usuario y mostrar la información adecuada en el perfil
+                val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+
+                //Se inicializa como user por defecto en caso de error
+                val rolUsuario = remember { mutableStateOf("user") }
+
+                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
+                LaunchedEffect(uid) {
+                    if (uid != null) {
+                        db.getReference("users").child(uid).get()
+                            .addOnSuccessListener { snapshot ->
+                                val rol = snapshot.child("role").value as? String ?: "user"
+                                rolUsuario.value = rol
+                            }
+                    }
+                }
+
+                val onIrHome = {
+                    when (rolUsuario.value.lowercase()) {
+                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
+                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
+                        }
+                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
+                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
+                        }
+                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+                    }
+                }
+
+                val onIrServicios = {
+                    when (rolUsuario.value.lowercase()) {
+                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
+                        else -> navController.navigate(Rutas.SERVICES.ruta)
+                    }
+                }
+
                 ProfileScreen(
                     onVolver = { navController.popBackStack() },
+                    onIrHome = onIrHome,
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios =  onIrServicios,
+                    onIrNotificaciones = { navController.navigate("notifications") },
+                    notificacionesNoLeidas = notificacionesNoLeidas.value,
                     onLogOut = {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
                     }
 
+
                 )
             }
 
             composable(Rutas.SERVICES.ruta){
+                // Obtenemos el UID del usuario actual
+                val auth = FirebaseAuth.getInstance()
+                val uid = auth.currentUser?.uid
+
+                // Accedemos a la BBDD para obtener el rol del usuario
+                val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+
+                // Se inicializa como user por defecto en caso de error
+                val rolUsuario = remember { mutableStateOf("user") }
+
+                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
+                LaunchedEffect(uid) {
+                    if (uid != null) {
+                        db.getReference("users").child(uid).get()
+                            .addOnSuccessListener { snapshot ->
+                                val rol = snapshot.child("role").value as? String ?: "user"
+                                rolUsuario.value = rol
+                            }
+                    }
+                }
+
+                val onIrHome = {
+                    when (rolUsuario.value.lowercase()) {
+                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
+                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
+                        }
+                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
+                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
+                        }
+                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+                    }
+                }
+
+                val onIrServicios = {
+                    when (rolUsuario.value.lowercase()) {
+                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
+                        else -> navController.navigate(Rutas.SERVICES.ruta)
+                    }
+                }
+
                 ServicesScreen(
-                    onVolver = { navController.popBackStack() }
+                    onIrHome = onIrHome,
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = onIrServicios,
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onVolver = { navController.popBackStack() },
+                    onNotificationsClick = { navController.navigate("notifications") },
+                    notificationBadgeCount = notificacionesNoLeidas.value
                 )
             }
+
 
             composable(Rutas.SERVICES_ADMIN.ruta){
                 AdminServicesScreen(
@@ -385,11 +544,68 @@ class AppNavigation {
                 listOf(navArgument("averiaId"){ type = NavType.StringType })
             ) { backStackEntry ->
                 val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
+                // Obtenemos el UID del usuario actual
+                val auth = FirebaseAuth.getInstance()
+                val uid = auth.currentUser?.uid
+
+                // Accedemos a la BBDD para obtener el rol del usuario
+                val db =
+                    FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+
+                // Se inicializa como user por defecto en caso de error
+                val rolUsuario = remember { mutableStateOf("user") }
+
+                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
+                LaunchedEffect(uid) {
+                    if (uid != null) {
+                        db.getReference("users").child(uid).get()
+                            .addOnSuccessListener { snapshot ->
+                                val rol = snapshot.child("role").value as? String ?: "user"
+                                rolUsuario.value = rol
+                            }
+                    }
+                }
+
+                val onIrHome = {
+                    when (rolUsuario.value.lowercase()) {
+                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+
+                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
+                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
+                        }
+
+                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
+                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
+                        }
+
+                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                        }
+                    }
+                }
+
+                val onIrServicios = {
+                    when (rolUsuario.value.lowercase()) {
+                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
+                        else -> navController.navigate(Rutas.SERVICES.ruta)
+                    }
+                }
+
                 PresupuestoDetalleScreen(
                     averiaId = averiaId,
-                    onVolver = { navController.popBackStack() }
+                    onIrHome = onIrHome,
+                    onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
+                    onGestionServicios = onIrServicios,
+                    onLogOut = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
+                    },
+                    onVolver = { navController.popBackStack() },
+                    onNotificationsClick = { navController.navigate("notifications") },
+                    notificationBadgeCount = notificacionesNoLeidas.value
                 )
-
             }
 
             composable(Rutas.PRESUPUESTOS_ADMIN.ruta) {
