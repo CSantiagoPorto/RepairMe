@@ -81,7 +81,9 @@ fun ClientesPantallaAdminScreen(
             when (tipoBusqueda) {
 
                 "Nombre" -> cliente.name.contains(busqueda, ignoreCase = true) ||
-                        cliente.apellidos.contains(busqueda, ignoreCase = true)
+                        cliente.apellidos.contains(busqueda, ignoreCase = true)||
+                        "${cliente.name.trim()} ${cliente.apellidos.trim()}".contains(busqueda.trim(), ignoreCase = true)
+
 
                 "Email" -> cliente.email.contains(busqueda, ignoreCase = true)
 

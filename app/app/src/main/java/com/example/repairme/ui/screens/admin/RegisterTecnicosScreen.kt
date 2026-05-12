@@ -63,7 +63,12 @@ fun RegisterTecnicoScreen(
     notificacionesNoLeidas: Int=0
     //Dejo esta función aquí porque la voy a usar para volver al login cuando
     //el registro haya sido exitoso
-
+    onIrHome: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
 
     //Creo instancia del repo y del context
@@ -74,6 +79,10 @@ fun RegisterTecnicoScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var pass by rememberSaveable { mutableStateOf("") }
     var nombre by rememberSaveable { mutableStateOf("") }
+    var apellidos by rememberSaveable { mutableStateOf("") }
+    var telefono by rememberSaveable { mutableStateOf("") }
+    var dni by rememberSaveable { mutableStateOf("") }
+
 
     // Variables para decir si OK o error
     var error by rememberSaveable { mutableStateOf<String?>(null) }
@@ -130,6 +139,16 @@ fun RegisterTecnicoScreen(
                 label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth()
             )
+            OutlinedTextField(
+                value = apellidos,
+                onValueChange = {
+                    apellidos = it
+                    error = null
+                },
+                label = { Text("Apellidos") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
 
             OutlinedTextField(
                 value = email,
@@ -142,6 +161,27 @@ fun RegisterTecnicoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !ok
             )
+            OutlinedTextField(
+                value = telefono,
+                onValueChange = {
+                    telefono = it
+                    error = null
+                },
+                label = { Text("Teléfono") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = dni,
+                onValueChange = {
+                    dni = it
+                    error = null
+                },
+                label = { Text("DNI") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
 
             OutlinedTextField(
                 value = pass,
@@ -165,7 +205,7 @@ fun RegisterTecnicoScreen(
             }
 
             if (ok) {
-                Text("Registro enviado ✅")
+                Text("Registro enviado")
             }
 
             // Botón de registro
@@ -177,7 +217,7 @@ fun RegisterTecnicoScreen(
                             email = email.trim(),
                             password = pass.trim(),
                             nombre = nombre.trim(),
-                            apellidos = "", // Empty porque Tecnico no tiene apellidos en su model
+                            apellidos = apellidos.trim(),
                             telefono = "", // Empty for tecnico
                             direccion = "", // Empty for tecnico
                             codigoPostal = "", // Empty for tecnico
@@ -306,7 +346,8 @@ fun NuevaAveriaAdmin(
         it.name.contains(busqueda, ignoreCase = true) ||
                 it.apellidos.contains(busqueda, ignoreCase = true) ||
                 it.dni.equals(busqueda, ignoreCase = true)||
-                it.email.equals(busqueda, ignoreCase = true)
+                it.email.contains(busqueda, ignoreCase = true)||//Lo cambio a contains porque si uso equals me lo hace escribir entero
+                "${it.name.trim()} ${it.apellidos.trim()}".contains(busqueda, ignoreCase = true)
     }
     fun validarCampos(): Boolean {
         if (

@@ -81,6 +81,10 @@ fun ListaTecnicosScreen(
     LaunchedEffect(Unit) {
         cargarTecnicos() // ejecuta siempre que se abra la pantalla
     }
+    /*"${cliente?.name?.trim() ?: ""} ${cliente?.apellidos?.trim() ?: ""}"
+            cliente?.name?.contains(busqueda, ignoreCase = true) == true ||
+                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true
+                    nombreCompleto.contains(busqueda.trim(), ignoreCase = true)*/
 
     // preparamos lista a mostrar
     val listaFiltrada = listaTecnicos.filter { tecnico ->
@@ -88,7 +92,10 @@ fun ListaTecnicosScreen(
 
         val coincideBusqueda =
             tecnico.name.contains(busqueda, ignoreCase = true) ||
-                    tecnico.email.contains(busqueda, ignoreCase = true)
+                    tecnico.email.contains(busqueda, ignoreCase = true)||
+                    tecnico.apellidos.contains(busqueda, ignoreCase = true)||
+                    tecnico.dni.contains(busqueda, ignoreCase = true)||
+                    "${tecnico.name.trim()} ${tecnico.apellidos.trim()}".contains(busqueda.trim(), ignoreCase = true)
 
         val coincideEstado = when (filtroEstado) {
             "Todos" -> true
@@ -205,7 +212,7 @@ fun ListaTecnicosScreen(
                                         verticalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
                                         Text(
-                                            text = tecnico.name.ifBlank { "Sin nombre" },
+                                            text = "${tecnico.name.trim()} ${tecnico.apellidos.trim()}".ifBlank { "Sin nombre" },
                                             fontWeight = FontWeight.Bold,
                                             color = Naranja
                                         )
