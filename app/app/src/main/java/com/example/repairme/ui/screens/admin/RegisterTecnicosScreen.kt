@@ -60,15 +60,6 @@ fun RegisterTecnicoScreen(
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {},
-    notificacionesNoLeidas: Int=0
-    //Dejo esta función aquí porque la voy a usar para volver al login cuando
-    //el registro haya sido exitoso
-    
-    onIrHome: () -> Unit = {},
-    onIrPerfil: () -> Unit = {},
-    onGestionServicios: () -> Unit = {},
-    onLogOut: () -> Unit = {},
-    onIrNotificaciones: () -> Unit = {},
     notificacionesNoLeidas: Int = 0
 ) {
 
