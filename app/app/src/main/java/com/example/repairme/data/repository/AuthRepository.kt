@@ -26,6 +26,13 @@ class AuthRepository {
 
     val duration = Toast.LENGTH_LONG
 
+
+    /*Autentica con  email y contraseña
+    * Consulta bbdd, obtiene el usuario (que contiene el rol y nos va a servir para que la app sepa a que pantalla navegar
+    * verifica que la cuenta  no esté desactivada (y si lo está cierra sesión y muestra mensaje
+    * Si la validación va bien llama a validacionOK
+    * Si la validadción no va bien llama a validacionError y muestra el mensaje de error correspondiente*/
+
     fun validarCorreoPassword(
         correo: String,
         contraseña: String,
@@ -42,7 +49,7 @@ class AuthRepository {
                             autenticacion.signOut()
                             validacionError("Su cuenta ha sido desactivada. Si desea reactivarla pónase en contacto con el administrador")
 
-                        }else{validacionOK(usuario.copy(id = id))}
+                        }else{validacionOK(usuario.copy(id = id))}//el id de usuario está como exclude, así que id le llega vacío. El copy lo rellena
 
                     } else {
                         validacionError("No se encontró el usuario")
@@ -94,6 +101,14 @@ class AuthRepository {
             creadoError("Error al crear usuario: ${e.message}")
         }
     }
+
+    /*
+    * El login de google tiene que funcionar de la siguiente manera:
+    * Autentica al user con la cuenta de google
+    * recibe el idToken que identifica la cuenta  de google y lo convierte en credencial de Firebase
+    * Busca al user en la bbdd
+    * Si no existe-> lo crea con los datos que tiene Google
+    * Si la cuenta está inactiva tiene que cerrar la sesión y mostrar un toast*/
 
     fun loginGoogle(
         tokenGoogle: String,//A fb hay que pasarle el token porque no sabe lo que ha estado haciendo google

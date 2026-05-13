@@ -28,6 +28,8 @@ import com.example.repairme.ui.theme.Naranja
 
 @Composable
 fun AdminScreen(
+
+    //Esta es la pantalla principal del ADMIN
     // Son Callbacks para navegar a otras pantallas
     onIrHome: () -> Unit = {},
     onVerAverias: () -> Unit = {},

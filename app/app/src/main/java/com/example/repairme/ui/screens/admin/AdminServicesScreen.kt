@@ -43,6 +43,8 @@ import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun AdminServicesScreen(
+    //Esta pantalla gestiona las operaciones relacionadas con los servicios del taller
+    //La misma pantalla crea y edita los servivios
     onVolver: () -> Unit = {},
     onIrHome: () -> Unit = {},
     onIrPerfil: () -> Unit = {},

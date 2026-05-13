@@ -63,13 +63,20 @@ fun RegisterTecnicoScreen(
     notificacionesNoLeidas: Int=0
     //Dejo esta función aquí porque la voy a usar para volver al login cuando
     //el registro haya sido exitoso
+    
+    onIrHome: () -> Unit = {},
+    onIrPerfil: () -> Unit = {},
+    onGestionServicios: () -> Unit = {},
+    onLogOut: () -> Unit = {},
+    onIrNotificaciones: () -> Unit = {},
+    notificacionesNoLeidas: Int = 0
 ) {
 
     //Creo instancia del repo y del context
     val repo = AuthRepository()
     val context = LocalContext.current
 
-    // Variables/inputs del formulario
+    // Variables del formulario
     var email by rememberSaveable { mutableStateOf("") }
     var pass by rememberSaveable { mutableStateOf("") }
     var nombre by rememberSaveable { mutableStateOf("") }
@@ -212,12 +219,12 @@ fun RegisterTecnicoScreen(
                             password = pass.trim(),
                             nombre = nombre.trim(),
                             apellidos = apellidos.trim(),
-                            telefono = "", // Empty for tecnico
-                            direccion = "", // Empty for tecnico
-                            codigoPostal = "", // Empty for tecnico
-                            localidad = "", // Empty for tecnico
-                            dni = "", // Empty for tecnico
-                            role = "tecnico", // Set role to TECNICO para que coincida con el model
+                            telefono = "",
+                            direccion = "",
+                            codigoPostal = "",
+                            localidad = "",
+                            dni = "",
+                            role = "tecnico",
                             creadoOK = {
                                 ok = false
                                 Toast.makeText(context, "Técnico creado", Toast.LENGTH_LONG).show()
