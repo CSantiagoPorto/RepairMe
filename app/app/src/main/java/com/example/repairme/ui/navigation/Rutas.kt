@@ -1,7 +1,7 @@
 package com.example.repairme.ui.navigation
 
 sealed class Rutas (val ruta:String) {
-    //Equivale a un enum
+    //Equivale a un enum tipado (esto significa que cada opción puede guardar datos dentro, la cadena de texto dentro de la ruta en este caso)
     data object LOGIN : Rutas("login")
     data object REGISTRO : Rutas("registro")
     data object USERSCREEN : Rutas("pantallaUser")
@@ -22,8 +22,7 @@ sealed class Rutas (val ruta:String) {
     data object CLIENTES_ADMIN : Rutas("clientesPantallaAdmin")
     data object DETALLE_PRESUPUESTO : Rutas("detallePresuCliente/{averiaId}")//Esta es la nueva ruta para
     //que ek cliente vea los presupuestos. Si está sin aceptar le sale con botones
-    //La clase contiene el botón para generar el pdf. Este archivo cuando funcione lo clonamos para
-    //que reutilizar en las facturas
+
 
     data object PRESUPUESTOS_ADMIN: Rutas("presupuestosAdmin")
     data object LISTA_PARA_RECOGER_ADMIN : Rutas("listaParaRecogerAdmin")

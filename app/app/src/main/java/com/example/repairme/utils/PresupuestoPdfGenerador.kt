@@ -27,6 +27,10 @@ object fuentesPdf{
     val notaFont        = Font(Font.FontFamily.HELVETICA, 9f,  Font.ITALIC, BaseColor(160, 160, 160))
 
 }
+
+//Genera un pdf con el presupuesto usando iText
+//El pdf se va a guardar en la carpeta de la caché de la app y es necesario tener instalado un visor de pdf en emulador porque lo va a usar para abrirlo
+//recibe la avería, el cliente y el técnico y lo rellena
 fun generarPdf(
     context: Context,//Necesito acceder a la carpeta context.cacheDir, así que necesita acceso al sisema
     averia: Averia,

@@ -10,6 +10,7 @@ import com.example.repairme.data.model.EstadoAveria
 import com.example.repairme.data.model.EstadoTecnico
 
 class TecnicoRepository: OperationsTemplateRepository() {
+    //Gestiona las operaciones de los técnicos, que son usuarios normales pero con role=tecnico
 
     // Usamos bylzay para que se conecte a la base de datos cuando sea necesario
     private val auth by lazy { FirebaseAuth.getInstance() }
@@ -155,7 +156,7 @@ class TecnicoRepository: OperationsTemplateRepository() {
                                 return
                             }
 
-                            var pendientes = idsAverias.size
+                            var pendientes = idsAverias.size // Contador de averías
                             var huboError = false
 
                             idsAverias.forEach { averiaId ->
@@ -166,10 +167,10 @@ class TecnicoRepository: OperationsTemplateRepository() {
                                         "estado" to EstadoAveria.PendienteReasignar.name
                                     ),
                                     ok = {
-                                        pendientes--
+                                        pendientes-- // Resta 1
 
                                         if (pendientes == 0 && !huboError) {
-                                            exito()
+                                            exito()//Cuando llega a 0 han terminado de actualizarse en Firebase
                                         }
                                     },
                                     error = { msg ->

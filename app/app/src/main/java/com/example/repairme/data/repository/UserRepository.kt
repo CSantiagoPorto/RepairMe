@@ -8,6 +8,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 
 class UserRepository : OperationsTemplateRepository() {
+    //Gestiona las operaciones sobre los usuarios.
+
 
     private val auth by lazy { FirebaseAuth.getInstance() }
     private val NODE = "users"
@@ -41,7 +43,7 @@ class UserRepository : OperationsTemplateRepository() {
         var listaCliente= mutableListOf<Usuario>()
         val clienteRef= ref(NODE)
 
-        clienteRef.orderByChild("role").equalTo("user")
+        clienteRef.orderByChild("role").equalTo("user")//Filtra por usuario, no va a mostrar ni al admin ni al técnico
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (child in snapshot.children){

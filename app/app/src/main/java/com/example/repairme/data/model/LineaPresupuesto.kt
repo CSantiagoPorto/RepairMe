@@ -8,3 +8,5 @@ data class LineaPresupuesto(
     val precioUnitario: Double = 0.0
 
             )
+
+//Esto es cada línea del presupuesto de la reparación

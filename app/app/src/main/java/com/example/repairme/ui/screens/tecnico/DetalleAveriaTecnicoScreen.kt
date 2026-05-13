@@ -35,6 +35,7 @@ import com.example.repairme.ui.components.BaseScreen
 import com.example.repairme.ui.theme.naranjaLetras
 
 @Composable
+//Desde aqyí el técnico va a elaborar los presupuestos. Al enviar las líneas de presupuesto las guarda en la avería y cambia el estado a presupuestado
 fun DetalleAveriaTecnicoScreen(
     averiaId: String,
     onVolver: () -> Unit,
@@ -71,6 +72,7 @@ fun DetalleAveriaTecnicoScreen(
 
     LaunchedEffect(Unit) {
         cargarAveria()
+        //Este método obtiene las averías por ID y el LaunchedEffect las carga una vez al entrar
     }
 
     BaseScreen(
@@ -135,7 +137,7 @@ fun DetalleAveriaTecnicoScreen(
                                         contentColor = Color.White
                                     ),
                                     onClick={
-                                        var precioNumero= precioUnidad.toDoubleOrNull()?:0.0
+                                        var precioNumero= precioUnidad.toDoubleOrNull()?:0.0//Convierto a números los Strings del TextField
                                         var cantidadNumero= cantidad.toDoubleOrNull()?:1.0
                                         val totalFila=precioNumero*cantidadNumero
                                         val lineaEscribir= LineaPresupuesto(
@@ -188,7 +190,7 @@ fun DetalleAveriaTecnicoScreen(
                                     ),
                                     onClick = {
                                         averia?.let {
-                                                resultado->
+
                                             var averiaPresupuestada=averia!!.copy(
                                                 lineasPresupuesto=lineas,
                                                 estado= EstadoAveria.Presupuestada.name

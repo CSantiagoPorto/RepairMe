@@ -2,7 +2,9 @@ package com.example.repairme.data.repository
 
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-
+//Con esta clase centralizamos las operaciones más habituales. Excepto AuthRepository todos los repos dependen de esta clase
+//Unifica aquí la conexión a RealTime Database y los CRUD genéricos para no tener que repetir tanto código
+//Lo métodos son protected para que sólo los repositorios hijos puedan acceder
 open class OperationsTemplateRepository {
 
     // Conexión a la bbdd usando lazy para evitar errores en Previews

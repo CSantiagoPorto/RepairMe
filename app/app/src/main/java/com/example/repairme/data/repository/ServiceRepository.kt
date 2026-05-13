@@ -4,6 +4,8 @@ import com.example.repairme.data.model.Servicio
 import com.google.firebase.database.*
 
 class ServiceRepository : OperationsTemplateRepository() {
+    //Esta clase gestiona los  servicios del taller. Usa los métodos predefinidos en OperationsTemplateRepository de la que hereda
+    //Obtiene, crea, edita y elimina servicios
 
     private val NODE = "services"
 
@@ -19,7 +21,7 @@ class ServiceRepository : OperationsTemplateRepository() {
                     val servicio = child.getValue(Servicio::class.java)
                     val id = child.key ?: ""
 
-                    if (servicio != null && servicio.activo) {
+                    if (servicio != null && servicio.activo) {//Sólo va a devolver los servicios que están activos
                         lista.add(servicio.copy(id = id))
                     }
                 }
