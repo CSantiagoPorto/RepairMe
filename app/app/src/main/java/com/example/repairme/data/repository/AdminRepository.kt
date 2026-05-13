@@ -84,6 +84,8 @@ class AdminRepository(private val context: Context) : OperationsTemplateReposito
 
 
     }
+
+    //Esto al final no se usa porque se hace directamente en ProfileScreen
     fun darDeBajaUsuario(
         userId: String,
         exito: () -> Unit,
@@ -91,7 +93,7 @@ class AdminRepository(private val context: Context) : OperationsTemplateReposito
     ) {
         updateChildren(
             path = "users/$userId/estado",
-            updates = mapOf("estadp" to "Inactivo"),
+            updates = mapOf("estado" to "Inactivo"),
             ok = { exito() },
             error = { msg -> error(msg) }
         )
