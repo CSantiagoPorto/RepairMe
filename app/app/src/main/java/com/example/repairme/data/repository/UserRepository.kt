@@ -10,7 +10,6 @@ import com.google.firebase.database.ValueEventListener
 class UserRepository : OperationsTemplateRepository() {
     //Gestiona las operaciones sobre los usuarios.
 
-
     private val auth by lazy { FirebaseAuth.getInstance() }
     private val NODE = "users"
     private val NODE2="repairs"

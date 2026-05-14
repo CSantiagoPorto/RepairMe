@@ -35,7 +35,7 @@ class NotificationRepository : OperationsTemplateRepository() {
         )
     }
 
-    /**
+    /*
      * Escucha las notificaciones no leídas del usuario actual en tiempo real.
      */
     fun escucharNotificacionesNoLeidas(
@@ -62,7 +62,7 @@ class NotificationRepository : OperationsTemplateRepository() {
 
     }
 
-    /**
+    /*
      * Obtiene todas las notificaciones del usuario actual.
      */
     fun obtenerMisNotificaciones(
@@ -80,7 +80,7 @@ class NotificationRepository : OperationsTemplateRepository() {
             })
     }
 
-    /**
+    /*
      * Marca todas las notificaciones de un usuario como leídas.
      */
     fun marcarComoLeidas() {
@@ -103,14 +103,14 @@ class NotificationRepository : OperationsTemplateRepository() {
             })
     }
 
-    /**
+    /*
      * Marca una notificación específica como leída
      */
     fun marcarNotificacionComoLeida(notificationId: String) {
         ref("$NODE/$notificationId/leida").setValue(true)
     }
 
-    /**
+    /*
      * Notifica al cliente y a todos los administradores sobre un cambio de estado en una avería.
      */
     fun notificarCambioEstado(
@@ -119,7 +119,7 @@ class NotificationRepository : OperationsTemplateRepository() {
         nuevoEstado: String,
         averiaId: String
     ) {
-        // 1. Notificación para el cliente
+        // Notificación para el cliente
         val notifCliente = Notificacion(
             userId = clienteId,
             titulo = "Estado de reparación actualizado",
@@ -128,7 +128,7 @@ class NotificationRepository : OperationsTemplateRepository() {
         )
         enviarNotificacion(notifCliente)
 
-        // 2. Buscar administradores y notificarles
+        // Buscar administradores y notificarles
         ref(USERS_NODE).orderByChild("role").equalTo("admin")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -149,9 +149,7 @@ class NotificationRepository : OperationsTemplateRepository() {
             })
     }
 
-    /**
-     * Notifica a un técnico que se le ha asignado una avería.
-     */
+    /*Notifica a un técnico que se le ha asignado una avería*/
     fun notificarAsignacionTecnico(
         tecnicoId: String,
         equipoNombre: String,
@@ -166,9 +164,8 @@ class NotificationRepository : OperationsTemplateRepository() {
         enviarNotificacion(notif)
     }
 
-    /**
-     * Notifica al admin que un usuario ha aprobado un presupuesto.
-     */
+
+    /*Notifica al admin que un usuario ha aprobado un presupuesto.*/
     fun notificarPresupuestoAprobado(
         equipoNombre: String,
         nombreUsuario: String,

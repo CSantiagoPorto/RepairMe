@@ -81,10 +81,7 @@ fun ListaTecnicosScreen(
     LaunchedEffect(Unit) {
         cargarTecnicos() // ejecuta siempre que se abra la pantalla
     }
-    /*"${cliente?.name?.trim() ?: ""} ${cliente?.apellidos?.trim() ?: ""}"
-            cliente?.name?.contains(busqueda, ignoreCase = true) == true ||
-                    cliente?.apellidos?.contains(busqueda, ignoreCase = true) == true
-                    nombreCompleto.contains(busqueda.trim(), ignoreCase = true)*/
+
 
     // preparamos lista a mostrar
     val listaFiltrada = listaTecnicos.filter { tecnico ->

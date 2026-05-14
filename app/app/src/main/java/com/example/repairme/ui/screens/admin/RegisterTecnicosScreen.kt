@@ -387,9 +387,6 @@ fun NuevaAveriaAdmin(
                 )}
 
 
-
-
-
                     items(clientesFiltrados) { cliente ->
                         Card(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),

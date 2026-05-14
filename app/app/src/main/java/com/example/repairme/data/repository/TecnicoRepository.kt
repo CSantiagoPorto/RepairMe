@@ -19,32 +19,6 @@ class TecnicoRepository: OperationsTemplateRepository() {
     //Necesitamos grabar un equipo. Cada equipo tiene que ir vinculado a un id de usuario
     //Voy a neceesitar: crearlo, que me devuelva el id, que tenga asociado idUser
 
- /*   fun crearTecnico(
-        tecnico: Tecnico, //En vez de meterle mil parámetros le meto el objeto ya
-        error: (String) -> Unit,
-        exito: (String) -> Unit
-    ) {
-
-
-        //Problema: HAY QUE GENERAR EL ID y pushearlo
-        val tecnicoUid = newId(NODE)
-
-        if (tecnicoUid.isBlank()) {
-            error("Se produjo un error al creae el id del dispositivo")
-            return
-        }
-
-        var tecnicoId = tecnico.copy(
-            tecnicoId = tecnicoUid,
-
-        )
-
-        setValue("$NODE/$tecnicoUid", tecnicoId,
-            ok = { exito(tecnicoUid) },
-            error = { error("Algo pasó y no se grabó en la bbdd") }
-        )
-    }*/
-
 
 
 
