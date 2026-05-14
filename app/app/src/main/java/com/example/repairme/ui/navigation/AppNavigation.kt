@@ -1,3 +1,4 @@
+
 package com.example.repairme.ui.navigation
 
 import android.widget.Toast
@@ -6,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,7 +40,6 @@ import com.example.repairme.ui.screens.admin.ListaTecnicosScreen
 import com.example.repairme.ui.screens.common.NotificationsScreen
 import com.example.repairme.ui.screens.admin.NuevaAveriaAdmin
 import com.example.repairme.ui.screens.common.DetalleAveriaComunScreen
-
 
 class AppNavigation {
 
@@ -92,12 +93,6 @@ class AppNavigation {
                     onNavigateToUserScreen = { navController.navigate(Rutas.USERSCREEN.ruta) },
                     onNavigateToTecnicoScreen = { navController.navigate(Rutas.TECNICOSCREEN.ruta) },
                     onNavigateToAdminScreen = { navController.navigate(Rutas.ADMINSCREEN.ruta) }
-
-
-
-                    //Esta es la función real que le pasa el destino. Cuando se llama a la función
-                    //sobreescribe la función vacía y ejecuta el navController
-                    //Es aquí cuando se decide a dónde ir (
                 )
             }
 
@@ -173,7 +168,7 @@ class AppNavigation {
                     onVerPresupuestos = { navController.navigate(Rutas.PRESUPUESTOS_ADMIN.ruta) },
                     onVerListaRecoger = { navController.navigate(Rutas.LISTA_PARA_RECOGER_ADMIN.ruta) },
                     onNuevaAveria = { navController.navigate(Rutas.CREAR_AVERIA_ADMIN.ruta) },
-                    
+
                     notificacionesNoLeidas = notificacionesNoLeidas.value
 
                 )
@@ -222,6 +217,7 @@ class AppNavigation {
 
             composable(Rutas.REGISTRO_TECNICO.ruta){
                 RegisterTecnicoScreen(
+                    onVolver = { navController.popBackStack() },
                     onRegisterSucess = { navController.popBackStack() },
                     onIrHome = { navController.navigate(Rutas.ADMINSCREEN.ruta) },
                     onIrPerfil = { navController.navigate(Rutas.PROFILE.ruta) },
@@ -292,50 +288,7 @@ class AppNavigation {
                 val autorRol = backStackEntry.arguments?.getString("autorRol") ?: ""
                 val autorNombre = backStackEntry.arguments?.getString("autorNombre") ?: ""
 
-                // Obtenemos el UID del usuario actual
-                val auth = FirebaseAuth.getInstance()
-                val uid = auth.currentUser?.uid
-
-                // Accedemos a la BBDD para obtener el rol del usuario
-                val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
-
-                // Se inicializa como user por defecto en caso de error
-                val rolUsuario = remember { mutableStateOf("user") }
-
-                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
-                LaunchedEffect(uid) {
-                    if (uid != null) {
-                        db.getReference("users").child(uid).get()
-                            .addOnSuccessListener { snapshot ->
-                                val rol = snapshot.child("role").value as? String ?: "user"
-                                rolUsuario.value = rol
-                            }
-                    }
-                }
-
-                val onIrHome = {
-                    when (rolUsuario.value.lowercase()) {
-                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
-                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
-                        }
-                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
-                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
-                        }
-                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                    }
-                }
-
-                val onIrServicios = {
-                    when (rolUsuario.value.lowercase()) {
-                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
-                        else -> navController.navigate(Rutas.SERVICES.ruta)
-                    }
-                }
+                val (onIrHome, onIrServicios) = obtenerRolYCallbacks(navController)
 
                 DetalleAveriaComunScreen(
                     averiaId = averiaId,
@@ -378,50 +331,7 @@ class AppNavigation {
             }
 
             composable(Rutas.PROFILE.ruta) {
-                // Obtenemos el UID del usuario actual para mostrar su perfil
-                val auth = FirebaseAuth.getInstance()
-                val uid = auth.currentUser?.uid
-
-                // Accedemos a la BBDD para obtener el rol del usuario y mostrar la información adecuada en el perfil
-                val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
-
-                //Se inicializa como user por defecto en caso de error
-                val rolUsuario = remember { mutableStateOf("user") }
-
-                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
-                LaunchedEffect(uid) {
-                    if (uid != null) {
-                        db.getReference("users").child(uid).get()
-                            .addOnSuccessListener { snapshot ->
-                                val rol = snapshot.child("role").value as? String ?: "user"
-                                rolUsuario.value = rol
-                            }
-                    }
-                }
-
-                val onIrHome = {
-                    when (rolUsuario.value.lowercase()) {
-                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
-                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
-                        }
-                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
-                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
-                        }
-                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                    }
-                }
-
-                val onIrServicios = {
-                    when (rolUsuario.value.lowercase()) {
-                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
-                        else -> navController.navigate(Rutas.SERVICES.ruta)
-                    }
-                }
+                val (onIrHome, onIrServicios) = obtenerRolYCallbacks(navController)
 
                 ProfileScreen(
                     onVolver = { navController.popBackStack() },
@@ -434,56 +344,11 @@ class AppNavigation {
                         FirebaseAuth.getInstance().signOut()
                         navController.navigate(Rutas.LOGIN.ruta) { popUpTo(0) }
                     }
-
-
                 )
             }
 
             composable(Rutas.SERVICES.ruta){
-                // Obtenemos el UID del usuario actual
-                val auth = FirebaseAuth.getInstance()
-                val uid = auth.currentUser?.uid
-
-                // Accedemos a la BBDD para obtener el rol del usuario
-                val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
-
-                // Se inicializa como user por defecto en caso de error
-                val rolUsuario = remember { mutableStateOf("user") }
-
-                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
-                LaunchedEffect(uid) {
-                    if (uid != null) {
-                        db.getReference("users").child(uid).get()
-                            .addOnSuccessListener { snapshot ->
-                                val rol = snapshot.child("role").value as? String ?: "user"
-                                rolUsuario.value = rol
-                            }
-                    }
-                }
-
-                val onIrHome = {
-                    when (rolUsuario.value.lowercase()) {
-                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
-                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
-                        }
-                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
-                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
-                        }
-                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                    }
-                }
-
-                val onIrServicios = {
-                    when (rolUsuario.value.lowercase()) {
-                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
-                        else -> navController.navigate(Rutas.SERVICES.ruta)
-                    }
-                }
+                val (onIrHome, onIrServicios) = obtenerRolYCallbacks(navController)
 
                 ServicesScreen(
                     onIrHome = onIrHome,
@@ -544,54 +409,7 @@ class AppNavigation {
                 listOf(navArgument("averiaId"){ type = NavType.StringType })
             ) { backStackEntry ->
                 val averiaId = backStackEntry.arguments?.getString("averiaId") ?: ""
-                // Obtenemos el UID del usuario actual
-                val auth = FirebaseAuth.getInstance()
-                val uid = auth.currentUser?.uid
-
-                // Accedemos a la BBDD para obtener el rol del usuario
-                val db =
-                    FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
-
-                // Se inicializa como user por defecto en caso de error
-                val rolUsuario = remember { mutableStateOf("user") }
-
-                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
-                LaunchedEffect(uid) {
-                    if (uid != null) {
-                        db.getReference("users").child(uid).get()
-                            .addOnSuccessListener { snapshot ->
-                                val rol = snapshot.child("role").value as? String ?: "user"
-                                rolUsuario.value = rol
-                            }
-                    }
-                }
-
-                val onIrHome = {
-                    when (rolUsuario.value.lowercase()) {
-                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-
-                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
-                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
-                        }
-
-                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
-                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
-                        }
-
-                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                    }
-                }
-
-                val onIrServicios = {
-                    when (rolUsuario.value.lowercase()) {
-                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
-                        else -> navController.navigate(Rutas.SERVICES.ruta)
-                    }
-                }
+                val (onIrHome, onIrServicios) = obtenerRolYCallbacks(navController)
 
                 PresupuestoDetalleScreen(
                     averiaId = averiaId,
@@ -642,72 +460,10 @@ class AppNavigation {
                 )
             }
 
-
-
-
             // Esta pantalla es común para todos los roles (User, Tecnico, Admin)
             // Determina el rol del usuario para navegar a la pantalla principal correcta cuando presione HOME
             composable("notifications") {
-                // Obtenemos el UID del usuario actual autenticado en Firebase
-                val auth = FirebaseAuth.getInstance()
-                val uid = auth.currentUser?.uid
-
-                // Accedemos a la base de datos de Firebase para obtener datos del usuario
-                val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
-
-                // Estado local para almacenar el rol del usuario
-                // Se inicializa como "user" por defecto en caso de error
-                val rolUsuario = remember { mutableStateOf("user") }
-
-                // LaunchedEffect para obtener el rol del usuario de forma asincrónica
-                // Se ejecuta cuando el UID del usuario cambia
-                LaunchedEffect(uid) {
-                    if (uid != null) {
-                        // Consultamos la base de datos para obtener el rol del usuario
-                        db.getReference("users").child(uid).get()
-                            .addOnSuccessListener { snapshot ->
-                                // Extraemos el valor de "role" del documento del usuario
-                                val role = snapshot.child("role").value as? String ?: "user"
-                                // Actualizamos el estado con el rol obtenido
-                                rolUsuario.value = role
-                            }
-                    }
-                }
-
-                // Callback para el botón HOME
-                // Navega a la pantalla principal según el rol del usuario
-                val onIrHome = {
-                    when (rolUsuario.value.lowercase()) {
-                        // Si es User, va a UserScreen
-                        "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            // Limpia la pila de navegación para que no haya duplicados
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                        // Si es Técnico, va a TecnicoScreen
-                        "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
-                            popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
-                        }
-                        // Si es Admin, va a AdminScreen
-                        "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
-                            popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
-                        }
-                        // Por defecto, va a UserScreen
-                        else -> navController.navigate(Rutas.USERSCREEN.ruta) {
-                            popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
-                        }
-                    }
-                }
-
-                // Callback para el botón de SERVICIOS
-                // Navega a la pantalla de servicios según el rol del usuario
-                val onIrServicios = {
-                    when (rolUsuario.value.lowercase()) {
-                        // Si es Admin, va a AdminServicesScreen
-                        "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
-                        // Para User y Tecnico, va a Services
-                        else -> navController.navigate(Rutas.SERVICES.ruta)
-                    }
-                }
+                val (onIrHome, onIrServicios) = obtenerRolYCallbacks(navController)
 
                 NotificationsScreen(
                     onIrHome = onIrHome,
@@ -741,12 +497,56 @@ class AppNavigation {
                 )
 
             }
-
-
-
-
-
-
         }
+    }
+
+    @Composable
+    private fun obtenerRolYCallbacks(navController: NavController): Pair<() -> Unit, () -> Unit> {
+        // Obtenemos el UID del usuario actual
+        val auth = FirebaseAuth.getInstance()
+        val uid = auth.currentUser?.uid
+
+        // Accedemos a la BBDD para obtener el rol del usuario
+        val db = FirebaseDatabase.getInstance("https://repairme-956fd-default-rtdb.europe-west1.firebasedatabase.app")
+
+        // Se inicializa como user por defecto en caso de error
+        val rolUsuario = remember { mutableStateOf("user") }
+
+        // LaunchedEffect para obtener el rol del usuario de forma asincrónica
+        LaunchedEffect(uid) {
+            if (uid != null) {
+                db.getReference("users").child(uid).get()
+                    .addOnSuccessListener { snapshot ->
+                        val rol = snapshot.child("role").value as? String ?: "user"
+                        rolUsuario.value = rol
+                    }
+            }
+        }
+
+        val onIrHome = {
+            when (rolUsuario.value.lowercase()) {
+                "user" -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                    popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                }
+                "tecnico" -> navController.navigate(Rutas.TECNICOSCREEN.ruta) {
+                    popUpTo(Rutas.TECNICOSCREEN.ruta) { inclusive = true }
+                }
+                "admin" -> navController.navigate(Rutas.ADMINSCREEN.ruta) {
+                    popUpTo(Rutas.ADMINSCREEN.ruta) { inclusive = true }
+                }
+                else -> navController.navigate(Rutas.USERSCREEN.ruta) {
+                    popUpTo(Rutas.USERSCREEN.ruta) { inclusive = true }
+                }
+            }
+        }
+
+        val onIrServicios = {
+            when (rolUsuario.value.lowercase()) {
+                "admin" -> navController.navigate(Rutas.SERVICES_ADMIN.ruta)
+                else -> navController.navigate(Rutas.SERVICES.ruta)
+            }
+        }
+
+        return Pair(onIrHome, onIrServicios)
     }
 }

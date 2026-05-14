@@ -60,10 +60,7 @@ fun RegisterTecnicoScreen(
     onGestionServicios: () -> Unit = {},
     onIrNotificaciones: () -> Unit = {},
     onLogOut: () -> Unit = {},
-    notificacionesNoLeidas: Int=0
-    //Dejo esta función aquí porque la voy a usar para volver al login cuando
-    //el registro haya sido exitoso
-    
+    notificacionesNoLeidas: Int = 0
 ) {
 
     //Creo instancia del repo y del context
