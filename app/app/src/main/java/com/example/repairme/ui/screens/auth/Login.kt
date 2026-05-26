@@ -78,7 +78,7 @@ fun LoginScreen(
             mensaje(context,"La contraseña debe tener al menos 8 caracteres")
             return
         }
-        mensaje(context,"Voy a validar")
+        //mensaje(context,"Voy a validar")
         repo.validarCorreoPassword(
             correo = email,
             contraseña = contrasena,

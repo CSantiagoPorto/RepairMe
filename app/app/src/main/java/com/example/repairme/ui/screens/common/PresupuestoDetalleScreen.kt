@@ -167,6 +167,9 @@ fun PresupuestoDetalleScreen(
                                             text = cliente?.dni
                                                 ?: "No se encontró ningún dni asociado"
                                         )
+                                        Text(text = cliente?.phone ?: "Sin teléfono")
+                                        Text(text = cliente?.email ?: "Sin email")
+
 
                                     }
 
