@@ -81,8 +81,6 @@ class AdminRepository(private val context: Context) : OperationsTemplateReposito
         }
 
 
-
-
     }
 
     //Esto al final no se usa porque se hace directamente en ProfileScreen

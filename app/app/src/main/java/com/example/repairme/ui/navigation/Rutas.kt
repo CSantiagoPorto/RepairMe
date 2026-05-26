@@ -30,8 +30,6 @@ sealed class Rutas (val ruta:String) {
 
 
 }
-
-
     //Aquí le estoy diciendo que Login pues es un tipo de ruta
     //con el data object le hacemos un singleton a la instancia de la pantalla y tenemos
     //igual el toString y el equals

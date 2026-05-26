@@ -387,9 +387,6 @@ fun NuevaAveriaAdmin(
                 )}
 
 
-
-
-
                     items(clientesFiltrados) { cliente ->
                         Card(
                             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -845,9 +842,10 @@ fun NuevaAveriaAdmin(
 
                     // Volver
                 }
-                    TextButton(onClick = onVolver) {
+                    /*TextButton(onClick = onVolver) {
                         Text("Volver", color = Naranja)
-                    }
+                    }Sí
+                    */
                 }
             }
         }

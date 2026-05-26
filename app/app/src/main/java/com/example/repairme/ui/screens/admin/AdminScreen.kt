@@ -100,12 +100,7 @@ fun AdminScreen(
                 icono = Icons.Filled.Engineering,
                 onClick = onVerTecnicos
             )
-            //Card para crear las avería nuevas
-                // AdminCard(
-                // titulo = "Crear Avería",
-                // icono = Icons.Filled.HomeRepairService,
-                // onClick = onNuevaAveria
-                // )
+
 
             // Card de Clientes
             AdminCard(
