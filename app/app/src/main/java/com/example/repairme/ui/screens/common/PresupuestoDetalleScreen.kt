@@ -291,6 +291,7 @@ fun PresupuestoDetalleScreen(
                                                 estado = EstadoAveria.Declinada.name
                                             ),
                                             exito = {
+                                                onVolver()
 
 
                                             },

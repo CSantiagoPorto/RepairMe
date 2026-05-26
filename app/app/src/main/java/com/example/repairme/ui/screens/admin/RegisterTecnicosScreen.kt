@@ -842,9 +842,10 @@ fun NuevaAveriaAdmin(
 
                     // Volver
                 }
-                    TextButton(onClick = onVolver) {
+                    /*TextButton(onClick = onVolver) {
                         Text("Volver", color = Naranja)
-                    }
+                    }Sí
+                    */
                 }
             }
         }
