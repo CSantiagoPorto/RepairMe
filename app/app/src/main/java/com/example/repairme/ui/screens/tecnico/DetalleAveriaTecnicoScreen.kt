@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -161,6 +165,7 @@ fun DetalleAveriaTecnicoScreen(
                                 Text("Cant.", modifier = Modifier.weight(1f))
                                 Text("Precio", modifier = Modifier.weight(1f))
                                 Text("Total", modifier = Modifier.weight(1f))
+                                //Text("Borrar", modifier = Modifier.weight(1f))
                             }
                         }
                         items(lineas) { linea ->
@@ -169,6 +174,15 @@ fun DetalleAveriaTecnicoScreen(
                                 Text("${linea.cantidad}", modifier = Modifier.weight(1f))
                                 Text("${linea.precioUnitario}", modifier = Modifier.weight(1f))
                                 Text("${linea.cantidad * linea.precioUnitario}", modifier = Modifier.weight(1f))
+
+                                IconButton(
+                                    onClick = { lineas = lineas - linea },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Icon(Icons.Filled.Delete, contentDescription = "Borrar línea")
+                                }
+
+
                             }
                         }
                         item {

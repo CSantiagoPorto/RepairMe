@@ -154,7 +154,11 @@ fun UserScreen(
                     onVolver()
                 },
                 exito = { averias ->
-                    listaPresupuestadas = averias
+                    listaPresupuestadas = averias.filter {
+                        it.estado != EstadoAveria.Asignada.name &&
+                                it.estado != EstadoAveria.Pendiente.name
+
+                    }
                 }
             )
         }
