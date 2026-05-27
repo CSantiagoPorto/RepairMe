@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +46,7 @@ fun TecnicoScreen(
     val grayBackground = Color(0xFFF5F5F5)
 
     // Estado para controlar qué pantalla se muestra dentro del técnico (Home, Reparar o Reparados)
-    var currentScreen by remember { mutableStateOf<String?>(null) }
+    var currentScreen by rememberSaveable { mutableStateOf<String?>(null) }
 
     // Configuramos los botones de la barra inferior para que cambien el 'currentScreen' internamente
     val itemsNavegacion = listOf(
