@@ -154,6 +154,7 @@ fun DetalleReparacionesFinalizadas(
                                     Text(text = averia?.tituloAveria?:"Sin nombre")
                                     Text(text = averia?.descripcion?:"No hay descripción")
                                    // Text(text = "Fecha de entrega : ${pasarFechaEntregaAString(averia?.fechaEntrega ?: 0L)}")
+                                    //
 
 
                                 }
