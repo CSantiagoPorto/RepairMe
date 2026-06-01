@@ -205,17 +205,14 @@ fun RegisterTecnicoScreen(
                 onClick = {
                     if (validarCampos()) {
                         ok = true
-                        repo.crearUsuario(
+                        repo.crearTecnico(
+                            context = context,
                             email = email.trim(),
                             password = pass.trim(),
                             nombre = nombre.trim(),
                             apellidos = apellidos.trim(),
-                            telefono = "",
-                            direccion = "",
-                            codigoPostal = "",
-                            localidad = "",
-                            dni = "",
-                            role = "tecnico",
+                            telefono = telefono.trim(),
+                            dni = dni.trim(),
                             creadoOK = {
                                 ok = false
                                 Toast.makeText(context, "Técnico creado", Toast.LENGTH_LONG).show()
@@ -227,6 +224,7 @@ fun RegisterTecnicoScreen(
                                 Toast.makeText(context, "Error: $mensaje", Toast.LENGTH_LONG).show()
                             }
                         )
+
                     } else {
                         ok = false
                     }

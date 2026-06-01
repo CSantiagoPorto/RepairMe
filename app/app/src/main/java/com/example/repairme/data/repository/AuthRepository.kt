@@ -11,6 +11,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.google.firebase.FirebaseApp
+
 
 
 
@@ -154,4 +156,52 @@ class AuthRepository {
                 e-> fallo("Error de bbdd")
             }
     }
+    fun crearTecnico(
+        context: android.content.Context,
+        email: String,
+        password: String,
+        nombre: String,
+        apellidos: String,
+        telefono: String,
+        dni: String,
+        creadoOK: () -> Unit,
+        creadoError: (String) -> Unit
+    ) {
+        val appSecundaria = try {
+            FirebaseApp.getInstance("temp_tecnico")
+        } catch (e: Exception) {
+            FirebaseApp.initializeApp(
+                context,
+                FirebaseApp.getInstance().options,
+                "temp_tecnico"
+            )
+        }
+        val authSecundaria = FirebaseAuth.getInstance(appSecundaria)
+
+        authSecundaria.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                val uid = it.user?.uid ?: return@addOnSuccessListener
+                val usuario = Usuario(
+                    id = uid,
+                    name = nombre,
+                    apellidos = apellidos,
+                    email = email,
+                    phone = telefono,
+                    dni = dni,
+                    role = "tecnico",
+                    createdAt = System.currentTimeMillis(),
+                    estado = EstadoTecnico.Activo.name
+                )
+                bbdd.getReference().child("users").child(uid).setValue(usuario)
+                    .addOnSuccessListener {
+                        authSecundaria.signOut()
+                        creadoOK()
+                    }
+                    .addOnFailureListener { e -> creadoError("Error de BD: ${e.message}") }
+            }
+            .addOnFailureListener { e ->
+                creadoError("Error al crear técnico: ${e.message}")
+            }
+    }
+
 }
