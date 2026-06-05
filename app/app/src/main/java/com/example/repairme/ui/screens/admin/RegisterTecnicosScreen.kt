@@ -77,32 +77,9 @@ fun RegisterTecnicoScreen(
 
 
     // Variables para decir si OK o error
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
+    var error by remember { mutableStateOf<String?>(null) }
     var ok by rememberSaveable { mutableStateOf(false) }
-
-    // Función de validación
-    fun validarCampos(): Boolean {
-        // Si algún campo está vacío -> error
-        if (email.trim().isEmpty() || !email.contains("@")) {
-            error = "Email inválido"
-            return false
-        }
-
-        if (pass.trim().length < 8) {
-            error = "Contraseña debe tener al menos 8 caracteres"
-            return false
-        }
-        if (
-            nombre.trim().isEmpty()
-        ) {
-            error = "Rellena todos los campos"
-            return false
-        }
-
-        // Si todo va bien, limpiamos error
-        error = null
-        return true
-    }
+    var intentoEnviar by remember { mutableStateOf(false) }
 
     BaseScreen(
         title = "Registrar Técnico",
@@ -124,77 +101,70 @@ fun RegisterTecnicoScreen(
                 // Nombre
             OutlinedTextField(
                 value = nombre,
-                onValueChange = {
-                    nombre = it
-                    error = null
-                },
+                onValueChange = { nombre = it },
                 label = { Text("Nombre") },
+                isError = intentoEnviar && nombre.trim().isEmpty(),
+                supportingText = {
+                    if (intentoEnviar && nombre.trim().isEmpty()) Text("Campo obligatorio")
+                },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = apellidos,
-                onValueChange = {
-                    apellidos = it
-                    error = null
-                },
+                onValueChange = { apellidos = it },
                 label = { Text("Apellidos") },
+                isError = intentoEnviar && apellidos.trim().isEmpty(),
+                supportingText = {
+                    if (intentoEnviar && apellidos.trim().isEmpty()) Text("Campo obligatorio")
+                },
                 modifier = Modifier.fillMaxWidth()
             )
-
-
             OutlinedTextField(
                 value = email,
-                onValueChange = {
-                    email = it
-                    error = null
-                },
+                onValueChange = { email = it },
                 label = { Text("Email") },
+                isError = intentoEnviar && (email.trim().isEmpty() || !email.contains("@")),
+                supportingText = {
+                    if (intentoEnviar && (email.trim().isEmpty() || !email.contains("@"))) Text("Email inválido")
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !ok
             )
             OutlinedTextField(
                 value = telefono,
-                onValueChange = {
-                    telefono = it
-                    error = null
-                },
+                onValueChange = { telefono = it },
                 label = { Text("Teléfono") },
+                isError = intentoEnviar && !telefono.trim().matches(Regex("^[0-9]{9}$")),
+                supportingText = {
+                    if (intentoEnviar && !telefono.trim().matches(Regex("^[0-9]{9}$"))) Text("9 dígitos")
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth()
             )
-
             OutlinedTextField(
                 value = dni,
-                onValueChange = {
-                    dni = it
-                    error = null
-                },
+                onValueChange = { dni = it },
                 label = { Text("DNI") },
+                isError = intentoEnviar && !dni.trim().matches(Regex("^[0-9]{8}[A-Za-z]$")),
+                supportingText = {
+                    if (intentoEnviar && !dni.trim().matches(Regex("^[0-9]{8}[A-Za-z]$"))) Text("8 números y 1 letra, ej: 12345678A")
+                },
                 modifier = Modifier.fillMaxWidth()
             )
-
-
             OutlinedTextField(
                 value = pass,
-                onValueChange = {
-                    pass = it
-                    error = null
-                },
+                onValueChange = { pass = it },
                 label = { Text("Contraseña") },
+                isError = intentoEnviar && pass.trim().length < 8,
+                supportingText = {
+                    if (intentoEnviar && pass.trim().length < 8) Text("Mínimo 8 caracteres")
+                },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !ok
             )
-
-            // Mensajes de error/ok
-            if (error != null) {
-                Text(
-                    text = error!!,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
 
             if (ok) {
                 Text("Registro enviado")
@@ -203,19 +173,23 @@ fun RegisterTecnicoScreen(
             // Botón de registro
             Button(
                 onClick = {
-                    if (validarCampos()) {
+                    intentoEnviar = true
+                    val camposOk = nombre.trim().isNotEmpty() &&
+                        apellidos.trim().isNotEmpty() &&
+                        email.trim().isNotEmpty() && email.contains("@") &&
+                        pass.trim().length >= 8 &&
+                        dni.trim().matches(Regex("^[0-9]{8}[A-Za-z]$")) &&
+                        telefono.trim().matches(Regex("^[0-9]{9}$"))
+                    if (camposOk) {
                         ok = true
-                        repo.crearUsuario(
+                        repo.crearTecnico(
+                            context = context,
                             email = email.trim(),
                             password = pass.trim(),
                             nombre = nombre.trim(),
                             apellidos = apellidos.trim(),
-                            telefono = "",
-                            direccion = "",
-                            codigoPostal = "",
-                            localidad = "",
-                            dni = "",
-                            role = "tecnico",
+                            telefono = telefono.trim(),
+                            dni = dni.trim(),
                             creadoOK = {
                                 ok = false
                                 Toast.makeText(context, "Técnico creado", Toast.LENGTH_LONG).show()
@@ -227,8 +201,6 @@ fun RegisterTecnicoScreen(
                                 Toast.makeText(context, "Error: $mensaje", Toast.LENGTH_LONG).show()
                             }
                         )
-                    } else {
-                        ok = false
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -238,6 +210,10 @@ fun RegisterTecnicoScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Registrar Técnico")
+            }
+
+            if (error != null) {
+                Text(text = error!!, color = MaterialTheme.colorScheme.error)
             }
         }
     }
@@ -303,6 +279,7 @@ fun NuevaAveriaAdmin(
     var nuevoCodigoPostal by remember { mutableStateOf("") }
     var nuevaLocalidad by remember { mutableStateOf("") }
     var rgpdAceptado by remember { mutableStateOf(false) }
+    var intentoEnviarCliente by remember { mutableStateOf(false) }
 
 
     //var notificacionesNoLeidas by remember { mutableStateOf(0) }
@@ -412,30 +389,55 @@ fun NuevaAveriaAdmin(
                             value = nuevoNombre,
                             onValueChange = { nuevoNombre = it },
                             label = { Text("Nombre") },
+                            isError = intentoEnviarCliente && nuevoNombre.trim().isEmpty(),
+                            supportingText = {
+                                if (intentoEnviarCliente && nuevoNombre.trim().isEmpty())
+                                    Text("Campo obligatorio")
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                         OutlinedTextField(
                             value = nuevoApellidos,
                             onValueChange = { nuevoApellidos = it },
                             label = { Text("Apellidos") },
+                            isError = intentoEnviarCliente && nuevoApellidos.trim().isEmpty(),
+                            supportingText = {
+                                if (intentoEnviarCliente && nuevoApellidos.trim().isEmpty())
+                                    Text("Campo obligatorio")
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                         OutlinedTextField(
                             value = nuevoEmail,
                             onValueChange = { nuevoEmail = it },
                             label = { Text("Email") },
+                            isError = intentoEnviarCliente && (nuevoEmail.trim().isEmpty() || !nuevoEmail.contains("@")),
+                            supportingText = {
+                                if (intentoEnviarCliente && (nuevoEmail.trim().isEmpty() || !nuevoEmail.contains("@")))
+                                    Text("Email inválido")
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                         OutlinedTextField(
                             value = nuevoTelefono,
                             onValueChange = { nuevoTelefono = it },
                             label = { Text("Teléfono") },
+                            isError = intentoEnviarCliente && !nuevoTelefono.trim().matches(Regex("^[0-9]{9}$")),
+                            supportingText = {
+                                if (intentoEnviarCliente && !nuevoTelefono.trim().matches(Regex("^[0-9]{9}$")))
+                                    Text("9 dígitos")
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                         OutlinedTextField(
                             value = nuevoDni,
                             onValueChange = { nuevoDni = it },
                             label = { Text("DNI") },
+                            isError = intentoEnviarCliente && !nuevoDni.trim().matches(Regex("^[0-9]{8}[A-Za-z]$")),
+                            supportingText = {
+                                if (intentoEnviarCliente && !nuevoDni.trim().matches(Regex("^[0-9]{8}[A-Za-z]$")))
+                                    Text("8 números y 1 letra, ej: 12345678A")
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                         OutlinedTextField(
@@ -468,10 +470,16 @@ fun NuevaAveriaAdmin(
                             Text("Acepto la política de protección de datos")
                         }
                         Button(onClick = {
-                            if(!rgpdAceptado){
-                                error="Es obligatorio aceptar la política de protección de datos"
+                            intentoEnviarCliente = true
+                            if (nuevoNombre.trim().isEmpty() || nuevoApellidos.trim().isEmpty()) return@Button
+                            if (nuevoEmail.trim().isEmpty() || !nuevoEmail.contains("@")) return@Button
+                            if (!nuevoDni.trim().matches(Regex("^[0-9]{8}[A-Za-z]$"))) return@Button
+                            if (!nuevoTelefono.trim().matches(Regex("^[0-9]{9}$"))) return@Button
+                            if (!rgpdAceptado) {
+                                error = "Es obligatorio aceptar la política de protección de datos"
                                 return@Button
                             }
+                            error = null
                             repoAdmin.crearUsuarioAdmin(
                                 email = nuevoEmail,
                                 nombre = nuevoNombre,
@@ -487,13 +495,14 @@ fun NuevaAveriaAdmin(
                                         name = nuevoNombre,
                                         apellidos = nuevoApellidos,
                                         email = nuevoEmail
-
                                     )
-
                                 },
                                 error = { msg -> error = msg })
                         }) {
                             Text("Confirmar cliente")
+                        }
+                        if (error != null) {
+                            Text(text = error!!, color = MaterialTheme.colorScheme.error)
                         }
                     } }
                 item{
