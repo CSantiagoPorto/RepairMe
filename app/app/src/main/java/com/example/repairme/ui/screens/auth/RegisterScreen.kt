@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,8 @@ fun RegisterScreen(
     // Variables para decir si OK o error
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     var ok by rememberSaveable { mutableStateOf(false) }
+    var rgpdAceptado by rememberSaveable { mutableStateOf(false) }
+    var mostrarPolitica by remember { mutableStateOf(false) }
 
 
     fun validarCampos(): Boolean {
@@ -241,6 +244,54 @@ fun RegisterScreen(
 
 
 
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = rgpdAceptado,
+                onCheckedChange = { rgpdAceptado = it }
+            )
+            Text("Acepto la ")
+            TextButton(
+                onClick = { mostrarPolitica = true },
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text("política de privacidad", color = Naranja)
+            }
+        }
+
+        if (mostrarPolitica) {
+            AlertDialog(
+                onDismissRequest = { mostrarPolitica = false },
+                title = { Text("Política de Privacidad") },
+                text = {
+                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                        Text(
+                            """Responsable del tratamiento: ReparMe.
+
+Finalidad: gestionar las solicitudes de reparación y la relación comercial con el cliente.
+
+Datos recogidos: nombre, apellidos, DNI, dirección, teléfono y correo electrónico.
+
+Base legal: consentimiento del interesado (art. 6.1.a RGPD) y ejecución de un contrato (art. 6.1.b RGPD).
+
+Conservación: los datos se conservarán mientras exista la relación comercial y durante los plazos legales exigibles.
+
+Derechos: puede ejercer sus derechos de acceso, rectificación, supresión y portabilidad dirigiéndose a reparme@email.com.
+
+Reglamento aplicable: Reglamento (UE) 2016/679 (RGPD) y Ley Orgánica 3/2018 (LOPDGDD)."""
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { mostrarPolitica = false }) {
+                        Text("Cerrar")
+                    }
+                }
+            )
+        }
+
         if (error != null) {
             Text(
                 text = error!!,
@@ -282,6 +333,7 @@ fun RegisterScreen(
                     ok = false
                 }
             },
+            enabled = rgpdAceptado,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Naranja,
                 contentColor = Color.White

@@ -246,6 +246,39 @@ fun PresupuestoDetalleScreen(
 
 
 
+                        if (averia?.updates?.isNotEmpty() == true) {
+                            item {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(
+                                            text = "Actualizaciones",
+                                            fontWeight = FontWeight.Bold,
+                                            color = naranjaLetras
+                                        )
+                                        averia!!.updates.sortedByDescending { it.createdAt }.forEach { update ->
+                                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                                Text(
+                                                    text = update.mensaje,
+                                                    style = MaterialTheme.typography.bodyMedium
+                                                )
+                                                Text(
+                                                    text = "${update.autorNombre} · ${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date(update.createdAt))}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color.Gray
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         item {
                             if (averia?.estado == EstadoAveria.Presupuestada.name && usuarioActual?.role =="user") {
 

@@ -279,6 +279,7 @@ fun NuevaAveriaAdmin(
     var nuevoCodigoPostal by remember { mutableStateOf("") }
     var nuevaLocalidad by remember { mutableStateOf("") }
     var rgpdAceptado by remember { mutableStateOf(false) }
+    var mostrarPolitica by remember { mutableStateOf(false) }
     var intentoEnviarCliente by remember { mutableStateOf(false) }
 
 
@@ -465,9 +466,46 @@ fun NuevaAveriaAdmin(
                         ) {
                             Checkbox(
                                 checked = rgpdAceptado,
-                                onCheckedChange = {rgpdAceptado=it}
+                                onCheckedChange = { rgpdAceptado = it }
                             )
-                            Text("Acepto la política de protección de datos")
+                            Text("Acepto la ")
+                            TextButton(
+                                onClick = { mostrarPolitica = true },
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                Text("política de privacidad", color = Naranja)
+                            }
+                        }
+
+                        if (mostrarPolitica) {
+                            AlertDialog(
+                                onDismissRequest = { mostrarPolitica = false },
+                                title = { Text("Política de Privacidad") },
+                                text = {
+                                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                                        Text(
+                                            """Responsable del tratamiento: ReparMe.
+
+Finalidad: gestionar las solicitudes de reparación y la relación comercial con el cliente.
+
+Datos recogidos: nombre, apellidos, DNI, dirección, teléfono y correo electrónico.
+
+Base legal: consentimiento del interesado (art. 6.1.a RGPD) y ejecución de un contrato (art. 6.1.b RGPD).
+
+Conservación: los datos se conservarán mientras exista la relación comercial y durante los plazos legales exigibles.
+
+Derechos: puede ejercer sus derechos de acceso, rectificación, supresión y portabilidad dirigiéndose a reparme@email.com.
+
+Reglamento aplicable: Reglamento (UE) 2016/679 (RGPD) y Ley Orgánica 3/2018 (LOPDGDD)."""
+                                        )
+                                    }
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = { mostrarPolitica = false }) {
+                                        Text("Cerrar")
+                                    }
+                                }
+                            )
                         }
                         Button(onClick = {
                             intentoEnviarCliente = true
